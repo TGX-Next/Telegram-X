@@ -12,6 +12,7 @@
  *
  * File created on 25/04/2015 at 09:10
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.content.Context;
@@ -74,18 +75,13 @@ public class Drawables {
       drawable.addState(StateSet.WILD_CARD, defaultDrawable);
     }
 
-    /*if (Build.VERSION.SDK_INT >= 11 && useExitFade)
-      drawable.setExitFadeDuration(EXIT_FADE_DURATION);*/
+
 
     return drawable;
   }
 
   public static void setAlpha (Drawable d, int alpha) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (d.getAlpha() != alpha) {
-        d.setAlpha(alpha);
-      }
-    } else {
+    if (d.getAlpha() != alpha) {
       d.setAlpha(alpha);
     }
   }
@@ -112,15 +108,11 @@ public class Drawables {
       }
       b.setAlpha(alpha);
     } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        if (filter != d.getColorFilter()) {
-          d.setColorFilter(filter);
-        }
+      if (filter != d.getColorFilter()) {
+        d.setColorFilter(filter);
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        if (alpha != d.getAlpha()) {
-          d.setAlpha(alpha);
-        }
+      if (alpha != d.getAlpha()) {
+        d.setAlpha(alpha);
       }
     }
   }
@@ -161,11 +153,7 @@ public class Drawables {
   }
 
   public static Drawable bitmapDrawable (Context context, Bitmap bitmap) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      return new BitmapDrawable(context.getResources(), bitmap);
-    } else {
-      return new BitmapDrawable(bitmap);
-    }
+    return new BitmapDrawable(context.getResources(), bitmap);
   }
 
   public static Drawable get (int res) {
@@ -204,15 +192,13 @@ public class Drawables {
   }
 
   public static Bitmap getBitmap (int res) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       Drawable drawable = get(res);
       Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
       Canvas canvas = new Canvas(bitmap);
       drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
       drawable.draw(canvas);
       return bitmap;
-    } else {
-      return BitmapFactory.decodeResource(UI.getResources(), res);
     }
   }
 
@@ -245,3 +231,4 @@ public class Drawables {
     return null;
   }
 }
+// endregion

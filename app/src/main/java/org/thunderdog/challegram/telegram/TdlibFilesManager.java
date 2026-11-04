@@ -12,6 +12,7 @@
  *
  * File created on 24/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.content.SharedPreferences;
@@ -1017,10 +1018,8 @@ public class TdlibFilesManager implements GlobalConnectionListener {
   }
 
   private boolean isDataSaverEventuallyEnabled (int connectionState) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      if (tdlib.context().watchDog().isSystemDataSaverEnabled()) {
-        return true;
-      }
+    if (tdlib.context().watchDog().isSystemDataSaverEnabled()) {
+      return true;
     }
     switch (connectionState) {
       case WatchDog.CONNECTION_TYPE_ROAMING: {
@@ -1489,3 +1488,4 @@ public class TdlibFilesManager implements GlobalConnectionListener {
     }
   }
 }
+// endregion

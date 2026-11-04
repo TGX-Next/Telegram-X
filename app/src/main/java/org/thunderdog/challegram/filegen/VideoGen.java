@@ -12,10 +12,10 @@
  *
  * File created on 14/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.filegen;
 
 import static tgx.flavor.VideoTransformer.getVideoFrameRate;
-import static tgx.flavor.VideoTransformer.legacyConvertVideoComplex;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
@@ -23,7 +23,6 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 import androidx.media3.common.C;
 import androidx.media3.common.Effect;
@@ -222,7 +221,7 @@ public class VideoGen {
     final String sourcePath = info.getOriginalPath();
     final String destinationPath = info.getDestinationPath();
 
-    boolean sendOriginalInCaseFileSizeGrows = !Config.MODERN_VIDEO_TRANSCODING_ENABLED && info.canTakeSimplePath() && (entry.inputVideoRotation == 0 || !Config.TRANSCODE_ROTATED_VIDEOS_FOR_IOS_CLIENT);
+    boolean sendOriginalInCaseFileSizeGrows = false;
 
     long sourceSize = getBytesCount(sourcePath, true);
     ProgressCallback onProgress = new ProgressCallback() {
@@ -317,11 +316,7 @@ public class VideoGen {
       }
     };
 
-    if (!Config.MODERN_VIDEO_TRANSCODING_ENABLED && info.disableTranscoding()) {
-      // Send original file only in case Transformer isn't used.
-      sendOriginal(info, entry);
-      return;
-    }
+
 
     awaitOrConvertVideo(sourcePath, destinationPath, info, entry, onProgress, onComplete, onCancel, onFailure);
   }
@@ -330,11 +325,7 @@ public class VideoGen {
   private final ArrayDeque<Runnable> pendingVideoGenerations = new ArrayDeque<>();
 
   private int maxParallelVideoGenerations () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      return MathUtils.clamp(Runtime.getRuntime().availableProcessors(), 1, 8);
-    } else {
-      return 1;
-    }
+    return MathUtils.clamp(Runtime.getRuntime().availableProcessors(), 1, 8);
   }
 
   private void awaitOrConvertVideo (String sourcePath, String destinationPath, VideoGenerationInfo info, Entry entry, ProgressCallback onProgress, Runnable onComplete, RunnableData<String> onCancel, RunnableData<Throwable> onFailure) {
@@ -359,20 +350,14 @@ public class VideoGen {
 
   private void convertVideo (String sourcePath, String destinationPath, VideoGenerationInfo info, Entry entry, ProgressCallback onProgress, Runnable onComplete, RunnableData<String> onCancel, RunnableData<Throwable> onFailure, Runnable after) {
     try {
-      if (Config.MODERN_VIDEO_TRANSCODING_ENABLED) {
-        convertVideoComplexV2(sourcePath, destinationPath, info, entry, onProgress, onComplete, onCancel, onFailure, after);
-      } else if (Config.LEGACY_VIDEO_TRANSCODING_ENABLED) {
-        legacyConvertVideoComplex(this, AppContext.get(), sourcePath, destinationPath, info, entry, onProgress, onComplete, onCancel, onFailure, after);
-      } else {
-        onFailure.runWithData(new RuntimeException());
-      }
+      convertVideoComplexV2(sourcePath, destinationPath, info, entry, onProgress, onComplete, onCancel, onFailure, after);
     } catch (Throwable t) {
       Log.e(t);
       onFailure.runWithData(t);
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private void convertVideoComplexV2 (String sourcePath, String destinationPath, VideoGenerationInfo info, Entry entry, ProgressCallback onProgress, Runnable onComplete, RunnableData<String> onCancel, RunnableData<Throwable> onFailure, Runnable after) throws FileNotFoundException {
     MediaMetadataRetriever retriever = U.openRetriever(sourcePath);
     if (retriever == null)
@@ -381,11 +366,7 @@ public class VideoGen {
     int inputVideoWidth = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
     int inputVideoHeight = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
     int inputVideoRotation;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      inputVideoRotation = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
-    } else {
-      inputVideoRotation = 0;
-    }
+    inputVideoRotation = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
     entry.inputVideoRotation = inputVideoRotation;
     long inputVideoBitrate = StringUtils.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
     U.closeRetriever(retriever);
@@ -660,3 +641,4 @@ public class VideoGen {
     }
   }
 }
+// endregion

@@ -3,9 +3,10 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="@drawable/transparent"
+  android:maxLines="1"
+  android:textColor="#ffffffff"
   android:textColorHint="#ffadcae0"
   android:textSize="19dp"
-  android:maxLines="1"
-  android:background="@drawable/transparent"
-  android:textColor="#ffffffff"
+  android:theme="@style/LightEditTextTheme"
   tools:ignore="SpUsage" />

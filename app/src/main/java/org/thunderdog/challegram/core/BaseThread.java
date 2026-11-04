@@ -12,6 +12,7 @@
  *
  * File created on 05/04/2015 at 08:45
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.core;
 
 import android.os.Build;
@@ -57,7 +58,7 @@ public class BaseThread extends Thread {
   public void quitLooper (boolean safely) {
     Looper looper = Looper.myLooper();
     if (looper != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && safely) {
+      if ((safely)) {
         looper.quitSafely();
       } else {
         looper.quit();
@@ -117,3 +118,4 @@ public class BaseThread extends Thread {
   /* Should be overridden */
   protected void process (Message msg) { }
 }
+// endregion

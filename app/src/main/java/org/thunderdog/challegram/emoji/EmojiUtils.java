@@ -12,6 +12,7 @@
  *
  * File created on 11/05/2019
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.emoji;
 
 import android.os.Build;
@@ -21,11 +22,10 @@ import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import me.vkryl.core.lambda.Destroyable;
 
-@RequiresApi(Build.VERSION_CODES.KITKAT)
+
 public class EmojiUtils {
   static boolean handleDeleteSurroundingText(@NonNull final InputConnection inputConnection,
                                              @NonNull final Editable editable, @IntRange(from = 0) final int beforeLength,
@@ -215,3 +215,4 @@ public class EmojiUtils {
     }
   }
 }
+// endregion

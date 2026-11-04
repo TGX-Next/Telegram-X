@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 @file:JvmName("NLoader")
 
 package tgx.flavor
@@ -22,11 +23,10 @@ fun loadLibraries() {
   loadLibrary("sslx")
   loadLibrary("tdjni")
   loadLibrary("leveldbjni")
-  if (BuildConfig.CALLS_AVAILABLE) {
-    loadLibrary("tgcallsjni")
-  }
+  loadLibrary("tgcallsjni")
   loadLibrary("tgxjni")
   trace("setup") {
     N.setupLibraries()
   }
 }
+// endregion

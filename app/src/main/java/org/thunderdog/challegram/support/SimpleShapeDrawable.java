@@ -12,6 +12,7 @@
  *
  * File created on 26/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.support;
 
 import android.graphics.ColorFilter;
@@ -26,7 +27,7 @@ import org.thunderdog.challegram.util.ColorChangeAcceptorDelegate;
 import me.vkryl.core.ColorUtils;
 
 public abstract class SimpleShapeDrawable extends Drawable implements ColorChangeAcceptorDelegate {
-  public static final boolean USE_SOFTWARE_SHADOW = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean USE_SOFTWARE_SHADOW = false;
 
   private @ColorId
   int colorId;
@@ -77,3 +78,4 @@ public abstract class SimpleShapeDrawable extends Drawable implements ColorChang
     return PixelFormat.UNKNOWN;
   }
 }
+// endregion

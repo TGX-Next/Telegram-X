@@ -12,6 +12,7 @@
  *
  * File created on 27/04/2015 at 15:32
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.app.Activity;
@@ -1538,7 +1539,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
         }
       };
       pagerContentView.setOffscreenPageLimit(1);
-      pagerContentView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+      pagerContentView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
       pagerContentView.addOnPageChangeListener(this);
       pagerContentView.setAdapter(pagerContentAdapter);
       pagerContentView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -7643,12 +7644,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
   }
 
   public void showKeyboard (long messageId, TdApi.ReplyMarkupShowKeyboard markup) {
-    if (false && !isFocused() && commandsMessageId != messageId) { // Смотрится как говно
-      scheduledKeyboardMessageId = messageId;
-      scheduledKeyboard = markup;
-    } else {
-      openCommandsKeyboard(messageId, markup, false, false);
-    }
+    openCommandsKeyboard(messageId, markup, false, false);
   }
 
   @Override
@@ -10392,7 +10388,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
         TdApi.InputMessageContent content;
         if (file.isVideo()) {
           boolean sendAsAnimation = file.shouldMuteVideo();
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+          {
             MediaMetadataRetriever retriever = null;
             try {
               retriever = U.openRetriever(file.getFilePath());
@@ -10419,7 +10415,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
           final int height = size[1];
 
           final TD.FileInfo fileInfo = new TD.FileInfo();
-          boolean forceVideo = Config.USE_VIDEO_COMPRESSION && !(asFiles && VideoGenerationInfo.isEmpty(file));
+          boolean forceVideo = (!(asFiles && VideoGenerationInfo.isEmpty(file)));
           final TdApi.InputFile inputVideo = forceVideo ? VideoGenerationInfo.newFile(file.getFilePath(), file, asFiles) : TD.createInputFile(file.getFilePath(), null, fileInfo);
           TdApi.FormattedText caption = file.getCaption(true, !disableMarkdown);
           if (asFiles && !forceVideo) {
@@ -12866,3 +12862,4 @@ public class MessagesController extends ViewController<MessagesController.Argume
     }
   }
 }
+// endregion

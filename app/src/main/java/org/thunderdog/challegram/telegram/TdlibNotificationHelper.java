@@ -12,6 +12,7 @@
  *
  * File created on 25/12/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.content.Context;
@@ -20,7 +21,6 @@ import android.os.Build;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.drinkless.tdlib.TdApi;
@@ -296,10 +296,8 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   }
 
   public void onNotificationChannelGroupReset (long accountUserId) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (tdlib.notifications().resetChannelCache(accountUserId)) {
-        rebuild();
-      }
+    if (tdlib.notifications().resetChannelCache(accountUserId)) {
+      rebuild();
     }
   }
 
@@ -332,7 +330,7 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   }
 
   public boolean isEmpty () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    {
       long accountUserId = tdlib.myUserId(true);
       // Only channels made already: this makes none, e.g. when the data of an account that logs
       // out is dropped and its channels are deleted
@@ -364,9 +362,9 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
     return group != null && !group.isEmpty() && !group.isHidden() ? group : null;
   }
 
-  @RequiresApi(Build.VERSION_CODES.O)
+
   public String findCommonChannelId (int category) throws TdlibNotificationChannelGroup.ChannelCreationFailureException {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    {
       TdlibNotificationChannelGroup channelGroup = tdlib.notifications().getChannelCache();
       android.app.NotificationChannel channel = null;
       List<TdlibNotification> notifications = lastNotifications(category, true);
@@ -392,7 +390,6 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
       }
       return channel != null ? channel.getId() : null;
     }
-    return null;
   }
 
   public List<TdlibNotification> lastNotifications (int category, boolean onlyVisible) {
@@ -641,3 +638,4 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
     }
   }
 }
+// endregion

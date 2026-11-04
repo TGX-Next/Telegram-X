@@ -12,6 +12,7 @@
  *
  * File created on 16/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -453,18 +454,13 @@ public class SettingsPrivacyController extends RecyclerViewController<SettingsPr
       if (!tdlib.canSetNewChatPrivacySettings() && tdlib.ui().showPremiumAlert(this, v, TdlibUi.PremiumFeature.NEW_CHATS_PRIVACY)) {
         return;
       }
-      if (true) {
-        context.tooltipManager()
-          .builder(v)
-          .icon(R.drawable.baseline_warning_24)
-          .controller(this)
-          .show(tdlib, "Changing message privacy is not available, please wait for the next update or try in desktop app.")
-          .hideDelayed();
-        return;
-      }
-      SettingsPrivacyKeyController c = new SettingsPrivacyKeyController(context, tdlib);
-      c.setArguments(SettingsPrivacyKeyController.Args.newChatsPrivacy());
-      navigateTo(c);
+      context.tooltipManager()
+        .builder(v)
+        .icon(R.drawable.baseline_warning_24)
+        .controller(this)
+        .show(tdlib, "Changing message privacy is not available, please wait for the next update or try in desktop app.")
+        .hideDelayed();
+      return;
     } else if (id == R.id.btn_privacyRule) {
       TdApi.UserPrivacySetting setting = (TdApi.UserPrivacySetting) ((ListItem) v.getTag()).getData();
       if (Td.requiresPremiumSubscription(setting) && tdlib.ui().showPremiumAlert(this, v, TdlibUi.PremiumFeature.RESTRICT_VOICE_AND_VIDEO_MESSAGES)) {
@@ -810,3 +806,4 @@ public class SettingsPrivacyController extends RecyclerViewController<SettingsPr
     }
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 24/04/2015 at 21:06
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.content.res.AssetManager;
@@ -98,8 +99,8 @@ public class Fonts {
     return fallback;
   }
 
-  private static final boolean LOAD_SANS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-  private static final boolean LOAD_MONO = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+  private static final boolean LOAD_SANS = true;
+  private static final boolean LOAD_MONO = true;
   public static final boolean FORCE_BUILTIN_MONO = LOAD_MONO && Device.IS_SAMSUNG;
 
   public static Typeface getRobotoRegular () {
@@ -324,3 +325,4 @@ public class Fonts {
     return new TextPaintStorage(getRobotoRegular(), getRobotoMedium(), getRobotoItalic(), null, getRobotoMono(), getRobotoBold(), 0);
   }
 }
+// endregion

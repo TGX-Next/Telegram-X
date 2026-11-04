@@ -12,6 +12,7 @@
  *
  * File created on 28/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 /*
  * This file is a part of Telegram X
  * Copyright © 2014 (tgx-android@pm.me)
@@ -162,9 +163,7 @@ public class MediaWrapper implements FileProgressComponent.SimpleListener, FileP
     this.sourceMessageId = messageId;
     this.useHotStuff = useHotStuff;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      this.path = new Path();
-    }
+    this.path = new Path();
 
     this.fileProgress = new FileProgressComponent(context, tdlib, TdlibFilesManager.DOWNLOAD_FLAG_PHOTO, !isHot(), chatId, messageId);
     this.fileProgress.setSimpleListener(this);
@@ -249,9 +248,7 @@ public class MediaWrapper implements FileProgressComponent.SimpleListener, FileP
     this.sourceMessageId = messageId;
     this.useHotStuff = useHotStuff;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      this.path = new Path();
-    }
+    this.path = new Path();
 
     this.fileProgress = new FileProgressComponent(context, tdlib, TdlibFilesManager.DOWNLOAD_FLAG_VIDEO, !isHot(), chatId, messageId);
     this.fileProgress.setDownloadedIconRes(isHot() ? (source != null && source.isHotDone() ? R.drawable.baseline_check_24 : R.drawable.deproko_baseline_whatshot_24) : FileProgressComponent.PLAY_ICON);
@@ -327,9 +324,7 @@ public class MediaWrapper implements FileProgressComponent.SimpleListener, FileP
     this.source = source;
     this.sourceMessageId = messageId;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      this.path = new Path();
-    }
+    this.path = new Path();
 
     this.fileProgress = new FileProgressComponent(context, tdlib, TdlibFilesManager.DOWNLOAD_FLAG_GIF, true, chatId, messageId);
     this.fileProgress.setSimpleListener(this);
@@ -886,7 +881,7 @@ public class MediaWrapper implements FileProgressComponent.SimpleListener, FileP
 
     lastRadius = radius;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if ((path != null)) {
       path.reset();
       RectF rectF = Paints.getRectF();
       rectF.set(lastLeft, lastTop, cellRight, cellBottom);
@@ -971,7 +966,7 @@ public class MediaWrapper implements FileProgressComponent.SimpleListener, FileP
 
   public <T extends View & DrawableProvider> void draw (T view, Canvas c, int startX, int startY, Receiver preview, Receiver receiver, float alpha) {
     final float selectionFactor = selectionAnimator != null && source != null ? source.getSelectionFactor(selectionAnimator) : 0f;
-    final boolean clipped = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null && !(source != null && source.useFullWidth());
+    final boolean clipped = (path != null) && !(source != null && source.useFullWidth());
     final int saveCount;
     if (clipped) {
       int radius = getRadius();
@@ -1515,3 +1510,4 @@ public class MediaWrapper implements FileProgressComponent.SimpleListener, FileP
     return Screen.dp(19f);
   }
 }
+// endregion

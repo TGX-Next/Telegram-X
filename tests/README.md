@@ -13,7 +13,7 @@ Unit and integration tests are compiled together with app code and can use any o
 
 `tests/core` contains test libraries and helpers shared by tests on device: app launch, element lookup, session snapshot. `tests/buildSrc` contains build configuration of tests, it's compiled as a part of `buildSrc`.
 
-Tests use JUnit 4, [Truth](https://truth.dev) assertions, [UI Automator](https://developer.android.com/training/testing/other-components/ui-automator), [Macrobenchmark](https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview) and [Microbenchmark](https://developer.android.com/topic/performance/benchmarking/microbenchmark-overview). Tests running in separate process require Android 7.0+, so they don't cover app variants for older versions.
+Tests use JUnit 4, [Truth](https://truth.dev) assertions, [UI Automator](https://developer.android.com/training/testing/other-components/ui-automator), [Macrobenchmark](https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview) and [Microbenchmark](https://developer.android.com/topic/performance/benchmarking/microbenchmark-overview). Device tests require Android 13+ and arm64.
 
 ## Workflow
 
@@ -21,7 +21,7 @@ Each change follows [pull request rules](../docs/PULL_REQUEST_TEMPLATE.md), is v
 
 * **Bug fix.** Starts with a check that reproduces the bug and fails.
   * The fix removes the root cause with the smallest change, only in affected flavors. Conditions, catches or delays that only hide the symptom are not fixes. Commit description explains the cause.
-  * The check runs on flavors that may have the bug to find the affected ones, see [Flavors](#flavors). When no check can run on them, e.g. the bug is only on Android 5.0, checks on device require Android 7.0+ and a unit check doesn't reproduce it, the bug is fixed without a check, and the description says how the fix was checked instead.
+  * Checks target the `latest` flavor. When a bug cannot be reproduced by an automated check, describe the manual verification and coverage gap.
   * Visual bugs, e.g. of layout or glitches, are shown in the description by [screenshots or recordings](#screenshots-and-recordings) before and after the fix.
   * When the bug appeared after a version without it, `git bisect run` with the command that runs the check finds the commit that caused it. Checks are ignored by git, so they stay in place while bisect switches commits.
   * Stack traces of release builds are deobfuscated with `retrace mapping.txt stacktrace.txt` from Android SDK command-line tools and the mapping file of that build.
@@ -34,7 +34,7 @@ Each change follows [pull request rules](../docs/PULL_REQUEST_TEMPLATE.md), is v
 * Animations use `me.vkryl.android.animatorx`: one animator drives all elements that change together, so they stay in sync and change without reflection, unlike with `ObjectAnimator`. Its animators don't allocate objects on frames: `BoolAnimator` switches between two states, `FloatAnimator` animates a number, `IntAnimator` an integer and `ArgbAnimator` a color, in `ColorInterpolation.SRGB` by default or `OKLAB` to keep transitions between hues bright. Existing code also uses older `me.vkryl.android.animator`, see [guide](../docs/GUIDE.md#4-animating-things).
 * Animation listener applies only changes needed in the current state. `BoolAnimatorListener.onValueChange` receives `state` (`FALSE`, `INTERMEDIATE` or `TRUE`), `prevState` and `stateChanged`: what doesn't change while animating, e.g. visibility, is applied once when state changes.
 * Animations don't request layout on every frame. Frames change only what is drawn (`invalidate`) or properties that don't need layout: translation, scale, alpha. Dimensions are applied in final states or once when state changes between `FALSE`, `INTERMEDIATE` and `TRUE`, e.g. view takes expanded size when it leaves `FALSE` state, and its content is revealed by drawing while animating.
-* Lists scroll without allocations, layout passes and jumps: data that items draw is prepared once, not on every bind, items keep their size after they are bound, and code doesn't change scroll position while user scrolls. Old devices suffer from allocations most: on Android 4.x every garbage collection pauses the app.
+* Lists scroll without allocations, layout passes and jumps: data that items draw is prepared once, not on every bind, items keep their size after they are bound, and code doesn't change scroll position while user scrolls. Avoid unnecessary allocations during scrolling.
 
 ## Tests and checks
 
@@ -79,21 +79,16 @@ git fetch origin checks/<branch> && git restore --source=FETCH_HEAD -- 'tests/*/
 
 ## Flavors
 
-App is built in flavors for ranges of Android versions. Code, resources, manifest entries and R8 rules in `proguard-rules.pro` needed only by some flavors are placed in `src/<folder>` that is added to exactly these flavors, instead of copies in each `src/only<Flavor>`. Manifest entries and R8 rules are added this way only in `app`. Folders are listed by `findExtraFolders` in `buildSrc`.
+The only supported flavor is `latest`, for Android 13 (API 33) or newer on arm64.
+All supported application code, resources and manifest entries use the `main` source set.
 
-| Flavor | Android | Folders |
-|---|---|---|
-| `legacy` | 4.1–4.4W, API 16–20 | `preMarshmallow`, `onlyLegacy` |
-| `lollipop` | 5.0–5.1, API 21–22 | `sinceLollipop`, `preMarshmallow`, `onlyLollipop` |
-| `marshmallow` | 6.0, API 23 | `sinceLollipop`, `sinceMarshmallow`, `onlyMarshmallow` |
-| `nop` | 7.0–9, API 24–28 | `sinceLollipop`, `sinceMarshmallow`, `sinceOreo`, `onlyNop` |
-| `qrs` | 10–12L, API 29–32 | `sinceLollipop`, `sinceMarshmallow`, `sinceOreo`, `onlyQrs` |
-| `latest` | 13 and newer, API 33+ | `sinceLollipop`, `sinceMarshmallow`, `sinceOreo`, `onlyLatest` |
+Build configuration tests in `tests/unit/buildSrc` run with `./gradlew -p buildSrc test`.
+They verify the API floor, supported ABI selection, rejection of other ABIs, and version-code offsets.
 
-* `sinceOreo` is added to `nop` too, which also runs on Android 7.x, so code there still compares `Build.VERSION.SDK_INT`.
-* When no folder matches affected flavors exactly, code in the closest wider folder compares `Build.VERSION.SDK_INT`. A new folder is added to `findExtraFolders` only when several files need it.
-* Checks run on a flavor with its name in the task instead of `Latest`, see [Running tests](#running-tests). Unit checks run on every flavor, e.g. `testLegacyDebugUnitTest`, checks on device only on `nop`, `qrs` and `latest`.
-* Classes added after `minSdk` of a flavor are used only after version checks. Declarations can't be guarded by them: older Android fails to load or verify classes that mention new classes in supertypes, types of fields, parameters and results of methods, or caught exceptions, e.g. with `NoClassDefFoundError` or `VerifyError` on Android 4.x. `./gradlew checkMinSdk` finds such declarations and imports of new classes in debug variants of all flavors, `check<Variant>MinSdk` in one variant, and lists them in `build/reports/minSdk/<variant>.txt` of the module. It fails only in flavors for Android 4.x, where new classes are referenced by their full name only inside version checks: Dalvik fails to verify whole classes that use them elsewhere, and imports make such uses easy to miss. ART of Android 5.0+ resolves classes only when they are used, so in newer flavors the lists are only for reference. Files of classes annotated with `@RequiresApi` or `@TargetApi` may import them. `legacy` flavor of the app is built and checked only with `-PuseLegacyNdk=true`. Uses of classes and methods annotated with `@RequiresApi`, anonymous classes and calls inside methods are checked by `NewApi` check of lint instead, e.g. `./gradlew :app:lintLegacyDebug -PuseLegacyNdk=true`: without the flag newer NDK raises minSdk of `legacy` flavor. Classes of `java.util` and `java.time` are left to lint too, because core library desugaring adds many of them to older Android.
+Run JVM tests with `:app:testLatestDebugUnitTest` and device tests on an Android 13+ arm64
+phone or emulator. `./gradlew checkMinSdk` reports declarations added after API 33;
+`./gradlew :app:lintLatestDebug` checks API calls. Keep version checks for APIs introduced
+after Android 13.
 
 ## Pull request description
 
@@ -562,31 +557,14 @@ Tests on device replace installed app and clear its data, so they must never run
 * `connected`: dedicated test device connected via `adb`. Faster than emulator and gives real benchmark results. Screen lock must be disabled, tests turn on the screen themselves. When several devices are connected, select one with `ANDROID_SERIAL=<serial from adb devices>`.
 
 * Single test of unit tests: `--tests 'org.thunderdog.challegram.charts.SegmentTreeTest'`. Of tests on device: `-Pandroid.testInstrumentationRunnerArguments.class=tgx.test.ChatTest#openChat`.
-* `-Pabi` limits native libraries to ABIs of devices, separated by commas: `arm64` for phones and emulators on ARM machines, `x64` for emulators on x86 machines, e.g. `-Pabi=arm64,x64` for both. Without it, all ABIs are built.
+* Native libraries are built only for arm64. Optional `-Pabi=arm64` selects the same target. Device tests require an Android 13+ arm64 phone or emulator.
 * UI tests have two build types. `NonMinifiedRelease` builds faster and is suitable for writing tests. `BenchmarkRelease` is minified with R8 the same way as release builds, use it to check the build before publishing.
 * Benchmarks on emulator fail by default, because results are not representative. To check that they work, add `-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR`. Real measurements require `connected` device.
-* To test other flavors, replace `Latest` in task name, e.g. with `Nop` (Android 7.0–9).
+* The only flavor is `Latest`; tests require Android 13+ and arm64.
 * Baseline profiles are generated for all variants that use them, on connected device and then on emulator, and saved in `app/src/<variant>/generated/baselineProfiles`.
 * On failure Gradle prints path to report. Results of tests on device, including logcat, are saved in `build/outputs/androidTest-results` of the module.
 * When a test in separate process fails, screenshot, UI hierarchy and app crashes at that moment are saved as `<Class>.<test>.failure.png`, `<Class>.<test>.failure.xml` and `<Class>.<test>.crash.txt`, screenshots taken by test as `<Class>.<test>.<name>.png`. Gradle copies them to `build/outputs` of the module: `find tests/ui/build/outputs -name 'ChatTest.*'`.
 * After changes in `tests/core` or `tests/buildSrc`, `scripts/check-test-tools.sh` checks test tools: helpers of drawing, animations and scrolling, screenshots and recordings, check results before and after a change, benchmarks and their comparison, microbenchmarks, their outputs, comparison and method traces, `checkMinSdk`. Checks and benchmarks run on connected test device, `minsdk` step doesn't need it. Steps are selected by arguments, e.g. `scripts/check-test-tools.sh checks`. Its smoke checks are in `tests/<module>/tools`, which are compiled only with `-Ptgx.testTools`. The script runs Gradle and works with the device, `describeTestToolsCheck` task checks results and writes `build/test-tools-check/report.md`. It runs on macOS, Ubuntu and Windows in MSYS2 (UCRT64).
-
-### Android older than 7.0
-
-Tests of `tests/` need Android 7.0, API 24. On older phones, e.g. 4.2 of a weak test phone, `legacy` is measured by adb with its build with test hooks, minified like a release, made by `build.sh`:
-
-```shell
-tests/legacy/build.sh legacy -Pabi=arm32 -PuseLegacyNdk=true
-ANDROID_SERIAL=<device> tests/legacy/install.sh <apk> <snapshot.zip>
-ANDROID_SERIAL=<device> tests/legacy/start.sh 10 <output folder>
-ANDROID_SERIAL=<device> tests/legacy/scroll.sh 10 <output folder>
-```
-
-* `build.sh` builds the flavor given with test hooks and the marks of the start of `start-marks.patch`, which it applies to the clone for the time of the build and takes back after: the marks stay out of the code of the app, so that no release has them, and a mark added for a measurement goes into the patch. It prints the path of the APK.
-* `install.sh` installs the build and restores the snapshot of accounts at its first start, then deletes the copy of the snapshot on the phone.
-* `start.sh` measures cold and warm starts by `am start -W`, cold ones also by marks of `StartMarks` of the patch, which builds of `build.sh` log with tag `StartMarks` along the start once for each process: `Application`, the steps of `AppState`, `MainActivity.onCreate`, `first draw`, `chats shown` and `ready`, each with milliseconds since the previous mark and since the first one. It writes `starts.tsv` and the medians.
-* `scroll.sh` makes flings of the same length on the chat list and times each frame: on Android 4.1–4.3 by `debug.hwui.profile`, which it sets back after, and the times that `dumpsys gfxinfo` prints and clears, from Android 6.0 on by `framestats`. It writes `flings.tsv` and the totals: frames, their mean, 90th percentile, longest one and frames over one refresh, `BUDGET=16.67` ms by default. The same scripts measure a recent phone, e.g. `latest` built with `-Pabi=arm64`, to compare a change on both, with `BUDGET` of its refresh rate and the coordinates of its list.
-* Android 4.2 has no sections of traces of apps, API 18, and no `screenrecord`, 4.4; `atrace` there only traces the kernel, e.g. `-s` scheduling. A step that takes long gets marks inside it, by `startMark("name")` in `start-marks.patch`.
 
 ## Test accounts
 

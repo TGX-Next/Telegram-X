@@ -12,6 +12,7 @@
  *
  * File created on 24/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.graphics.Canvas;
@@ -898,7 +899,7 @@ public class FileProgressComponent implements TdlibFilesManager.FileListener, Fa
   public void setIgnoreAnimations (boolean ignoreAnimations) {
     this.ignoreAnimations = ignoreAnimations;
   }
-  
+
   private boolean shouldAnimate () {
     return viewProvider != null && viewProvider.hasAnyTargetToInvalidate() && !ignoreAnimations;
   }
@@ -1692,3 +1693,4 @@ public class FileProgressComponent implements TdlibFilesManager.FileListener, Fa
     }
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 15/05/2015 at 19:25
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.base;
 
 import android.content.Context;
@@ -59,18 +60,10 @@ public class ProgressWrap extends FrameLayoutFix {
     FrameLayoutFix.LayoutParams params = FrameLayoutFix.newParams(Screen.dp(36f), Screen.dp(36f), Gravity.LEFT | Gravity.CENTER_VERTICAL);
     params.setMargins(Screen.dp(12f), 0, 0, 0);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      progressBar = new ProgressBar(getContext());
-      progressBar.setIndeterminate(true);
-      progressBar.setLayoutParams(params);
-      addView(progressBar);
-    } else {
-      SpinnerView spinnerView = new SpinnerView(getContext());
-      spinnerView.setImageResource(R.drawable.spinner_48_inner);
-      spinnerView.setLayoutParams(params);
-
-      addView(spinnerView);
-    }
+    progressBar = new ProgressBar(getContext());
+    progressBar.setIndeterminate(true);
+    progressBar.setLayoutParams(params);
+    addView(progressBar);
 
     params = FrameLayoutFix.newParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.LEFT | Gravity.CENTER_VERTICAL);
     params.setMargins(Screen.dp(60f), Screen.dp(1f), 0, 0);
@@ -97,3 +90,4 @@ public class ProgressWrap extends FrameLayoutFix {
     return progressBar;
   }
 }
+// endregion

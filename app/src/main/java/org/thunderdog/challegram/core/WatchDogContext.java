@@ -12,6 +12,7 @@
  *
  * File created on 27/02/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.core;
 
 import android.app.NotificationManager;
@@ -32,21 +33,15 @@ public class WatchDogContext {
     INTENT_FILTER.addAction(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     // INTENT_FILTER.addAction(Airplane mode?);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      INTENT_FILTER.addAction(android.media.AudioManager.ACTION_HEADSET_PLUG);
-    }
+    INTENT_FILTER.addAction(android.media.AudioManager.ACTION_HEADSET_PLUG);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      INTENT_FILTER.addAction(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED);
-    }
+    INTENT_FILTER.addAction(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      INTENT_FILTER.addAction(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED);
-      INTENT_FILTER.addAction(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
-      INTENT_FILTER.addAction(
-        NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED
-      );
-    }
+    INTENT_FILTER.addAction(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED);
+    INTENT_FILTER.addAction(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+    INTENT_FILTER.addAction(
+      NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED
+    );
   }
 
   private final Context context;
@@ -91,3 +86,4 @@ public class WatchDogContext {
   }
 
 }
+// endregion

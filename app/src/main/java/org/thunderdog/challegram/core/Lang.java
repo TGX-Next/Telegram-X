@@ -12,6 +12,7 @@
  *
  * File created on 23/05/2015 at 12:20
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.core;
 
 import android.content.Context;
@@ -532,7 +533,7 @@ public class Lang {
   public static String formatDecimal (double n) {
     Locale locale = Settings.instance().forceArabicNumbers() ? Locale.US : dateFormatLocale();
     synchronized (Lang.class) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+      if ((ALLOW_ICU)) {
         android.icu.text.DecimalFormat format = (android.icu.text.DecimalFormat) decimalFormat;
         if (format == null || decimalFormatLocale != locale) {
           android.icu.text.DecimalFormatSymbols symbols = new android.icu.text.DecimalFormatSymbols(decimalFormatLocale = locale);
@@ -602,7 +603,7 @@ public class Lang {
   }
 
   private static java.text.Format newNumberFormat () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if ((ALLOW_ICU)) {
       try {
         return android.icu.text.NumberFormat.getInstance(dateFormatLocale());
       } catch (Throwable ignored) { }
@@ -611,7 +612,7 @@ public class Lang {
   }
 
   public static String compactNumber (long n) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU && n >= 0) {
+    if ((ALLOW_ICU) && n >= 0) {
       try {
         return android.icu.text.CompactDecimalFormat.getInstance(dateFormatLocale(), android.icu.text.CompactDecimalFormat.CompactStyle.SHORT).format(n);
       } catch (Throwable ignored) { }
@@ -666,7 +667,7 @@ public class Lang {
   }
 
   private static java.text.Format newDateFormat (String pattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if ((ALLOW_ICU)) {
       try {
         return new android.icu.text.SimpleDateFormat(pattern, dateFormatLocale());
       } catch (ExceptionInInitializerError e) {
@@ -775,7 +776,7 @@ public class Lang {
   private static final int STYLE_SHORT = 3;
 
   private static int translateStyle (int style, boolean allowIcu) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU && allowIcu) {
+    if ((ALLOW_ICU) && allowIcu) {
       switch (style) {
         case STYLE_LONG:
           return android.icu.text.DateFormat.LONG;
@@ -798,7 +799,7 @@ public class Lang {
   }
 
   private static String systemDate (long timeInMillis, int style, String fallbackPattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if ((ALLOW_ICU)) {
       try {
         return formatDate(KEY_PREFIX_ICU_DATE + style, timeInMillis, () ->
           android.icu.text.DateFormat.getDateInstance(
@@ -825,19 +826,7 @@ public class Lang {
   ) {
     // Reading whether the system uses 12 hours takes long, so only the fallback reads it
     try {
-      /*String language = dateFormatLocale().getLanguage();
-      if (language.equals(Locale.getDefault().getLanguage())) {
-        Formatter f = new Formatter(new StringBuilder(50), dateFormatLocale());
-        return android.text.format.DateUtils.formatDateRange(AppContext.get(), f, timeInMillis, timeInMillis, android.text.format.DateUtils.FORMAT_SHOW_TIME).toString();
-      }
-      if (language.equals("en")) {
-        return dateFormat(fallbackPattern, timeInMillis);
-      }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
-        try {
-          return android.icu.text.DateFormat.getTimeInstance(translateStyle(style, true), dateFormatLocale()).format(DateUtils.dateInstance(timeInMillis));
-        } catch (Throwable ignored) { }
-      }*/
+
       return formatDate(KEY_PREFIX_TIME + style, timeInMillis, () ->
         java.text.DateFormat.getTimeInstance(translateStyle(style, false), dateFormatLocale())
       );
@@ -853,7 +842,7 @@ public class Lang {
     String fallbackPattern12,
     String fallbackPattern24
   ) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if ((ALLOW_ICU)) {
       try {
         final String key = KEY_PREFIX_ICU_DATE_TIME + dateStyle + " " + timeStyle;
         return formatDate(key, timeInMillis, () ->
@@ -879,7 +868,7 @@ public class Lang {
   }
 
   private static String systemDateWithoutYear (long timeInMillis, int style, String fallbackPattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if ((ALLOW_ICU)) {
       try {
         return formatDate(KEY_PREFIX_ICU_DATE_WITHOUT_YEAR + style, timeInMillis, () -> {
           String pattern = ((android.icu.text.SimpleDateFormat) android.icu.text.DateFormat
@@ -900,7 +889,7 @@ public class Lang {
   }
 
   private static String systemDateWithoutDay (long timeInMillis, int style, String fallbackPattern) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && ALLOW_ICU) {
+    if ((ALLOW_ICU)) {
       try {
         return formatDate(KEY_PREFIX_ICU_DATE_WITHOUT_DAY + style, timeInMillis, () -> {
           String pattern = ((android.icu.text.SimpleDateFormat) android.icu.text.DateFormat
@@ -2630,11 +2619,9 @@ public class Lang {
   }
 
   public static String[] getMonths (Locale locale) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      try {
-        return android.icu.text.DateFormatSymbols.getInstance(locale).getMonths();
-      } catch (Throwable ignored) { }
-    }
+    try {
+      return android.icu.text.DateFormatSymbols.getInstance(locale).getMonths();
+    } catch (Throwable ignored) { }
     return DateFormatSymbols.getInstance(locale).getMonths();
   }
 
@@ -2769,7 +2756,7 @@ public class Lang {
     int MANY = 4;
     int OTHER = 5;
   }
-  
+
   @Retention(RetentionPolicy.SOURCE)
   @IntDef({
     RelativeDateForm.NOW,
@@ -2797,7 +2784,7 @@ public class Lang {
     int TODAY = 4;
     int YESTERDAY = 5;
     int TOMORROW = 6;
-    
+
     int WEEKDAY = 10;
     int DATE = 11;
 
@@ -3604,11 +3591,9 @@ public class Lang {
 
   @SuppressWarnings("deprecation")
   public static Locale getPrimaryLocale (Configuration configuration) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    {
       android.os.LocaleList list = configuration.getLocales();
       return list.get(0);
-    } else {
-      return configuration.locale;
     }
   }
 
@@ -3651,26 +3636,18 @@ public class Lang {
 
   @SuppressWarnings("deprecation")
   private static Locale obtainLocalePreBaklava (String languageTag, String language, String country, String variant) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      try {
-        Locale.Builder b = new Locale.Builder()
-          .setLanguage(language);
-        if (!StringUtils.isEmpty(country)) {
-          b.setRegion(country);
-        }
-        if (!StringUtils.isEmpty(variant)) {
-          b.setVariant(variant);
-        }
-        return b.build();
-      } catch (RuntimeException illformedLocaleException) {
-        return Locale.forLanguageTag(languageTag);
+    try {
+      Locale.Builder b = new Locale.Builder()
+        .setLanguage(language);
+      if (!StringUtils.isEmpty(country)) {
+        b.setRegion(country);
       }
-    } else if (!StringUtils.isEmpty(variant)) {
-      return new Locale(language, country,variant);
-    } else if (!StringUtils.isEmpty(country)) {
-      return new Locale(language, country);
-    } else {
-      return new Locale(language);
+      if (!StringUtils.isEmpty(variant)) {
+        b.setVariant(variant);
+      }
+      return b.build();
+    } catch (RuntimeException illformedLocaleException) {
+      return Locale.forLanguageTag(languageTag);
     }
   }
 
@@ -4298,3 +4275,4 @@ public class Lang {
     return "";
   }
 }
+// endregion

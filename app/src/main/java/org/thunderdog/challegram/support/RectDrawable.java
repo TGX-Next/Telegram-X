@@ -12,6 +12,7 @@
  *
  * File created on 26/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.support;
 
 import android.graphics.Canvas;
@@ -40,10 +41,7 @@ public class RectDrawable extends SimpleShapeDrawable {
     rectF.set(rect.left + padding, rect.top + padding, rect.right - padding, rect.bottom - padding);
     int radius = Screen.dp(size);
     final int color = getDrawColor();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      c.drawRoundRect(rectF, radius, radius, Paints.fillingPaint(color));
-    } else {
-      c.drawRoundRect(rectF, radius, radius, Paints.shadowFillingPaint(color));
-    }
+    c.drawRoundRect(rectF, radius, radius, Paints.fillingPaint(color));
   }
 }
+// endregion

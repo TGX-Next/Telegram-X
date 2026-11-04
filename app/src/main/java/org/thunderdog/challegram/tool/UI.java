@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 15:36
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.Manifest;
@@ -149,11 +150,9 @@ public class UI {
       }
       return true;
     } catch (Throwable t) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        if (t instanceof android.app.ForegroundServiceStartNotAllowedException) {
-          Log.e("Cannot start foreground service due to system restrictions", t);
-          return false;
-        }
+      if (t instanceof android.app.ForegroundServiceStartNotAllowedException) {
+        Log.e("Cannot start foreground service due to system restrictions", t);
+        return false;
       }
       Log.e("Cannot start service, isForeground:%b", t, isForeground);
       return false;
@@ -162,7 +161,7 @@ public class UI {
 
   public static boolean startService (Intent intent, boolean isForeground, boolean forcePermissionRequest, @Nullable CancellationSignal signal) {
     if (isForeground) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ContextCompat.checkSelfPermission(AppContext.get(), Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+      if ((ContextCompat.checkSelfPermission(AppContext.get(), Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED)) {
         BaseActivity activity = getUiContext();
         if (activity != null) {
           activity.requestCustomPermissions(new String[] {Manifest.permission.FOREGROUND_SERVICE}, (code, permissions, grantResults, grantCount) -> {
@@ -175,11 +174,9 @@ public class UI {
           Log.e("Cannot start foreground service, because activity not found.");
         }
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        return startServiceImpl(getContext(), intent, true);
-      }
+      return startServiceImpl(getContext(), intent, true);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && forcePermissionRequest && ContextCompat.checkSelfPermission(AppContext.get(), Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+    if ((forcePermissionRequest) && ContextCompat.checkSelfPermission(AppContext.get(), Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
       BaseActivity activity = getUiContext();
       if (activity != null) {
         activity.requestCustomPermissions(new String[] {Manifest.permission.FOREGROUND_SERVICE}, (code, permissions, grantResults, grantCount) -> {
@@ -303,7 +300,7 @@ public class UI {
   public static boolean wasResumedRecently (long resumeTimeLimitMs) {
     return uiState == State.RESUMED || getResumeDiff() <= resumeTimeLimitMs;
   }
-  
+
   public static UIHandler getAppHandler () {
     if (_appHandler == null) {
       synchronized (UIHandler.class) {
@@ -333,10 +330,8 @@ public class UI {
       if (activity.getActivityState() == State.DESTROYED) {
         return false;
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        if (activity.isDestroyed()) {
-          return false;
-        }
+      if (activity.isDestroyed()) {
+        return false;
       }
       return true;
     }
@@ -566,11 +561,11 @@ public class UI {
     return UI.getContext(context).navigation().getCurrentStackItem();
   }
 
-  public static final int NAVIGATION_BAR_COLOR = false && Device.NEED_LIGHT_NAVIGATION_COLOR ? 0xfff0f0f0 : 0xff000000;
+  public static final int NAVIGATION_BAR_COLOR = (0xff000000);
 
   @SuppressWarnings("deprecation")
   public static void setLightSystemBars (Window w, boolean lightNavigationBar, boolean lightStatusBar, int newVisibility, boolean forceNewVisibility) {
-    if (Settings.instance().useEdgeToEdge() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    if ((Settings.instance().useEdgeToEdge())) {
       android.view.WindowInsetsController insetsController = w.getInsetsController();
       if (insetsController != null) {
         int flags =
@@ -583,26 +578,22 @@ public class UI {
       }
     }
     int visibility = forceNewVisibility ? newVisibility : w.getDecorView().getSystemUiVisibility();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      visibility = BitwiseUtils.setFlag(visibility, View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR, lightNavigationBar);
-    }
+    visibility = BitwiseUtils.setFlag(visibility, View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR, lightNavigationBar);
     visibility = BitwiseUtils.setFlag(visibility, View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR, lightStatusBar);
     w.getDecorView().setSystemUiVisibility(visibility);
   }
 
   @SuppressWarnings("deprecation")
   public static void setNavigationBarColor (Window w, int color, boolean isGestureNavigationEnabled) {
-    if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
-      if (Settings.instance().useEdgeToEdge()) {
-        if (isGestureNavigationEnabled) {
-          w.setNavigationBarColor(Color.TRANSPARENT);
-        } else {
-          int transparentColor = Color.alpha(color) == 255 ? ColorUtils.alphaColor(.75f, color) : color;
-          w.setNavigationBarColor(transparentColor);
-        }
+    if (Settings.instance().useEdgeToEdge()) {
+      if (isGestureNavigationEnabled) {
+        w.setNavigationBarColor(Color.TRANSPARENT);
       } else {
-        w.setNavigationBarColor(color);
+        int transparentColor = Color.alpha(color) == 255 ? ColorUtils.alphaColor(.75f, color) : color;
+        w.setNavigationBarColor(transparentColor);
       }
+    } else {
+      w.setNavigationBarColor(color);
     }
   }
 
@@ -621,14 +612,8 @@ public class UI {
         w.setNavigationBarContrastEnforced(false);
       }
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      w.setBackgroundDrawableResource(R.drawable.transparent);
-    } else {
-      if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
-        setNavigationBarColor(w, Theme.backgroundColor(), Screen.isGesturalNavigationEnabled(getResources()));
-      } else {
-        w.setNavigationBarColor(NAVIGATION_BAR_COLOR);
-      }
+    {
+      setNavigationBarColor(w, Theme.backgroundColor(), Screen.isGesturalNavigationEnabled(getResources()));
       setLightSystemBars(w, !Theme.isDark(), Theme.needLightStatusBar(), 0, false);
       RootDrawable d = new RootDrawable(a);
       w.setBackgroundDrawable(d);
@@ -639,25 +624,18 @@ public class UI {
 
   @SuppressWarnings("deprecation")
   public static void setFullscreenIfNeeded (View view) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      view.setFitsSystemWindows(true);
-      // TODO: rework to WindowInsetsController
-      view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
+    view.setFitsSystemWindows(true);
+    // TODO: rework to WindowInsetsController
+    view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
   }
 
   public static void setStatusBarColor (int color) {
-    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.USE_FULLSCREEN_NAVIGATION) {
-      final BaseActivity context = getUiContext();
-      if (context != null && context.getWindow() != null) {
-        context.getWindow().setStatusBarColor(color);
-      }
-    }*/
+
   }
 
   @SuppressWarnings("deprecation")
   public static int getStatusBarColor () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       final BaseActivity context = getUiContext();
       final Window window = context != null ? context.getWindow() : null;
       if (window != null) {
@@ -777,7 +755,7 @@ public class UI {
   @SuppressWarnings("deprecation")
   private static String toLanguageCode (InputMethodSubtype ims) {
     if (ims != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      {
         String languageTag = ims.getLanguageTag();
         if (!StringUtils.isEmpty(languageTag)) {
           return languageTag;
@@ -812,57 +790,17 @@ public class UI {
         inputLanguages.add(inputLanguageCode);
       }
 
-      /*if (Strings.isEmpty(inputLanguageCode)) {
-        try {
-          String id = android.provider.Settings.Secure.getString(
-            UI.getAppContext().getContentResolver(),
-            android.provider.Settings.Secure.DEFAULT_INPUT_METHOD
-          );
-          if (!Strings.isEmpty(id)) {
-            List<InputMethodInfo> list = imm.getInputMethodList();
-            lookup:
-            for (InputMethodInfo info : list) {
-              if (id.equals(info.getId())) {
-                List<InputMethodSubtype> subtypes = imm.getEnabledInputMethodSubtypeList(info, true);
-                for (InputMethodSubtype subtype : subtypes) {
-                  String languageCode = toLanguageCode(subtype);
-                  if (!Strings.isEmpty(languageCode)) {
-                    inputLanguageCode = languageCode;
-                    break lookup;
-                  }
-                }
-              }
-            }
-          }
-        } catch (Throwable ignored) { }
-      }
-      if (Strings.isEmpty(inputLanguageCode) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        try {
-          LocaleList localeList = ((InputView) callback).getImeHintLocales();
-          if (localeList != null) {
-            for (int i = 0; i < localeList.size(); i++) {
-              inputLanguageCode = U.toBcp47Language(localeList.get(i));
-              if (!Strings.isEmpty(inputLanguageCode))
-                break;
-            }
-          }
-        } catch (Throwable ignored) { }
-      }*/
+
     }
     if (inputLanguages.isEmpty()) {
       try {
         Configuration configuration = Resources.getSystem().getConfiguration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        {
           android.os.LocaleList locales = configuration.getLocales();
           for (int i = 0; i < locales.size(); i++) {
             String code = LocaleUtils.toBcp47Language(locales.get(i));
             if (!StringUtils.isEmpty(code))
               inputLanguages.add(code);
-          }
-        } else {
-          String code = LocaleUtils.toBcp47Language(Lang.getSystemLocale());
-          if (!StringUtils.isEmpty(code)) {
-            inputLanguages.add(code);
           }
         }
       } catch (Throwable ignored) { }
@@ -870,3 +808,4 @@ public class UI {
     return inputLanguages.isEmpty() ? null : inputLanguages.toArray(new String[0]);
   }
 }
+// endregion

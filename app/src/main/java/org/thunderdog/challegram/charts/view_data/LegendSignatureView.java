@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.charts.view_data;
 
 import android.animation.Animator;
@@ -123,7 +124,7 @@ public class LegendSignatureView extends FrameLayout {
     public void setData(int index, long date, ArrayList<LineViewData> lines, boolean animateChanges) {
         int n = holdes.length;
         if (animateChanges) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            {
                 android.transition.TransitionSet transition = new android.transition.TransitionSet();
                 transition.
                         addTransition(new android.transition.Fade(android.transition.Fade.OUT).setDuration(100)).
@@ -269,3 +270,4 @@ public class LegendSignatureView extends FrameLayout {
         }
     }
 }
+// endregion

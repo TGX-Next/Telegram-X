@@ -12,6 +12,7 @@
  *
  * File created on 01/05/2015 at 15:23
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
@@ -334,7 +335,7 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
 
     if (this.msg != null) {
       msg.onAttachedToView(this);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && manager.useBubbles()) {
+      if ((manager.useBubbles())) {
         invalidateOutline();
       }
     }
@@ -646,7 +647,7 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
         strings.append(R.string.Translate);
         icons.append(R.drawable.baseline_translate_24);
       }
-      
+
       ids.append(R.id.btn_messageSponsorInfo);
       strings.append(R.string.SponsoredInfoMenu);
       icons.append(R.drawable.baseline_info_24);
@@ -1633,3 +1634,4 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
     return false;
   }
 }
+// endregion

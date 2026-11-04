@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui.camera.x;
 
 import android.content.Context;
@@ -21,7 +22,6 @@ import android.view.TextureView;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.camera.camera2.Camera2Config;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
@@ -64,7 +64,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 public class CameraManagerX extends CameraManager<PreviewView> {
   public CameraManagerX (Context context, CameraDelegate delegate) {
     super(context, delegate);
@@ -588,3 +588,4 @@ public class CameraManagerX extends CameraManager<PreviewView> {
     }
   }
 }
+// endregion

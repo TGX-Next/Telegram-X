@@ -12,6 +12,7 @@
  *
  * File created on 08/02/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.config;
 
 import android.os.Build;
@@ -30,7 +31,7 @@ import java.util.Locale;
 
 public class Config {
   public static final boolean SUPPORT_SYSTEM_UNDERLINE_SPAN = true;
-  public static final boolean FOREGROUND_SYNC_ALWAYS_ENABLED = true; // Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+  public static final boolean FOREGROUND_SYNC_ALWAYS_ENABLED = true;
   public static final @Dimension(unit = Dimension.DP) int COMMENTS_BUBBLE_BUTTON_MIN_WIDTH = 200;
   public static final boolean SHOW_CHANNEL_POST_REPLY_INFO_IN_COMMENTS = true;
   public static final boolean CHAT_FOLDERS_SMART_CHAT_DELETION_ENABLED = true;
@@ -55,9 +56,6 @@ public class Config {
   public static final boolean FORCE_SOFTWARE_IMAGE_DECODER = true;
 
   public static final boolean WAIT_ANIMATIONS_BEFORE_START_VIDEO = true;
-
-  // Allow stretch bounce in places where the glow looks ugly
-  public static final boolean HAS_NICE_OVER_SCROLL_EFFECT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
 
   // Telegram for iOS has a long-established bug and doesn't play rotated videos properly
   // This affects all rotated videos (which even Telegram for iOS produces too).
@@ -110,19 +108,18 @@ public class Config {
 
   // Fields from default config.
 
-  public static final int STATUS_BAR_COLOR_ID = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? ColorId.statusBar : ColorId.statusBarLegacy;
-  public static final int STATUS_BAR_TEXT_COLOR_ID = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? ColorId.statusBarContent : ColorId.statusBarLegacyContent;
+  public static final int STATUS_BAR_COLOR_ID = ColorId.statusBar;
+  public static final int STATUS_BAR_TEXT_COLOR_ID = ColorId.statusBarContent;
 
   public static final boolean DISABLE_SENDING_MEDIA_CACHE = false; // BuildConfig.DEBUG; // FIXME: TDLib
   public static final boolean WORKAROUND_NEED_MODIFY = true; // FIXME TDLib
 
   public static final boolean USE_FULLSCREEN_NAVIGATION_CONTENT = false; // BuildConfig.DEBUG;
-  public static final boolean USE_TRANSLUCENT_NAVIGATION = false; // Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+  public static final boolean USE_TRANSLUCENT_NAVIGATION = false;
 
   public static final boolean HARDWARE_MESSAGE_LAYER = false;
-  public static final boolean HARDWARE_CLIP_PATH_FIX = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-  public static final boolean HARDWARE_MESSAGES_LIST = false; // HARDWARE_CLIP_PATH_FIX; // HARDWARE_CLIP_PATH_FIX;
-  public static final boolean HARDWARE_MEDIA_VIEWER = HARDWARE_CLIP_PATH_FIX;
+  public static final boolean HARDWARE_MESSAGES_LIST = false;
+  public static final boolean HARDWARE_MEDIA_VIEWER = true;
 
   public static final boolean ALLOW_MORE_CACHED_MESSAGES = false;
   public static final boolean NEED_MEDIA_GROUP_MERGE_REQUESTS = false;
@@ -135,13 +132,11 @@ public class Config {
 
   public static final boolean SERVICES_ENABLED = true; // !BuildConfig.DEBUG;
 
-  public static final boolean PIN_BITMAP_ENABLED = Build.VERSION.SDK_INT < Build.VERSION_CODES.M && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
   public static final boolean GCM_ENABLED = true;
 
   public static final boolean ALLOW_SYSTEM_EMOJI = BuildConfig.DEBUG;
 
-  public static final boolean USE_VIDEO_COMPRESSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
-  public static final boolean MUTE_VIDEO_AVAILABLE = USE_VIDEO_COMPRESSION;
+  public static final boolean MUTE_VIDEO_AVAILABLE = true;
 
   public static final boolean MASKS_TEXTS_AVAILABLE = false;
 
@@ -159,23 +154,17 @@ public class Config {
   public static final boolean USE_STICKER_VIBRATE = true;
 
 
-  public static final boolean CUSTOM_CAMERA_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
   public static final boolean CAMERA_ALLOW_FAKE_ROTATION = true;
   public static final boolean CAMERA_AUTO_FLASH_ENABLED = true;
   public static final boolean CAMERA_ALLOW_SNAPSHOTS = false; // true;
-  public static final boolean CAMERA_X_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
   public static final int MAX_COPY_TEXT_LINE_COUNT = 12;
 
   public static final boolean CROP_USE_REGION_READER = true;
   public static final boolean CROP_ENABLED = true;
-  public static final boolean MODERN_VIDEO_TRANSCODING_ENABLED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-  public static final boolean LEGACY_VIDEO_TRANSCODING_ENABLED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && BuildConfig.LEGACY_FLAVOR;
 
-  public static final boolean IN_APP_BROWSER_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1;
 
-  public static final boolean VIDEO_PLAYER_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-  public static final boolean HLS_VIDEO_ENABLED = VIDEO_PLAYER_AVAILABLE;
+  public static final boolean HLS_VIDEO_ENABLED = true;
 
   public static final boolean FORCE_TOUCH_ENABLED = true;
   public static final boolean HOLD_TO_PREVIEW_AVAILABLE = true;
@@ -186,22 +175,19 @@ public class Config {
 
   public static final boolean SLOW_VIDEO_SWITCH = Device.IS_SAMSUNG; // TODO make
 
-  public static final boolean ROUND_VIDEOS_PLAYBACK_SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-  public static final boolean ROUND_VIDEOS_RECORD_SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
 
   public static final boolean DEBUG_CLIPPING = false;
   public static final boolean USE_CRASHLYTICS = false;
 
   public static final boolean CALL_FROM_PREVIEW = false;
 
-  public static final boolean USE_GROUP_NAMES = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
 
   public static final boolean FORCE_SHOW_RECENTS_STICKERS_TITLE = false;
   public static final int DEFAULT_SHOW_RECENT_STICKERS_COUNT = 10;
 
-  public static final boolean USE_TEXT_ADVANCE = true; // Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+  public static final boolean USE_TEXT_ADVANCE = true;
 
-  public static final boolean SMOOTH_SCROLL_TO_BOTTOM_ENABLED = false; // Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean SMOOTH_SCROLL_TO_BOTTOM_ENABLED = false;
 
   public static final boolean ALLOW_DEBUG_DC = BuildConfig.DEBUG || BuildConfig.EXPERIMENTAL;
 
@@ -210,9 +196,9 @@ public class Config {
 
   public static final boolean USE_NEW_PLAYER = true;
 
-  public static final boolean USE_CLOUD_PLAYER = USE_NEW_PLAYER && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+  public static final boolean USE_CLOUD_PLAYER = (USE_NEW_PLAYER);
   public static final float DEFAULT_ICON_SWITCH_SCALE = .4f;
-  public static final boolean CUTOUT_ENABLED = true; // Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
+  public static final boolean CUTOUT_ENABLED = true;
   public static final boolean EXPLICIT_DICE_AVAILABLE = false;
 
   public static final boolean FOREGROUND_SERVICE_DEMO = false;
@@ -236,7 +222,6 @@ public class Config {
     return false;
   }
 
-  public static final boolean REQUEST_BACKGROUND_LOCATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
 
   public static final boolean DISABLE_VIEWER_ELEVATION = false;
 
@@ -253,16 +238,15 @@ public class Config {
   public static final int ROBOT_DC_ID = 1;
   public static final String ROBOT_PASSWORD = "objection";
 
-  public static boolean VIBRATE_ONLY_IF_SILENT_AVAILABLE = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
+  public static boolean VIBRATE_ONLY_IF_SILENT_AVAILABLE = false;
 
-  public static boolean USE_OLD_COVER = false; // Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+  public static boolean USE_OLD_COVER = false;
 
   public static boolean ALLOW_BOT_COVERS = true;
 
   public static final boolean FAVORITE_STICKERS_WITHOUT_SETS = false;
   public static final boolean DEBUG_NAV_ANIM = false; // BuildConfig.DEBUG;
 
-  public static final boolean NEED_NOTIFICATION_CONTENT_PREVIEW = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
   public static final boolean SHOW_COPY_REPORT_DETAILS_IN_SETTINGS = BuildConfig.EXPERIMENTAL;
 
@@ -272,11 +256,9 @@ public class Config {
 
   public static final int MINIMUM_CALL_CONTACTS_SUGGESTIONS = 3;
 
-  public static final boolean USE_CUSTOM_NAVIGATION_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
   public static final boolean USE_TRANSPARENT_STATUS_BAR = false;
 
-  public static final boolean EDGE_TO_EDGE_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
-  public static final boolean EDGE_TO_EDGE_CUSTOMIZABLE = EDGE_TO_EDGE_AVAILABLE && (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM || BuildConfig.TARGET_SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM);
+  public static final boolean EDGE_TO_EDGE_CUSTOMIZABLE = true && (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM || BuildConfig.TARGET_SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM);
 
   public static final boolean PREFER_RENDER_EXTENSIONS = true;
 
@@ -295,7 +277,6 @@ public class Config {
 
   public static final boolean ALLOW_DATE_MODIFIED_RESOLVING = false; // disabling, because android sucks
 
-  public static final boolean REVEAL_ANIMATION_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
   public static final boolean REMOVE_INTRO = true;
 
@@ -315,7 +296,7 @@ public class Config {
 
   public static final boolean QR_AVAILABLE = true;
   public static final boolean QR_FORCE_ZXING = false;
-  public static final boolean MANAGE_STORAGE_PERMISSION_AVAILABLE = false; // Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+  public static final boolean MANAGE_STORAGE_PERMISSION_AVAILABLE = false;
 
   public static final boolean VIDEO_CLOUD_PLAYBACK_AVAILABLE = true;
 
@@ -351,3 +332,4 @@ public class Config {
 
   public static final boolean COMPILE_CHECK = false /*never set to true*/;
 }
+// endregion

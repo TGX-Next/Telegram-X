@@ -12,6 +12,7 @@
  *
  * File created on 28/08/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -24,7 +25,6 @@ import android.os.Build;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.config.Config;
 
@@ -39,13 +39,13 @@ public class CircleFrameLayout extends FrameLayoutFix {
   public CircleFrameLayout (@NonNull Context context) {
     super(context);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if ((!Config.DEBUG_CLIPPING)) {
       aspectPaint = null;
 
       path = null;
       setOutlineProvider(new android.view.ViewOutlineProvider() {
         @Override
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
         public void getOutline (View view, android.graphics.Outline outline) {
           final int viewWidth = view.getMeasuredWidth();
           outline.setRoundRect(0, 0, viewWidth, view.getMeasuredHeight(), viewWidth / 2);
@@ -64,7 +64,7 @@ public class CircleFrameLayout extends FrameLayoutFix {
   }
 
   public void setTransparentOutline (boolean transparentOutline) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if ((!Config.DEBUG_CLIPPING)) {
       if (this.transparentOutline != transparentOutline) {
         this.transparentOutline = transparentOutline;
         invalidateOutline();
@@ -82,7 +82,7 @@ public class CircleFrameLayout extends FrameLayoutFix {
     if (lastWidth != newWidth || lastHeight != newHeight) {
       lastWidth = newWidth;
       lastHeight = newHeight;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+      if ((!Config.DEBUG_CLIPPING)) {
         invalidateOutline();
       } else {
         path.reset();
@@ -94,7 +94,7 @@ public class CircleFrameLayout extends FrameLayoutFix {
 
   @Override
   protected void dispatchDraw(Canvas c) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if ((!Config.DEBUG_CLIPPING)) {
       super.dispatchDraw(c);
     } else {
       super.dispatchDraw(c);
@@ -102,3 +102,4 @@ public class CircleFrameLayout extends FrameLayoutFix {
     }
   }
 }
+// endregion

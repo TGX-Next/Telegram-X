@@ -12,6 +12,7 @@
  *
  * File created on 19/09/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui.camera.legacy;
 
 import android.content.Context;
@@ -24,7 +25,6 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.exifinterface.media.ExifInterface;
 
 import org.thunderdog.challegram.Log;
@@ -52,7 +52,7 @@ import okio.BufferedSink;
 import okio.Okio;
 
 @SuppressWarnings("deprecation")
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+
 public class CameraApiLegacy extends CameraApi implements Camera.PreviewCallback, Camera.AutoFocusMoveCallback, Camera.AutoFocusCallback, Camera.ShutterCallback, Camera.PictureCallback, MediaRecorder.OnInfoListener {
   // === UI ===
 
@@ -434,9 +434,7 @@ public class CameraApiLegacy extends CameraApi implements Camera.PreviewCallback
 
   private static void getCameraInfo (int id, Camera.CameraInfo info) {
     info.facing = 0;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      info.canDisableShutterSound = false;
-    }
+    info.canDisableShutterSound = false;
     info.orientation = 0;
     Camera.getCameraInfo(id, info);
   }
@@ -880,3 +878,4 @@ public class CameraApiLegacy extends CameraApi implements Camera.PreviewCallback
     Log.i(Log.TAG_CAMERA, "onAutoFocusMoving %b", start);
   }
 }
+// endregion

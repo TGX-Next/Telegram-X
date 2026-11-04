@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 
 #include <jni.h>
 #include <stdio.h>
@@ -48,7 +49,7 @@ jint imageOnJNILoad (JavaVM *vm, void *reserved, JNIEnv *env) {
   if (jclass_RuntimeException == 0) {
     return -1;
   }
-  
+
   jclass_Options = jni_find_class(env, "android/graphics/BitmapFactory$Options", 0);
   if (jclass_Options == 0) {
     return -1;
@@ -65,7 +66,7 @@ jint imageOnJNILoad (JavaVM *vm, void *reserved, JNIEnv *env) {
   if (jclass_Options_outWidth == 0) {
     return -1;
   }
-  
+
   jclass_Bitmap = jni_find_class(env, "android/graphics/Bitmap", 0);
   if (jclass_Bitmap == 0) {
     return -1;
@@ -74,7 +75,7 @@ jint imageOnJNILoad (JavaVM *vm, void *reserved, JNIEnv *env) {
   if (jclass_Bitmap_createBitmap == 0) {
     return -1;
   }
-  
+
   jclass_Config = jni_find_class(env, "android/graphics/Bitmap$Config", 0);
   if (jclass_Config == 0) {
     return -1;
@@ -83,7 +84,7 @@ jint imageOnJNILoad (JavaVM *vm, void *reserved, JNIEnv *env) {
   if (jclass_Config_ARGB_8888 == 0) {
     return -1;
   }
-  
+
   return JNI_VERSION_1_6;
 }
 #endif
@@ -105,29 +106,29 @@ static void fastBlurMore(int imageWidth, int imageHeight, int imageStride, void 
     if (radius > 15 || div >= w || div >= h || w * h > BLUR_SIZE_LIMIT || imageStride > imageWidth * 4) {
         return;
     }
-    
+
     uint64_t *rgb = malloc(imageWidth * imageHeight * sizeof(uint64_t));
     if (rgb == NULL) {
         return;
     }
-    
+
     int x, y, i;
-    
+
     int yw = 0;
     const int we = w - r1;
     for (y = 0; y < h; y++) {
         uint64_t cur = get_colors (&pix[yw]);
         uint64_t rgballsum = -radius * cur;
         uint64_t rgbsum = cur * ((r1 * (r1 + 1)) >> 1);
-        
+
         for (i = 1; i <= radius; i++) {
             uint64_t cur = get_colors (&pix[yw + i * 4]);
             rgbsum += cur * (r1 - i);
             rgballsum += cur;
         }
-        
+
         x = 0;
-        
+
         #define update(start, middle, end) \
             rgb[y * w + x] = (rgbsum >> 6) & 0x00FF00FF00FF00FF; \
             rgballsum += get_colors (&pix[yw + (start) * 4]) - 2 * get_colors (&pix[yw + (middle) * 4]) + get_colors (&pix[yw + (end) * 4]); \
@@ -144,10 +145,10 @@ static void fastBlurMore(int imageWidth, int imageHeight, int imageStride, void 
             update (x - r1, x, w - 1);
         }
     #undef update
-        
+
         yw += stride;
     }
-    
+
     const int he = h - r1;
     for (x = 0; x < w; x++) {
         uint64_t rgballsum = -radius * rgb[x];
@@ -156,10 +157,10 @@ static void fastBlurMore(int imageWidth, int imageHeight, int imageStride, void 
             rgbsum += rgb[i * w + x] * (r1 - i);
             rgballsum += rgb[i * w + x];
         }
-        
+
         y = 0;
         int yi = x * 4;
-        
+
     #define update(start, middle, end) \
             int64_t res = rgbsum >> 6; \
             pix[yi] = res; \
@@ -169,7 +170,7 @@ static void fastBlurMore(int imageWidth, int imageHeight, int imageStride, void 
             rgbsum += rgballsum; \
             y++; \
             yi += stride;
-        
+
         while (y < r1) {
             update (0, y, y + r1);
         }
@@ -209,29 +210,29 @@ static void fastBlur(int imageWidth, int imageHeight, int imageStride, void *pix
     if (radius > 15 || div >= w || div >= h || w * h > BLUR_SIZE_LIMIT || imageStride > imageWidth * 4) {
         return;
     }
-    
+
     uint64_t *rgb = malloc(imageWidth * imageHeight * sizeof(uint64_t));
     if (rgb == NULL) {
         return;
     }
-    
+
     int x, y, i;
-    
+
     int yw = 0;
     const int we = w - r1;
     for (y = 0; y < h; y++) {
         uint64_t cur = get_colors (&pix[yw]);
         uint64_t rgballsum = -radius * cur;
         uint64_t rgbsum = cur * ((r1 * (r1 + 1)) >> 1);
-        
+
         for (i = 1; i <= radius; i++) {
             uint64_t cur = get_colors (&pix[yw + i * 4]);
             rgbsum += cur * (r1 - i);
             rgballsum += cur;
         }
-        
+
         x = 0;
-        
+
         #define update(start, middle, end)  \
                 rgb[y * w + x] = (rgbsum >> shift) & 0x00FF00FF00FF00FFLL; \
                 rgballsum += get_colors (&pix[yw + (start) * 4]) - 2 * get_colors (&pix[yw + (middle) * 4]) + get_colors (&pix[yw + (end) * 4]); \
@@ -247,12 +248,12 @@ static void fastBlur(int imageWidth, int imageHeight, int imageStride, void *pix
         while (x < w) {
             update (x - r1, x, w - 1);
         }
-        
+
         #undef update
-        
+
         yw += stride;
     }
-    
+
     const int he = h - r1;
     for (x = 0; x < w; x++) {
         uint64_t rgballsum = -radius * rgb[x];
@@ -261,10 +262,10 @@ static void fastBlur(int imageWidth, int imageHeight, int imageStride, void *pix
             rgbsum += rgb[i * w + x] * (r1 - i);
             rgballsum += rgb[i * w + x];
         }
-        
+
         y = 0;
         int yi = x * 4;
-        
+
         #define update(start, middle, end)  \
                 int64_t res = rgbsum >> shift;   \
                 pix[yi] = res;              \
@@ -274,7 +275,7 @@ static void fastBlur(int imageWidth, int imageHeight, int imageStride, void *pix
                 rgbsum += rgballsum;        \
                 y++;                        \
                 yi += stride;
-        
+
         while (y < r1) {
             update (0, y, y + r1);
         }
@@ -286,7 +287,7 @@ static void fastBlur(int imageWidth, int imageHeight, int imageStride, void *pix
         }
         #undef update
     }
-    
+
     free(rgb);
 }
 
@@ -294,9 +295,9 @@ JNIEXPORT jint Java_org_thunderdog_challegram_N_blurBitmap(JNIEnv *env, jclass c
   if (!bitmap) {
     return -1;
   }
-  
+
   AndroidBitmapInfo info;
-  
+
   if (AndroidBitmap_getInfo(env, bitmap, &info) < 0) {
     return -2;
   }
@@ -304,7 +305,7 @@ JNIEXPORT jint Java_org_thunderdog_challegram_N_blurBitmap(JNIEnv *env, jclass c
   if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
     return -3;
   }
-  
+
   if (!info.width || !info.height) {
     return -4;
   }
@@ -312,7 +313,7 @@ JNIEXPORT jint Java_org_thunderdog_challegram_N_blurBitmap(JNIEnv *env, jclass c
   if (!info.stride) {
     return -5;
   }
-  
+
   void *pixels = 0;
   if (AndroidBitmap_lockPixels(env, bitmap, &pixels) < 0) {
     return -6;
@@ -348,28 +349,28 @@ JNIEXPORT void Java_org_thunderdog_challegram_N_calcCDT(JNIEnv *env, jclass clas
     uint32_t **cdfs = calloc(totalSegments, sizeof(uint32_t *));
     uint32_t *cdfsMin = calloc(totalSegments, sizeof(uint32_t));
     uint32_t *cdfsMax = calloc(totalSegments, sizeof(uint32_t));
-    
+
     for (uint32_t a = 0; a < totalSegments; a++) {
         hist[a] = calloc(PGPhotoEnhanceHistogramBins, sizeof(uint32_t));
         cdfs[a] = calloc(PGPhotoEnhanceHistogramBins, sizeof(uint32_t));
     }
-    
+
     float xMul = PGPhotoEnhanceSegments / imageWidth;
     float yMul = PGPhotoEnhanceSegments / imageHeight;
-    
+
     for (uint32_t y = 0; y < imageHeight; y++) {
         uint32_t yOffset = y * width * 4;
         for (uint32_t x = 0; x < imageWidth; x++) {
             uint32_t index = x * 4 + yOffset;
-            
+
             uint32_t tx = (uint32_t)(x * xMul);
             uint32_t ty = (uint32_t)(y * yMul);
             uint32_t t = ty * PGPhotoEnhanceSegments + tx;
-            
+
             hist[t][bytes[index + 2]]++;
         }
     }
-    
+
     for (uint32_t i = 0; i < totalSegments; i++) {
         if (clipLimit > 0) {
             uint32_t clipped = 0;
@@ -379,40 +380,40 @@ JNIEXPORT void Java_org_thunderdog_challegram_N_calcCDT(JNIEnv *env, jclass clas
                     hist[i][j] = clipLimit;
                 }
             }
-            
+
             uint32_t redistBatch = clipped / PGPhotoEnhanceHistogramBins;
             uint32_t residual = clipped - redistBatch * PGPhotoEnhanceHistogramBins;
-            
+
             for (uint32_t j = 0; j < PGPhotoEnhanceHistogramBins; ++j) {
                 hist[i][j] += redistBatch;
             }
-            
+
             for (uint32_t j = 0; j < residual; ++j) {
                 hist[i][j]++;
             }
         }
         memcpy(cdfs[i], hist[i], PGPhotoEnhanceHistogramBins * sizeof(uint32_t));
-        
+
         uint32_t hMin = PGPhotoEnhanceHistogramBins - 1;
         for (uint32_t j = 0; j < hMin; ++j) {
             if (cdfs[j] != 0) {
                 hMin = j;
             }
         }
-        
+
         uint32_t cdf = 0;
         for (uint32_t j = hMin; j < PGPhotoEnhanceHistogramBins; ++j) {
             cdf += cdfs[i][j];
             cdfs[i][j] = (uint8_t) fminf(255.0f, (float) cdf * scale);
         }
-        
+
         cdfsMin[i] = cdfs[i][hMin];
         cdfsMax[i] = cdfs[i][PGPhotoEnhanceHistogramBins - 1];
     }
-    
+
     // uint32_t resultSize = 4 * PGPhotoEnhanceHistogramBins * totalSegments;
     uint32_t resultBytesPerRow = 4 * PGPhotoEnhanceHistogramBins;
-    
+
     unsigned char *result = (*env)->GetDirectBufferAddress(env, buffer);
     for (uint32_t tile = 0; tile < totalSegments; tile++) {
         uint32_t yOffset = tile * resultBytesPerRow;
@@ -433,15 +434,6 @@ JNIEXPORT void Java_org_thunderdog_challegram_N_calcCDT(JNIEnv *env, jclass clas
     free(cdfs);
     free(cdfsMax);
     free(cdfsMin);
-}
-
-JNIEXPORT int Java_org_thunderdog_challegram_N_pinBitmap (JNIEnv *env, jclass class, jobject bitmap) {
-  void *pixels;
-  return AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0 ? 1 : 0;
-}
-
-JNIEXPORT int Java_org_thunderdog_challegram_N_unpinBitmap (JNIEnv *env, jclass class, jobject bitmap) {
-  return AndroidBitmap_unlockPixels(env, bitmap);
 }
 
 JNIEXPORT jboolean Java_org_thunderdog_challegram_N_hasBuiltInWebpSupport (JNIEnv *env, jclass class) {
@@ -549,3 +541,4 @@ JNIEXPORT jboolean Java_org_thunderdog_challegram_N_loadWebpImage (JNIEnv *env, 
   return 1;
 #endif
 }
+// endregion

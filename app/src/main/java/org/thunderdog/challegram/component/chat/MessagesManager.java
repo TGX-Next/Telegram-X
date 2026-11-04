@@ -12,6 +12,7 @@
  *
  * File created on 10/09/2015 at 16:42
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.view.View;
@@ -2118,29 +2119,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
   }
 
   private void checkPositionInList (TGMessage msg, int index, long newMessageId) {
-    if (true) {
-      return;
-    }
-    ArrayList<TGMessage> items = adapter.getItems();
-    if (items != null) {
-      items.remove(index);
-      int i = Collections.binarySearch(items, msg, this);
-      if (i >= 0) {
-        items.add(index, msg);
-        return;
-      }
-      int newIndex = i * -1 - 1;
-      items.add(index, msg);
-      if (newIndex != index) {
-        int firstCompletelyVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
-        adapter.moveItem(index, newIndex);
-        if (firstCompletelyVisibleItemPosition == 0) {
-          scrollToPositionWithOffsetImpl(0, 0);
-        }
-      } else {
-        items.add(newIndex, msg);
-      }
-    }
+    return;
   }
 
   @Override
@@ -3824,3 +3803,4 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     }
   }
 }
+// endregion

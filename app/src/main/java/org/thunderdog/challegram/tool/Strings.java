@@ -12,6 +12,7 @@
  *
  * File created on 25/04/2015 at 13:16
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.graphics.Color;
@@ -886,11 +887,7 @@ public class Strings {
   public static String systemFormat (String formatPhone) {
     String result;
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        result = PhoneNumberUtils.formatNumber(formatPhone, "US");
-      } else {
-        result = PhoneNumberUtils.formatNumber(formatPhone);
-      }
+      result = PhoneNumberUtils.formatNumber(formatPhone, "US");
     } catch (Throwable t) {
       Log.e("Couldn't format the phone number", t);
       result = null;
@@ -942,7 +939,7 @@ public class Strings {
     if (c >= 0x70F && c <= 0x74A) return SCRIPT_SYRIAC;
     if (c >= 0x74D && c <= 0x74F) return SCRIPT_SYRIAC;
     if (c >= 0x780 && c <= 0x7B1) return SCRIPT_THAANA;
-    
+
     return SCRIPT_COMMON;
   }
 
@@ -1434,3 +1431,4 @@ public class Strings {
     }
   }
 }
+// endregion

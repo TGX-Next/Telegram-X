@@ -12,6 +12,7 @@
  *
  * File created on 25/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -410,7 +411,7 @@ public class EmojiMediaListController extends ViewController<EmojiLayout> implem
       Views.applyBottomInset(gifsView, extraBottomInset);
       gifsView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
       gifsView.setHasFixedSize(true);
-      gifsView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS :View.OVER_SCROLL_NEVER);
+      gifsView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
       gifsView.setAdapter(gifsAdapter);
       gifsView.addOnScrollListener(new RecyclerView.OnScrollListener() {
         @Override
@@ -1582,3 +1583,4 @@ public class EmojiMediaListController extends ViewController<EmojiLayout> implem
     };
   }
 }
+// endregion

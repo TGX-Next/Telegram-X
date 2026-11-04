@@ -12,6 +12,7 @@
  *
  * File created on 31/05/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -171,7 +172,7 @@ public class EmojiStatusListController extends ViewController<EmojiLayout> imple
       stickersView.setAdapter(stickersAdapter);
       // stickersView.setItemAnimator(null);
       stickersView.setItemAnimator(new CustomItemAnimator(AnimatorUtils.DECELERATE_INTERPOLATOR, 180));
-      stickersView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS :View.OVER_SCROLL_NEVER);
+      stickersView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
       stickersView.addOnScrollListener(new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged (@NonNull RecyclerView recyclerView, int newState) {
@@ -1075,7 +1076,7 @@ public class EmojiStatusListController extends ViewController<EmojiLayout> imple
 
     final int currentSection = getStickerSetSection();
 
-    if (!animated || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || getArguments() == null || Math.abs(futureSection - currentSection) > SCROLLBY_SECTION_LIMIT) {
+    if ((!animated) || getArguments() == null || Math.abs(futureSection - currentSection) > SCROLLBY_SECTION_LIMIT) {
       if (getArguments() != null) {
         getArguments().setIgnoreMovement(true);
       }
@@ -1457,3 +1458,4 @@ public class EmojiStatusListController extends ViewController<EmojiLayout> imple
     }
   }
 }
+// endregion

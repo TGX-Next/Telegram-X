@@ -1,4 +1,5 @@
 #!/bin/bash
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 # Checks test tools after their changes in tests/core or tests/buildSrc: helpers of drawing,
 # animations and scrolling, screenshots and recordings, check results before and after a change,
 # benchmarks and their comparison, microbenchmarks and minSdk check. Checks and benchmarks run on
@@ -280,20 +281,11 @@ if $NEEDS_DEVICE; then
   MODEL=$(adb_shell getprop ro.product.model)
   RELEASE=$(adb_shell getprop ro.build.version.release)
   ABI=$(adb_shell getprop ro.product.cpu.abi)
-  case $ABI in
-    arm64-v8a) ABI=arm64 ;;
-    armeabi-v7a) ABI=arm32 ;;
-    x86_64) ABI=x64 ;;
-  esac
-  if [ "$SDK_INT" -ge 33 ]; then
-    FLAVOR=Latest
-  elif [ "$SDK_INT" -ge 29 ]; then
-    FLAVOR=Qrs
-  elif [ "$SDK_INT" -ge 24 ]; then
-    FLAVOR=Nop
-  else
-    fail "UI tests and benchmarks require Android 7.0+, $MODEL has Android $RELEASE"
+  if [ "$ABI" != "arm64-v8a" ] || [ "$SDK_INT" -lt 33 ]; then
+    fail "Tests require Android 13+ and arm64, $MODEL has Android $RELEASE ($ABI)"
   fi
+  ABI=arm64
+  FLAVOR=Latest
 
   APP_ID=$(read-property.sh local.properties app.id) ||
     APP_ID=$(read-property.sh local.properties.sample app.id)
@@ -467,11 +459,10 @@ step_minsdk() {
   find . \( -name .git -o -name .gradle -o -name .cxx -o -name node_modules \) -prune \
     -o -type d -path '*/build/reports/minSdk' -prune -exec rm -rf {} +
   run minsdk gradle checkMinSdk "-Pabi=$ABI"
-  # Legacy flavor of the app is built only with older NDK, which supports only 32-bit ABIs
-  run minsdk-legacy gradle checkMinSdk -PuseLegacyNdk=true -Pabi=arm32
 }
 
 for STEP in $STEPS; do
   "step_$STEP"
 done
 FINISHED=true
+# endregion

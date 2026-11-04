@@ -12,6 +12,7 @@
  *
  * File created on 01/11/2026
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.core;
 
 import android.os.Build;
@@ -102,10 +103,11 @@ public final class LooperSerialQueue extends SerialQueue {
   @Override
   public void quit (boolean safely) {
     Looper looper = looperHandler().getLooper();
-    if (safely && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if ((safely)) {
       looper.quitSafely();
     } else {
       looper.quit();
     }
   }
 }
+// endregion

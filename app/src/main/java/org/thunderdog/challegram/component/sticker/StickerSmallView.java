@@ -12,6 +12,7 @@
  *
  * File created on 22/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.sticker;
 
 import android.content.Context;
@@ -435,11 +436,7 @@ public class StickerSmallView extends View implements FactorAnimator.Target, Sti
       return;
     }
 
-    if (false && ignoreNextStickerChanges) {
-      if (dispatchingMenuEvents || (dispatchingMenuEvents = Math.max(Math.abs(e.getX() - startX), Math.abs(e.getY() - startY)) >= Screen.getTouchSlopBig())) {
-        processMenuTouchEvent(e);
-      }
-    } else {
+    {
       View view = null;
       if (callback != null) {
         view = callback.getStickerViewUnder(this, x, y);
@@ -653,3 +650,4 @@ public class StickerSmallView extends View implements FactorAnimator.Target, Sti
     ((BaseActivity) getContext()).closeStickerPreview();
   }
 }
+// endregion

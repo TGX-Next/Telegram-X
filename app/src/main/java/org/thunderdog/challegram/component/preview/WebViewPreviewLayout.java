@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.preview;
 
 import android.annotation.SuppressLint;
@@ -72,13 +73,9 @@ public class WebViewPreviewLayout extends PreviewLayout {
     preview.getSettings().setJavaScriptEnabled(true);
     preview.getSettings().setAllowContentAccess(true);
     preview.getSettings().setJavaScriptCanOpenWindowsAutomatically(false);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      preview.getSettings().setMediaPlaybackRequiresUserGesture(false);
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      preview.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-      CookieManager.getInstance().setAcceptThirdPartyCookies(preview, true);
-    }
+    preview.getSettings().setMediaPlaybackRequiresUserGesture(false);
+    preview.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+    CookieManager.getInstance().setAcceptThirdPartyCookies(preview, true);
 
     preview.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.TOP));
     preview.setWebViewClient(new WebViewClient() {
@@ -135,9 +132,7 @@ public class WebViewPreviewLayout extends PreviewLayout {
     containerFullscreen = new FrameLayout(getContext());
     containerFullscreen.setBackgroundColor(Color.BLACK);
     containerFullscreen.setVisibility(View.GONE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      containerFullscreen.setFitsSystemWindows(true);
-    }
+    containerFullscreen.setFitsSystemWindows(true);
 
     container = new FrameLayout(getContext());
     container.addView(preview);
@@ -228,3 +223,4 @@ public class WebViewPreviewLayout extends PreviewLayout {
     }
   }
 }
+// endregion

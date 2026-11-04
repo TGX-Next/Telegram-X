@@ -12,6 +12,7 @@
  *
  * File created on 19/08/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget.emoji.header;
 
 import android.content.Context;
@@ -47,19 +48,19 @@ public class MediaHeaderView extends RecyclerView {
 
   private MediaAdapter mediaAdapter;
   private EmojiLayout emojiLayout;
-  
+
   public MediaHeaderView (@NonNull Context context) {
     super(context);
-    
+
     setHasFixedSize(true);
     setItemAnimator(new CustomItemAnimator(AnimatorUtils.DECELERATE_INTERPOLATOR, 180));
-    setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? OVER_SCROLL_IF_CONTENT_SCROLLS :OVER_SCROLL_NEVER);
+    setOverScrollMode((OVER_SCROLL_IF_CONTENT_SCROLLS));
     setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, Lang.rtl()));
     setPadding(EmojiLayout.getHorizontalPadding(), 0, EmojiLayout.getHorizontalPadding(), 0);
     setClipToPadding(false);
     setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, EmojiLayout.getHeaderSize()));
   }
-  
+
   public void init (EmojiLayout emojiLayout, ViewController<?> themeProvider, View.OnClickListener onClickListener) {
     this.emojiLayout = emojiLayout;
     setAdapter(mediaAdapter = new MediaAdapter(getContext(), emojiLayout, onClickListener, emojiLayout.isAnimatedEmojiOnly() ? 8 : emojiLayout.getEmojiSectionsSize(), !emojiLayout.isAnimatedEmojiOnly() && Settings.instance().getEmojiMediaSection() == EmojiMediaType.GIF, themeProvider, emojiLayout.isAnimatedEmojiOnly()));
@@ -207,7 +208,7 @@ public class MediaHeaderView extends RecyclerView {
       throw new RuntimeException("viewType == " + viewType);
     }
   }
-  
+
   private static class MediaAdapter extends RecyclerView.Adapter<MediaHolder> implements View.OnLongClickListener {
     private final Context context;
     private final View.OnClickListener onClickListener;
@@ -567,3 +568,4 @@ public class MediaHeaderView extends RecyclerView {
     }
   }
 }
+// endregion

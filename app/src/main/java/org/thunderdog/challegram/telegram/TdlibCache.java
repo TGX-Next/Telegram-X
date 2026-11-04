@@ -12,6 +12,7 @@
  *
  * File created on 30/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.os.Build;
@@ -1942,11 +1943,7 @@ public class TdlibCache implements LiveLocationManager.OutputDelegate, CleanupSt
   private int putSupergroup (TdApi.Supergroup supergroup) {
     TdApi.Supergroup oldSupergroup = supergroups.get(supergroup.id);
     final int mode;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      mode = oldSupergroup == null ? UPDATE_MODE_NONE : oldSupergroup.isChannel != supergroup.isChannel || !Td.equalsTo(oldSupergroup.usernames, supergroup.usernames) ? UPDATE_MODE_IMPORTANT : UPDATE_MODE_UPDATE;
-    } else {
-      mode = oldSupergroup == null ? UPDATE_MODE_NONE : UPDATE_MODE_UPDATE;
-    }
+    mode = oldSupergroup == null ? UPDATE_MODE_NONE : oldSupergroup.isChannel != supergroup.isChannel || !Td.equalsTo(oldSupergroup.usernames, supergroup.usernames) ? UPDATE_MODE_IMPORTANT : UPDATE_MODE_UPDATE;
     supergroups.put(supergroup.id, supergroup);
     return mode;
   }
@@ -1963,3 +1960,4 @@ public class TdlibCache implements LiveLocationManager.OutputDelegate, CleanupSt
     return updated;
   }
 }
+// endregion

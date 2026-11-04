@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.test
 
 import Sdk
@@ -32,7 +33,6 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
-import tgx.gradle.fatal
 import java.io.File
 import java.util.zip.ZipFile
 import javax.xml.parsers.SAXParserFactory
@@ -41,7 +41,6 @@ fun Project.configureMinSdkCheck() {
   val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
   val checkDebugVariants = tasks.register("checkMinSdk")
   androidComponents.onVariants { variant ->
-    // Newer NDK raises minSdk of variants, e.g. of legacy flavor built without -PuseLegacyNdk=true
     val variantMinSdk = variant.productFlavors.firstNotNullOfOrNull { (_, flavor) ->
       Sdk.VARIANTS.values
         .firstOrNull {
@@ -80,9 +79,6 @@ fun Project.configureMinSdkCheck() {
  * Lists classes of a variant that use classes added after its minSdk in declarations,
  * which version checks can't guard: supertypes, types of fields, parameters and results of methods,
  * and caught exceptions, and imports of such classes, see [findNewImports].
- * Fails for variants for Android 4.x: Dalvik fails to verify such classes,
- * e.g. with NoClassDefFoundError or VerifyError, even when the code that needs new classes
- * never runs there, while ART of Android 5.0+ resolves classes only when they are used.
  * Classes and methods annotated with `@RequiresApi` or `@TargetApi`,
  * as well as anonymous and local classes, are used only after version checks,
  * which are verified by NewApi check of lint, together with calls inside methods.
@@ -150,10 +146,7 @@ abstract class CheckMinSdkTask : DefaultTask() {
       return
     }
     val message = "Classes added after minSdk ${minSdk.get()} are used in declarations or imported"
-    if (minSdk.get() < ART_SDK) {
-      fatal("$message:\n${violations.joinToString("\n")}")
-    }
-    logger.info("$message, which Android 5.0+ allows: $reportFile")
+    logger.info("$message: $reportFile")
   }
 }
 
@@ -176,9 +169,6 @@ internal fun readApiLevels(file: File): Map<String, Int> {
   })
   return apiLevels
 }
-
-// Android 5.0 replaced Dalvik with ART
-private const val ART_SDK = 21
 
 // Core library desugaring adds many of their classes to older Android,
 // NewApi check of lint knows which
@@ -340,8 +330,7 @@ private val VERSION_ANNOTATED_CLASS = Regex(
 
 /**
  * Classes added after minSdk are referenced by their full name only inside version checks:
- * Dalvik on Android 4.x fails to verify whole classes that use them elsewhere,
- * and imports make such uses easy to miss.
+ * Imports help identify uses of API classes introduced after the supported minimum.
  * Files of classes annotated with `@RequiresApi` or `@TargetApi` may import them.
  */
 internal fun findNewImports(
@@ -372,3 +361,4 @@ internal fun findNewImports(
     .distinct()
     .toList()
 }
+// endregion

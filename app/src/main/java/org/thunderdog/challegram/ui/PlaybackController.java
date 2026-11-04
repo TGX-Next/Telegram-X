@@ -12,6 +12,7 @@
  *
  * File created on 14/01/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -1953,14 +1954,7 @@ public class PlaybackController extends ViewController<Void> implements Menu, Mo
     }
 
     private void setIsBuffering (boolean isBuffering) {
-      if (true) {
-        return;
-      }
-      if (bufferAnimator == null) {
-        bufferAnimator = new BoolAnimator(ANIMATOR_BUFFERING, this, AnimatorUtils.DECELERATE_INTERPOLATOR, 180l);
-      }
-      bufferAnimator.setStartDelay(isBuffering ? 1000l : 0);
-      bufferAnimator.setValue(isBuffering, true);
+      return;
     }
 
     private int getTitleWidth () {
@@ -2355,3 +2349,4 @@ public class PlaybackController extends ViewController<Void> implements Menu, Mo
     }
   }
 }
+// endregion

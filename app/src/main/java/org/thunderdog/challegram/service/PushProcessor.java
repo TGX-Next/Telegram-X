@@ -12,6 +12,7 @@
  *
  * File created on 22/10/2022
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.service;
 
 import android.content.Context;
@@ -99,11 +100,10 @@ public class PushProcessor {
   }
 
   private boolean inIdleMode () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    {
       PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
       return powerManager.isDeviceIdleMode();
     }
-    return false;
   }
 
   private static BaseThread queue;
@@ -163,7 +163,7 @@ public class PushProcessor {
     final boolean shown;
     final AtomicBoolean foregroundNotificationMayBeShown = new AtomicBoolean(false);
 
-    if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.S && (doze || !network)) || inRecoveryMode) {
+    if ((inRecoveryMode)) {
       synchronized (foregroundLock) {
         TDLib.Tag.notifications(pushId, accountId, "Trying to start a foreground task because we may be operating in a constrained environment, doze: %b, network: %b, recovery: %b", doze, network, inRecoveryMode);
         int showStatus = showForegroundNotification(manager, inRecoveryMode, pushId, accountId, false, foregroundServiceLatch);
@@ -350,3 +350,4 @@ public class PushProcessor {
     return ShowStatus.NOT_SHOWN;
   }
 }
+// endregion

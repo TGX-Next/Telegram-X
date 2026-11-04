@@ -12,6 +12,7 @@
  *
  * File created on 27/02/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -125,18 +126,14 @@ public class PageBlockWrapView extends FrameLayoutFix implements ViewPager.OnPag
       ViewSupport.setThemedBackground(webView, ColorId.placeholder);
       webView.getSettings().setJavaScriptEnabled(true);
       webView.getSettings().setAllowContentAccess(true);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        webView.addJavascriptInterface(new WebViewProxy(this), "TelegramWebviewProxy");
-        // webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-      }
+      webView.addJavascriptInterface(new WebViewProxy(this), "TelegramWebviewProxy");
+      // webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
       webView.getSettings().setDomStorageEnabled(true);
       webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(false);
       // webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19");
       // webView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false);
-      }
+      webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+      CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false);
       webView.setWebViewClient(new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading (WebView view, String url) {
@@ -569,3 +566,4 @@ public class PageBlockWrapView extends FrameLayoutFix implements ViewPager.OnPag
   @Override
   public final Resources getSparseDrawableResources () { return getResources(); }
 }
+// endregion

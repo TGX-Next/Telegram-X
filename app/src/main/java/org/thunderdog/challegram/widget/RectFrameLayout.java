@@ -12,6 +12,7 @@
  *
  * File created on 09/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -20,7 +21,6 @@ import android.os.Build;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.config.Config;
 import org.thunderdog.challegram.tool.Views;
@@ -33,10 +33,10 @@ public class RectFrameLayout extends FrameLayoutFix {
   public RectFrameLayout (@NonNull Context context) {
     super(context);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if ((!Config.DEBUG_CLIPPING)) {
       setOutlineProvider(new android.view.ViewOutlineProvider() {
         @Override
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
         public void getOutline (View view, android.graphics.Outline outline) {
           outline.setRect(0, top, view.getMeasuredWidth(), view.getMeasuredHeight() - bottom);
         }
@@ -52,7 +52,7 @@ public class RectFrameLayout extends FrameLayoutFix {
   }
 
   private void checkOutline () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if ((!Config.DEBUG_CLIPPING)) {
       invalidateOutline();
     }
   }
@@ -67,7 +67,7 @@ public class RectFrameLayout extends FrameLayoutFix {
 
   @Override
   protected void dispatchDraw(Canvas c) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.DEBUG_CLIPPING) {
+    if ((!Config.DEBUG_CLIPPING)) {
       super.dispatchDraw(c);
     } else {
       final int saveCount = Views.save(c);
@@ -77,3 +77,4 @@ public class RectFrameLayout extends FrameLayoutFix {
     }
   }
 }
+// endregion

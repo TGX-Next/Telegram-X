@@ -12,6 +12,7 @@
  *
  * File created on 02/05/2015 at 13:00
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util.text;
 
 import android.graphics.Canvas;
@@ -1851,7 +1852,7 @@ public class Text implements Runnable, Emoji.CountLimiter, CounterTextPart, List
     currentX = (int) part.getWidth();
     currentY += lineHeight;
     maxPartHeight = 0;
-    
+
     if (part.getQuoteEntityId() != -1) {
       final var x = Screen.dp(QuoteBackground.QUOTE_LEFT_PADDING + QuoteBackground.QUOTE_RIGHT_PADDING);
       part.setXY(x, currentY);
@@ -3443,9 +3444,7 @@ public class Text implements Runnable, Emoji.CountLimiter, CounterTextPart, List
       boolean replaceWithNeutralDirectionChar = false;
       if (neutralizeEmoji) {
         int ltrEmojiCharCount = EmojiBidUtil.ltrEmojiCharCount(codePoint, count, in, a, end);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && ltrEmojiCharCount == 0) {
-          ltrEmojiCharCount = EmojiBidUtilLegacy.ltrEmojiCharCountLegacy(codePoint, count);
-        }
+
         if (ltrEmojiCharCount > 0) {
           count = ltrEmojiCharCount;
           replaceWithNeutralDirectionChar = true;
@@ -3594,3 +3593,4 @@ public class Text implements Runnable, Emoji.CountLimiter, CounterTextPart, List
     }
   }
 }
+// endregion

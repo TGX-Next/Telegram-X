@@ -12,6 +12,7 @@
  *
  * File created on 06/05/2015 at 12:31
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.loader;
 
 import android.animation.ValueAnimator;
@@ -87,7 +88,7 @@ public class ImageReceiver implements Watcher, ValueAnimator.AnimatorUpdateListe
     if (handler == null) {
       handler = new ImageHandler();
       float density = UI.getResources().getDisplayMetrics().density;
-      ANIMATION_ENABLED = density >= 2.0f; //(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && density >= 2f) || (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && density > 2f);
+      ANIMATION_ENABLED = density >= 2.0f;
     }
     this.metadataPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
     this.view = view;
@@ -420,7 +421,7 @@ public class ImageReceiver implements Watcher, ValueAnimator.AnimatorUpdateListe
 
   private int getVisualRotationWithoutCropState () {
     if (file != null) {
-      return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && file instanceof ImageGalleryFile && ((ImageGalleryFile) file).needThumb() ? 0 : file.getVisualRotation();
+      return (file instanceof ImageGalleryFile) && ((ImageGalleryFile) file).needThumb() ? 0 : file.getVisualRotation();
     }
     return 0;
   }
@@ -1342,3 +1343,4 @@ public class ImageReceiver implements Watcher, ValueAnimator.AnimatorUpdateListe
     }
   }
 }
+// endregion

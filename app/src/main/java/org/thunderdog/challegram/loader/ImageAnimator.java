@@ -12,6 +12,7 @@
  *
  * File created on 18/05/2015 at 00:42
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.loader;
 
 import android.os.Build;
@@ -25,7 +26,7 @@ public class ImageAnimator  {
   private static ImageAnimatorHandler handler;
 
   private static final long FRAME_DELAY = 12l;
-  private static final long SLOW_FRAME_DELAY = Build.VERSION.SDK_INT > 20 ? 14l : 17l;
+  private static final long SLOW_FRAME_DELAY = (14l);
 
   private ImageReceiver receiver;
 
@@ -89,3 +90,4 @@ public class ImageAnimator  {
   }
 
 }
+// endregion

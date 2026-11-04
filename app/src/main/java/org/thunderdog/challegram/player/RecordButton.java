@@ -12,6 +12,7 @@
  *
  * File created on 20/08/2015 at 02:59
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.player;
 
 import android.content.Context;
@@ -22,7 +23,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.U;
 import org.thunderdog.challegram.theme.ColorId;
@@ -56,22 +56,20 @@ public class RecordButton extends View implements FactorAnimator.Target, ClickHe
 
     FrameLayoutFix.LayoutParams params = FrameLayoutFix.newParams(center * 2, center * 2, Gravity.TOP | Gravity.LEFT);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          if (expand <= 0f) {
-            outline.setEmpty();
-          } else {
-            int radius = (int) (RecordButton.this.radius * expand);
-            outline.setRoundRect(center - radius, center - radius, center + radius, center + radius, radius);
-          }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        if (expand <= 0f) {
+          outline.setEmpty();
+        } else {
+          int radius = (int) (RecordButton.this.radius * expand);
+          outline.setRoundRect(center - radius, center - radius, center + radius, center + radius, radius);
         }
-      });
-      setElevation(Screen.dp(1f));
-      setTranslationZ(Screen.dp(2f));
-    }
+      }
+    });
+    setElevation(Screen.dp(1f));
+    setTranslationZ(Screen.dp(2f));
 
     setLayoutParams(params);
   }
@@ -116,9 +114,7 @@ public class RecordButton extends View implements FactorAnimator.Target, ClickHe
   public void setExpand (float expand) {
     if (this.expand != expand) {
       this.expand = expand;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        invalidateOutline();
-      }
+      invalidateOutline();
       invalidate();
     }
   }
@@ -186,3 +182,4 @@ public class RecordButton extends View implements FactorAnimator.Target, ClickHe
     c.drawCircle(center, center, radius * expand, Paints.fillingPaint(color));
   }
 }
+// endregion

@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.gradle.task
 
 import Sdk
@@ -59,40 +60,6 @@ abstract class BuildLibvpxTask : BuildNativeLibraryTask() {
         cFlags += "-march=armv8-a"
         extraParams += "--enable-neon"
       }
-      "armeabi-v7a" -> {
-        ndkAbi = "armv7a-linux-androideabi"
-        extraParams += "--enable-neon"
-
-        val cpuFeatures = requireDir(
-          ndk.resolve("sources/android/cpufeatures")
-        )
-        cFlags.addAll(listOf(
-          "-march=armv7-a",
-          "-mfloat-abi=softfp",
-          "-mfpu=neon",
-          "-mthumb",
-          "-mtune=cortex-a8",
-          "-I${cpuFeatures.toPosixPath()}"
-        ))
-      }
-      "x86_64" -> {
-        ndkAbi = "x86_64-linux-android"
-        cFlags.addAll(listOf(
-          "-march=x86-64",
-          "-msse4.2",
-          "-mpopcnt",
-          "-fPIC"
-        ))
-      }
-      "x86" -> {
-        ndkAbi = "i686-linux-android"
-        cFlags.addAll(listOf(
-          "-march=i686",
-          "-msse3",
-          "-mfpmath=sse",
-          "-fPIC"
-        ))
-      }
       else -> {
         fatal("Unsupported abi: $abi")
       }
@@ -130,9 +97,6 @@ abstract class BuildLibvpxTask : BuildNativeLibraryTask() {
       "CPP" to cxx,
 
       "ASFLAGS" to "-D__ANDROID__",
-      "YASM" to requireFile(
-        prebuilt.resolveNdkBinary("bin/yasm")
-      ).toPosixPath(),
 
       "STRIP" to requireFile(
         prebuilt.resolveNdkBinary("bin/llvm-strip")
@@ -162,21 +126,10 @@ abstract class BuildLibvpxTask : BuildNativeLibraryTask() {
     val libvpxTarget = when (abi) {
       "arm64-v8a" ->
         "arm64-android-gcc"
-      "armeabi-v7a" ->
-        "armv7-android-gcc"
-      "x86_64" ->
-        "x86_64-android-gcc"
-      "x86" ->
-        "x86-android-gcc"
       else ->
         fatal("Unreachable")
     }
-    extraParams +=
-      if (abi != "armeabi-v7a" || flavor != "legacy") {
-        "--enable-runtime-cpu-detect"
-      } else {
-        "--disable-runtime-cpu-detect"
-      }
+    extraParams += "--enable-runtime-cpu-detect"
 
     val logFile = build.resolve("build.log")
 
@@ -238,16 +191,7 @@ abstract class BuildLibvpxTask : BuildNativeLibraryTask() {
     }
 
     val makeParams = mutableListOf<String>()
-    if (isWindowsHost() && abi == "armeabi-v7a") {
-      val converter = requireFile(input.resolve("build/make/ads2gas.pl"))
-      val script = build.resolve("ads2gas.sh")
-      // Keep shell escapes out of the Windows command line.
-      writeToFile(script) { sh ->
-        sh.append("set -o pipefail\n")
-        sh.append("tr -d '\\r' | perl \"${converter.toPosixPath()}\"\n")
-      }
-      makeParams += "ASM_CONVERSION=bash ${script.toPosixPath()}"
-    }
+
 
     runCommands(
       TAG,
@@ -265,3 +209,4 @@ abstract class BuildLibvpxTask : BuildNativeLibraryTask() {
     )
   }
 }
+// endregion

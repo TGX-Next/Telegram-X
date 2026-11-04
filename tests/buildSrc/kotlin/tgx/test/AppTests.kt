@@ -1,5 +1,7 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.test
 
+import Config
 import Keystore
 import Sdk
 import SdkVariant
@@ -23,8 +25,7 @@ import java.util.Properties
 
 private const val TEST_INSTRUMENTATION_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
 
-// Newer AndroidX test libraries require Android 7.0+
-private const val TEST_MIN_SDK_VERSION = 24
+private const val TEST_MIN_SDK_VERSION = Config.MIN_SDK_VERSION
 
 const val TEST_DEVICE = "emulator"
 
@@ -85,6 +86,7 @@ private fun TestOptions.addTestDevice() {
     apiLevel = 34 /*Android 14*/
     systemImageSource = "aosp"
     require64Bit = true
+    testedAbi = "arm64-v8a"
   }
 }
 
@@ -140,7 +142,7 @@ fun Project.configureTests() {
 fun Project.configureAppTests(
   vararg testedBuildTypes: String,
   inAppProcess: Boolean = false,
-  testedVariants: (SdkVariant) -> Boolean = { it.supportsSdk(TEST_MIN_SDK_VERSION) }
+  testedVariants: (SdkVariant) -> Boolean = { true }
 ) {
   if (isolated.rootProject.projectDirectory.file(OLD_SNAPSHOT_PATH).asFile.exists()) {
     fatal(
@@ -335,3 +337,4 @@ private fun Project.runTestsOnDeviceOneAtATime() {
     }
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 06/05/2015 at 13:32
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.loader;
 
 import android.app.ActivityManager;
@@ -60,13 +61,7 @@ public class ImageCache {
     protected int sizeOf (String key, Bitmap value) {
       if (value == null || value.isRecycled())
         return 1;
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
-        return value.getRowBytes() * value.getHeight();
-      } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-        return value.getByteCount();
-      } else {
-        return value.getAllocationByteCount();
-      }
+      return value.getAllocationByteCount();
     }
 
     @Override
@@ -96,11 +91,9 @@ public class ImageCache {
   }
 
   private int getMemcacheSize () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+    {
       int mib = Math.min(15, ((ActivityManager) AppContext.get().getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass() / 7);
       return (int) ByteUnit.MIB.toBytes(mib);
-    } else {
-      return (int) ByteUnit.MIB.toBytes(3);
     }
   }
 
@@ -237,3 +230,4 @@ public class ImageCache {
     }
   }
 }
+// endregion

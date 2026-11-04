@@ -1,17 +1,17 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.video.old;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 
 import com.googlecode.mp4parser.util.Matrix;
 
 import java.io.File;
 import java.util.ArrayList;
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+
 public class Mp4Movie {
   private Matrix matrix = Matrix.ROTATE_0;
   private ArrayList<Track> tracks = new ArrayList<>();
@@ -73,4 +73,4 @@ public class Mp4Movie {
     return tracks.size() - 1;
   }
 }
-
+// endregion

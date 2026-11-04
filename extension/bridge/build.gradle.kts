@@ -1,5 +1,4 @@
-import tgx.gradle.flavorImplementation
-
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 plugins {
   id("java-toolchain-convention")
   id(libs.plugins.android.library.get().pluginId)
@@ -7,11 +6,7 @@ plugins {
 }
 
 dependencies {
-  flavorImplementation(
-    libs.androidx.core.ktx.legacy,
-    libs.androidx.core.ktx.lollipop,
-    libs.androidx.core.ktx.latest
-  )
+  implementation(libs.androidx.core.ktx.latest)
   api(libs.kotlinx.coroutines.core)
   implementation(project(":tdlib"))
 }
@@ -19,3 +14,4 @@ dependencies {
 android {
   namespace = "tgx.bridge"
 }
+// endregion

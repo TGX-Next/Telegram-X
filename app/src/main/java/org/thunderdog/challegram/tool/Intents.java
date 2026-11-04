@@ -12,6 +12,7 @@
  *
  * File created on 03/05/2015 at 21:42
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.app.Activity;
@@ -32,7 +33,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
@@ -117,7 +117,7 @@ public class Intents {
   public static final String ACTION_PLAYBACK_PAUSE = PACKAGE_NAME + ".ACTION_PLAY_PAUSE";
   public static final String CHANNEL_ID_PLAYBACK = "playback";
 
-  @RequiresApi(Build.VERSION_CODES.O)
+
   public static String newSimpleChannel (String channelId, @StringRes int channelName) {
     NotificationManager m = (NotificationManager) AppContext.get().getSystemService(Context.NOTIFICATION_SERVICE);
     if (m != null) {
@@ -324,28 +324,11 @@ public class Intents {
   private static @Nullable ArrayList<Uri> openedFiles;
 
   private static void revokeFileReadPermission (Uri uri) {
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-      try {
-        AppContext.get().revokeUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-      } catch (Throwable e) {
-        Log.e("Cannot revokeUriPermission", e);
-      }
-    }
+
   }
 
   public static void revokeFileReadPermissions () {
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-      synchronized (Intents.class) {
-        if (openedFiles != null) {
-          while (!openedFiles.isEmpty()) {
-            int index = openedFiles.size() - 1;
-            Uri uri = openedFiles.get(index);
-            revokeFileReadPermission(uri);
-            openedFiles.remove(index);
-          }
-        }
-      }
-    }
+
   }
 
   public static boolean openFile (final BaseActivity context, File file, @Nullable String mimeType) {
@@ -376,7 +359,7 @@ public class Intents {
     try {
       Intent intent;
 
-      boolean isApk = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && StringUtils.equalsOrBothEmpty(mimeType, "application/vnd.android.package-archive");
+      boolean isApk = (StringUtils.equalsOrBothEmpty(mimeType, "application/vnd.android.package-archive"));
       if (isApk) {
         intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
       } else {
@@ -393,21 +376,7 @@ public class Intents {
       // Workaround for Android bug.
       // grantUriPermission also needed for KITKAT,
       // see https://code.google.com/p/android/issues/detail?id=76683
-      if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-        List<ResolveInfo> resInfoList = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        for (ResolveInfo resolveInfo : resInfoList) {
-          String packageName = resolveInfo.activityInfo.packageName;
-          AppContext.get().grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-        synchronized (Intents.class) {
-          if (openedFiles == null) {
-            openedFiles = new ArrayList<>();
-          }
-          if (!openedFiles.contains(uri)) {
-            openedFiles.add(uri);
-          }
-        }
-      }
+
 
       if (intent.resolveActivity(pm) != null) {
         UI.startActivity(intent);
@@ -418,14 +387,7 @@ public class Intents {
       UI.showToast(t.toString(), Toast.LENGTH_LONG);
     }
 
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-      synchronized (Intents.class) {
-        revokeFileReadPermission(uri);
-        if (openedFiles != null) {
-          openedFiles.remove(uri);
-        }
-      }
-    }
+
 
     Log.e("ACTION_VIEW failed. Mime: %s, Uri:\n%s", mimeType, uri.toString());
 
@@ -744,7 +706,7 @@ public class Intents {
     }
     try {
       String scheme = uri.getScheme() != null ? uri.getScheme().toLowerCase(Locale.ROOT) : "";
-      if (Config.IN_APP_BROWSER_AVAILABLE && (ignoreSetting || org.thunderdog.challegram.unsorted.Settings.instance().useInAppBrowser()) && !scheme.equals("tel")) {
+      if (((ignoreSetting || org.thunderdog.challegram.unsorted.Settings.instance().useInAppBrowser())) && !scheme.equals("tel")) {
         Intent share = new Intent(UI.getContext(), TGShareBroadcastReceiver.class);
         share.setAction(Intent.ACTION_SEND);
 
@@ -773,13 +735,7 @@ public class Intents {
   }
 
   public static int mutabilityFlags (boolean isMutable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      return isMutable ? PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT : PendingIntent.FLAG_IMMUTABLE;
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return isMutable ? PendingIntent.FLAG_UPDATE_CURRENT : PendingIntent.FLAG_IMMUTABLE;
-    } else {
-      return isMutable ? PendingIntent.FLAG_UPDATE_CURRENT : 0;
-    }
+    return isMutable ? PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT : PendingIntent.FLAG_IMMUTABLE;
   }
 
   /**
@@ -806,3 +762,4 @@ public class Intents {
     return packagesSupportingCustomTabs;
   }
 }
+// endregion

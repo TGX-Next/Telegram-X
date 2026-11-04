@@ -12,6 +12,7 @@
  *
  * File created on 28/03/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.voip;
 
 import android.content.Context;
@@ -198,7 +199,7 @@ public class VoIP {
   }
 
   private static void validateModifiedCallServer (TdApi.CallServer server) {
-    if (BuildConfig.CALLS_AVAILABLE && server.type.getConstructor() == TdApi.CallServerTypeTelegramReflector.CONSTRUCTOR) {
+    if ((server.type.getConstructor() == TdApi.CallServerTypeTelegramReflector.CONSTRUCTOR)) {
       TdApi.CallServerTypeTelegramReflector telegramReflector = (TdApi.CallServerTypeTelegramReflector) server.type;
       String myHex = N.toHexString(telegramReflector.peerTag);
       String validHex = toHexString(telegramReflector.peerTag);
@@ -307,11 +308,7 @@ public class VoIP {
 
   public static String[] getAvailableVersions (boolean allowFilter) {
     String[] tgCallsVersions;
-    if (BuildConfig.CALLS_AVAILABLE) {
-      tgCallsVersions = N.getTgCallsVersions();
-    } else {
-      tgCallsVersions = new String[0];
-    }
+    tgCallsVersions = N.getTgCallsVersions();
 
     Set<String> versions = new LinkedHashSet<>();
     Set<String> restrictedTgCallsVersions = new LinkedHashSet<>() {{
@@ -342,7 +339,7 @@ public class VoIP {
 
   private static int getNativeBufferSize (Context context) {
     AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER) != null) {
+    if ((am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER) != null)) {
       int outFramesPerBuffer = StringUtils.parseInt(am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER));
       if (outFramesPerBuffer != 0) {
         return outFramesPerBuffer;
@@ -369,11 +366,7 @@ public class VoIP {
     boolean isMicDisabled
   ) throws IllegalArgumentException {
     final String[] tgCallsVersions;
-    if (BuildConfig.CALLS_AVAILABLE) {
-      tgCallsVersions = N.getTgCallsVersions();
-    } else {
-      tgCallsVersions = new String[0];
-    }
+    tgCallsVersions = N.getTgCallsVersions();
 
     final VoIPLogs.Pair logFiles = VoIPLogs.getNewFile(true);
     tdlib.storeCallLogInformation(call, logFiles);
@@ -456,3 +449,4 @@ public class VoIP {
     return null;
   }
 }
+// endregion

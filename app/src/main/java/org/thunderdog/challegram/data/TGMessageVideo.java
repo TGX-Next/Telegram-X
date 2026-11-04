@@ -12,6 +12,7 @@
  *
  * File created on 27/08/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.data;
 
 import android.graphics.Canvas;
@@ -281,17 +282,12 @@ public class TGMessageVideo extends TGMessage implements FileProgressComponent.S
 
   @Override
   public boolean onClick (FileProgressComponent context, View view, TdApi.File file, long messageId) {
-    if (Config.ROUND_VIDEOS_PLAYBACK_SUPPORTED) {
-      if (view.getParent() instanceof MessageViewGroup) {
-        if (TD.isSelfDestructTypeImmediately(getMessage())) {
-          DisposableMediaViewController.openMediaOrShowTooltip(view, this, (targetView, outRect) -> fileProgress.toRect(outRect));
-        } else {
-          tdlib.context().player().playPauseMessage(tdlib, msg, manager);
-        }
+    if (view.getParent() instanceof MessageViewGroup) {
+      if (TD.isSelfDestructTypeImmediately(getMessage())) {
+        DisposableMediaViewController.openMediaOrShowTooltip(view, this, (targetView, outRect) -> fileProgress.toRect(outRect));
+      } else {
+        tdlib.context().player().playPauseMessage(tdlib, msg, manager);
       }
-    } else {
-      U.openFile(manager.controller(), "video.mp4", new File(file.local.path), "video/mp4", 0);
-      readContent();
     }
     return true;
   }
@@ -629,3 +625,4 @@ public class TGMessageVideo extends TGMessage implements FileProgressComponent.S
     fileProgress.notifyInvalidateTargetsChanged();
   }
 }
+// endregion

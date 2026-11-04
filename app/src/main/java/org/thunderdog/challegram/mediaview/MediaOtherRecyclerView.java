@@ -12,6 +12,7 @@
  *
  * File created on 10/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.mediaview;
 
 import android.content.Context;
@@ -33,11 +34,11 @@ public class MediaOtherRecyclerView extends RecyclerView {
     super(context);
   }
 
-  private Path path = null;//Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? new Path() : null;
+  private Path path = null;
   private float factor;
 
   public void setFactor (float factor) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if ((path != null)) {
       if (this.factor != factor) {
         this.factor = factor;
         layoutPath();
@@ -81,7 +82,7 @@ public class MediaOtherRecyclerView extends RecyclerView {
   @Override
   protected void onMeasure (int widthSpec, int heightSpec) {
     super.onMeasure(widthSpec, heightSpec);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if ((path != null)) {
       layoutPath();
     }
   }
@@ -98,3 +99,4 @@ public class MediaOtherRecyclerView extends RecyclerView {
     }
   }
 }
+// endregion

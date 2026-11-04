@@ -12,6 +12,7 @@
  *
  * File created on 02/10/2015 at 22:12
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.core;
 
 import android.os.Build;
@@ -20,7 +21,6 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.os.CancellationSignal;
@@ -36,9 +36,9 @@ import me.vkryl.core.BitwiseUtils;
 import me.vkryl.core.StringUtils;
 import me.vkryl.core.lambda.CancellableRunnable;
 
-@RequiresApi(Build.VERSION_CODES.M)
+
 public class BiometricAuthentication {
-  public static final boolean ONLY_FINGERPRINT = Build.VERSION.SDK_INT < Build.VERSION_CODES.R;
+  public static final boolean ONLY_FINGERPRINT = false;
 
   public interface Callback {
     void onAuthenticated (BiometricPrompt.AuthenticationResult result, boolean strong);
@@ -46,11 +46,7 @@ public class BiometricAuthentication {
   }
 
   private static @Nullable BiometricManager getManager () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return BiometricManager.from(AppContext.get());
-    } else {
-      return null;
-    }
+    return BiometricManager.from(AppContext.get());
   }
 
   @Retention(RetentionPolicy.SOURCE)
@@ -199,3 +195,4 @@ public class BiometricAuthentication {
     }
   }
 }
+// endregion

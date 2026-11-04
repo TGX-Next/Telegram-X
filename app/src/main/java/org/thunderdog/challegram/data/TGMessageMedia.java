@@ -12,6 +12,7 @@
  *
  * File created on 03/05/2015 at 10:56
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.data;
 
 import android.graphics.Canvas;
@@ -592,21 +593,13 @@ public class TGMessageMedia extends TGMessage {
       int pTimerRight, pTimerLeft;
 
       int offset = Screen.dp(4f);
-      if (true || isOutgoing() || useBubbles()) {
-        pTimerLeft = mediaWrapper.getCellLeft() + offset;
-        if (useBubbles()) {
-          pTimerLeft += offset + Screen.dp(2f);
-        } else {
-          pTimerLeft += Screen.dp(4f);
-        }
-        pTimerRight = pTimerLeft + timerWidth + offset;
+      pTimerLeft = mediaWrapper.getCellLeft() + offset;
+      if (useBubbles()) {
+        pTimerLeft += offset + Screen.dp(2f);
       } else {
-        pTimerRight = mediaWrapper.getCellRight() - offset;
-        if (useBubbles()) {
-          pTimerRight -= offset + Screen.dp(2f);
-        }
-        pTimerLeft = pTimerRight - timerWidth - Screen.dp(4f);
+        pTimerLeft += Screen.dp(4f);
       }
+      pTimerRight = pTimerLeft + timerWidth + offset;
       int pTimerTop = startY + mediaWrapper.getCellHeight() - Screen.dp(4f) - Screen.dp(20f) - Screen.dp(4f);
       if (useBubbles()) {
         pTimerTop -= offset;
@@ -988,3 +981,4 @@ public class TGMessageMedia extends TGMessage {
     return updated;
   }
 }
+// endregion

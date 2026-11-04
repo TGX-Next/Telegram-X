@@ -12,6 +12,7 @@
  *
  * File created on 25/09/2015 at 14:40
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.v;
 
 import android.content.Context;
@@ -95,7 +96,7 @@ public class MessagesRecyclerView extends RecyclerView implements FactorAnimator
   private MessagesItemDecoration itemDecoration;
 
   private void init () {
-    setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? OVER_SCROLL_IF_CONTENT_SCROLLS : OVER_SCROLL_NEVER);
+    setOverScrollMode((OVER_SCROLL_IF_CONTENT_SCROLLS));
     itemAnimator = new CustomItemAnimator(AnimatorUtils.DECELERATE_INTERPOLATOR, ITEM_ANIMATOR_DURATION);
     itemAnimator.setSupportsChangeAnimations(false);
     setItemAnimator(null);
@@ -451,3 +452,4 @@ public class MessagesRecyclerView extends RecyclerView implements FactorAnimator
     }
   }
 }
+// endregion

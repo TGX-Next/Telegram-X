@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.test
 
 import org.gradle.api.DefaultTask
@@ -455,19 +456,14 @@ private class TestToolsReport(
     heading("### Expectations")
     expect("checkMinSdk checked variants", reports.isNotEmpty())
     expect(
-      "checkMinSdk checked legacy flavor of the app",
-      root.resolve("app/build/reports/minSdk/legacyDebug.txt").exists()
+      "checkMinSdk checked the Android 13+ app flavor",
+      root.resolve("app/build/reports/minSdk/latestDebug.txt").exists()
     )
     expect(
-      "checkMinSdk passes, flavors for Android 5.0+ only list classes added after minSdk",
+      "checkMinSdk passes and reports classes added after API 33",
       exitCode("minsdk") == 0
     )
-    expect(
-      "No declarations and imports in legacy flavor use classes added after minSdk",
-      exitCode("minsdk-legacy") == 0
-    )
-    // Lists of variants for Android 5.0+ don't fail checks and are only counted
-    val failedReports = (log("minsdk") + log("minsdk-legacy")).mapNotNull { line ->
+    val failedReports = log("minsdk").mapNotNull { line ->
       FAILED_MIN_SDK_CHECK.matchEntire(line)?.destructured?.let { (module, variant) ->
         val directory = module.removePrefix(":").replace(':', '/')
         val name = variant.replaceFirstChar(Char::lowercaseChar)
@@ -634,3 +630,4 @@ private fun mediaType(file: File): String = when {
 private fun File.readLinesOrEmpty(): List<String> = if (isFile) readLines() else emptyList()
 
 private fun File.readTextOrEmpty(): String = if (isFile) readText() else ""
+// endregion

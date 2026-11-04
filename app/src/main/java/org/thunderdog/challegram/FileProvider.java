@@ -12,6 +12,7 @@
  *
  * File created on 20/04/2019
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram;
 
 import android.content.ContentProvider;
@@ -350,8 +351,7 @@ public class FileProvider extends ContentProvider {
           if (externalCacheDirs.length > 0) {
             target = externalCacheDirs[0];
           }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-          && TAG_EXTERNAL_MEDIA.equals(tag)) {
+        } else if ((TAG_EXTERNAL_MEDIA.equals(tag))) {
           File[] externalMediaDirs = context.getExternalMediaDirs();
           if (externalMediaDirs.length > 0) {
             target = externalMediaDirs[0];
@@ -687,3 +687,4 @@ public class FileProvider extends ContentProvider {
     return result;
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 04/05/2019
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.emoji;
 
 import android.graphics.Bitmap;
@@ -101,7 +102,7 @@ class EmojiBitmaps {
   }
 
   private static Bitmap loadAsset (String filePath, boolean isAsset, int sampleSize) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && Config.MODERN_IMAGE_DECODER_ENABLED) {
+    if ((Config.MODERN_IMAGE_DECODER_ENABLED)) {
       try {
         android.graphics.ImageDecoder.Source source;
         if (isAsset) {
@@ -211,3 +212,4 @@ class EmojiBitmaps {
     });
   }
 }
+// endregion

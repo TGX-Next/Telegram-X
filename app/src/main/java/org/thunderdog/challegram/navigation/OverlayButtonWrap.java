@@ -12,6 +12,7 @@
  *
  * File created on 02/02/2016 at 18:42
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.content.Context;
@@ -240,9 +241,7 @@ public class OverlayButtonWrap extends FrameLayoutFix implements View.OnClickLis
     }
     // text.setTranslationY(margin * (1f - factor));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      text.setTranslationZ(Screen.dp(2f));
-    }
+    text.setTranslationZ(Screen.dp(2f));
 
     addView(text, index * 2 + 1);
   }
@@ -524,3 +523,4 @@ public class OverlayButtonWrap extends FrameLayoutFix implements View.OnClickLis
     boolean onOverlayButtonClick (int id, View view);
   }
 }
+// endregion

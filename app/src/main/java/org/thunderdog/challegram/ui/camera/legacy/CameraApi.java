@@ -12,6 +12,7 @@
  *
  * File created on 18/09/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui.camera.legacy;
 
 import android.content.Context;
@@ -488,7 +489,7 @@ public abstract class CameraApi {
 
     return 0;
   }
-  
+
   protected static int comparePreviewSizes (int w1, int h1, int w2, int h2, long desiredSquare, float desiredRatio) {
     final long s1 = (long) w1 * h1;
     final long s2 = (long) w2 * h2;
@@ -837,3 +838,4 @@ public abstract class CameraApi {
     roundRecorder.finishCapture(key, saveResult);
   }
 }
+// endregion

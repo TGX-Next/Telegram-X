@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -233,7 +234,7 @@ public class ChatLinksController extends RecyclerViewController<ChatLinksControl
               } else if (id == R.id.btn_editRights) {
                 openRightsScreen();
               }
-              
+
               return true;
             });
 
@@ -275,7 +276,7 @@ public class ChatLinksController extends RecyclerViewController<ChatLinksControl
     };
 
     requestLinkRebind();
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setAdapter(this.adapter);
 
     TGLegacyManager.instance().addEmojiListener(this);
@@ -832,3 +833,4 @@ public class ChatLinksController extends RecyclerViewController<ChatLinksControl
     return inviteLinks == null;
   }
 }
+// endregion

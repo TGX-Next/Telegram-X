@@ -12,6 +12,7 @@
  *
  * File created on 19/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.attach;
 
 import android.Manifest;
@@ -124,14 +125,7 @@ public class MediaBottomGalleryController extends MediaBottomBaseController<Medi
     if (id == R.id.menu_btn_clear) {
       clearSearchInput();
     } else if (id == R.id.menu_btn_search) {
-      if (true) {
-        mediaLayout.chooseInlineBot(tdlib.getPhotoSearchBotUsername());
-      } else {
-        if (galleryShown || !hasGalleryAccess) {
-          mediaLayout.getHeaderView().openSearchMode();
-          headerView = mediaLayout.getHeaderView();
-        }
-      }
+      mediaLayout.chooseInlineBot(tdlib.getPhotoSearchBotUsername());
     } else if (id == R.id.menu_btn_more) {
       mediaLayout.openGallery(false);
     }
@@ -466,11 +460,9 @@ public class MediaBottomGalleryController extends MediaBottomBaseController<Medi
 
   @Override
   public void onCameraRequested () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (context().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-        context().requestCameraPermission();
-        return;
-      }
+    if (context().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+      context().requestCameraPermission();
+      return;
     }
     mediaLayout.openCamera();
   }
@@ -972,3 +964,4 @@ public class MediaBottomGalleryController extends MediaBottomBaseController<Medi
   }
 
 }
+// endregion

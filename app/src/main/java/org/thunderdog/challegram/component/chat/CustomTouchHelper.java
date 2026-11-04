@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 
 package org.thunderdog.challegram.component.chat;
 
@@ -1240,26 +1241,7 @@ public class CustomTouchHelper extends RecyclerView.ItemDecoration
   }
 
   private void addChildDrawingOrderCallback() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return;// we use elevation on Lollipop
-    }
-    if (mChildDrawingOrderCallback == null) {
-      mChildDrawingOrderCallback = (childCount, i) -> {
-        if (mOverdrawChild == null) {
-          return i;
-        }
-        int childPosition = mOverdrawChildPosition;
-        if (childPosition == -1) {
-          childPosition = mRecyclerView.indexOfChild(mOverdrawChild);
-          mOverdrawChildPosition = childPosition;
-        }
-        if (i == childCount - 1) {
-          return childPosition;
-        }
-        return i < childPosition ? i : i + 1;
-      };
-    }
-    mRecyclerView.setChildDrawingOrderCallback(mChildDrawingOrderCallback);
+    return;// we use elevation on Lollipop
   }
 
   private void removeChildDrawingOrderCallbackIfNecessary(View view) {
@@ -1362,15 +1344,7 @@ public class CustomTouchHelper extends RecyclerView.ItemDecoration
 
     private int mCachedMaxScrollSpeed = -1;
 
-    /*static {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        sUICallback = new ItemTouchUIUtilImpl.Lollipop();
-      } else if (Build.VERSION.SDK_INT >= 11) {
-        sUICallback = new ItemTouchUIUtilImpl.Honeycomb();
-      } else {
-        sUICallback = new ItemTouchUIUtilImpl.Gingerbread();
-      }
-    }*/
+
 
     /**
      * Returns the {@link ItemTouchUIUtil} that is used by the {@link Callback} class for visual
@@ -2337,3 +2311,4 @@ public class CustomTouchHelper extends RecyclerView.ItemDecoration
     }
   }
 }
+// endregion

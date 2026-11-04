@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
@@ -36,9 +37,7 @@ public class CounterBadgeView extends View {
     @Override
     public void onCounterAppearanceChanged (Counter counter, boolean sizeChanged) {
       if (sizeChanged) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          invalidateOutline();
-        }
+        invalidateOutline();
       }
       invalidate();
     }
@@ -71,3 +70,4 @@ public class CounterBadgeView extends View {
     counter.draw(c, x, y, Gravity.CENTER_HORIZONTAL, 1f);
   }
 }
+// endregion

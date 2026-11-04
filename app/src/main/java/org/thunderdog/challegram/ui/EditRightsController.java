@@ -12,6 +12,7 @@
  *
  * File created on 19/08/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -916,7 +917,7 @@ public class EditRightsController extends EditBaseController<EditRightsControlle
     }
 
     setDoneInProgress(true);
-    
+
     tdlib.ui().requestTransferOwnership(this, text, new TdlibUi.OwnershipTransferListener() {
       @Override
       public void onOwnershipTransferAbilityChecked (TdApi.Object result) {
@@ -1016,7 +1017,7 @@ public class EditRightsController extends EditBaseController<EditRightsControlle
         chat = new TGFoundChat(tdlib, null, Td.getSenderId(args.senderId), true);
       }
       chat.setForcedSubtitle(args.member != null && TD.isCreator(args.member.status) ? Lang.getString(R.string.ChannelOwner) : null);
-      
+
       items.add(new ListItem(ListItem.TYPE_CHAT_BETTER).setData(chat));
       items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     }
@@ -1293,7 +1294,7 @@ public class EditRightsController extends EditBaseController<EditRightsControlle
     }
     throw new IllegalArgumentException(Integer.toString(id));
   }
-  
+
   private static @RightId int rightIdForIdRes (@IdRes int id) {
     if (id == R.id.right_readMessages) {
       return RightId.READ_MESSAGES;
@@ -1934,3 +1935,4 @@ public class EditRightsController extends EditBaseController<EditRightsControlle
     }
   }
 }
+// endregion

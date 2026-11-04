@@ -12,6 +12,7 @@
  *
  * File created on 29/08/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.player;
 
 import android.content.Context;
@@ -33,7 +34,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.media3.common.C;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
@@ -80,7 +80,7 @@ import me.vkryl.android.widget.FrameLayoutFix;
 import me.vkryl.core.MathUtils;
 import tgx.td.Td;
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+
 public class RoundVideoController extends BasePlaybackController implements
   BaseActivity.ActivityListener,
   TdlibFilesManager.FileListener,
@@ -318,7 +318,7 @@ public class RoundVideoController extends BasePlaybackController implements
 
   private boolean isRendered;
 
-  public static final boolean USE_SURFACE = false; // Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+  public static final boolean USE_SURFACE = false;
 
   private void preparePlayerIfNeeded () { // Prepare off-screen texture
     if (texturePrepared) {
@@ -432,10 +432,8 @@ public class RoundVideoController extends BasePlaybackController implements
   }
 
   private static void setCircleShadow (View view) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      view.setElevation(Screen.dp(1f));
-      view.setTranslationZ(Screen.dp(1f));
-    }
+    view.setElevation(Screen.dp(1f));
+    view.setTranslationZ(Screen.dp(1f));
   }
 
   private static final float SWITCH_SCALE = .1f;
@@ -1884,3 +1882,4 @@ public class RoundVideoController extends BasePlaybackController implements
     }
   }
 }
+// endregion

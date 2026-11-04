@@ -12,6 +12,7 @@
  *
  * File created on 25/04/2024 (PR #563)
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util.text.bidi;
 
 import android.graphics.Paint;
@@ -47,11 +48,11 @@ public class BiDiUtils {
   public static int getLevel (@BiDiEntity int flags) {
     return (flags & 0xFF);
   }
-  
+
   public static boolean isRtl (@BiDiEntity int flags) {
     return BitwiseUtils.hasFlag(flags, IS_RTL_FLAG);
   }
-  
+
   public static boolean isParagraphRtl (@BiDiEntity int flags) {
     return BitwiseUtils.hasFlag(flags, IS_PARAGRAPH_RTL_FLAG);
   }
@@ -65,7 +66,7 @@ public class BiDiUtils {
   }
 
   public static boolean requiresBidi (CharSequence text, int start, int end) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    {
       // Source: android.icu.text.Bidi.requiresBidi
       // but uses CharSequence instead of char[],
       // and uses code point instead of char.
@@ -89,26 +90,11 @@ public class BiDiUtils {
         i += Character.charCount(codePoint);
       }
       return false;
-    } else {    // todo: test difference between UCharacter and Character
-      final int RTLMask = (1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT |
-        1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC |
-        1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING |
-        1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE |
-        1 << Character.DIRECTIONALITY_ARABIC_NUMBER);
-
-      for (int i = start; i < end; ) {
-        int codePoint = Character.codePointAt(text, i);
-        if (((1 << Character.getDirectionality(codePoint)) & RTLMask) != 0) {
-          return true;
-        }
-        i += Character.charCount(codePoint);
-      }
-      return false;
     }
   }
 
   public static boolean requiresBidi (char[] text, int start, int end) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    {
       // Source: android.icu.text.Bidi.requiresBidi
 
       final int RTLMask = (1 << android.icu.lang.UCharacter.DIRECTIONALITY_RIGHT_TO_LEFT |
@@ -125,21 +111,7 @@ public class BiDiUtils {
         i += Character.charCount(codePoint);
       }
       return false;
-    } else {
-      final int RTLMask = (1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT |
-        1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC |
-        1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING |
-        1 << Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE |
-        1 << Character.DIRECTIONALITY_ARABIC_NUMBER);
-
-      for (int i = start; i < end; ++i) {
-        int codePoint = Character.codePointAt(text, i, end);
-        if (((1 << Character.getDirectionality(codePoint)) & RTLMask) != 0) {
-          return true;
-        }
-        i += Character.charCount(codePoint);
-      }
-      return false;
     }
   }
 }
+// endregion

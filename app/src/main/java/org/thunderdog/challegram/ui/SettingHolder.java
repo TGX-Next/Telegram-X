@@ -12,6 +12,7 @@
  *
  * File created on 18/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -1276,7 +1277,7 @@ public class SettingHolder extends RecyclerView.ViewHolder {
           }
         });
         ViewSupport.setThemedBackground(recyclerView, ColorId.filling, themeProvider);
-        recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+        recyclerView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
         recyclerView.setItemAnimator(new CustomItemAnimator(AnimatorUtils.DECELERATE_INTERPOLATOR, 180l));
         recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Screen.dp(95f)));
@@ -2309,9 +2310,7 @@ public class SettingHolder extends RecyclerView.ViewHolder {
             editText.setId(id);
             int imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI;
             if (id == R.id.color_default) {
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                editText.getEditText().setShowSoftInputOnFocus(false);
-              }
+              editText.getEditText().setShowSoftInputOnFocus(false);
               editText.setTextColorId(ColorId.textPlaceholder);
             } else if (id == R.id.color_hex) {
               editText.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -2782,3 +2781,4 @@ public class SettingHolder extends RecyclerView.ViewHolder {
     return textView;
   }
 }
+// endregion

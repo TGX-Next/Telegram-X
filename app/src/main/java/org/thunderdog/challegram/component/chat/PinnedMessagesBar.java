@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
@@ -112,7 +113,7 @@ public class PinnedMessagesBar extends ViewGroup implements Destroyable, Message
 
     recyclerView = (CustomRecyclerView) Views.inflate(context, R.layout.recycler_custom, null);
     recyclerView.setItemAnimator(itemAnimator);
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? RecyclerView.OVER_SCROLL_IF_CONTENT_SCROLLS : RecyclerView.OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((RecyclerView.OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setVerticalScrollBarEnabled(false);
     Views.setScrollBarPosition(recyclerView);
     recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, reverseLayout));
@@ -893,3 +894,4 @@ public class PinnedMessagesBar extends ViewGroup implements Destroyable, Message
     }
   }
 }
+// endregion

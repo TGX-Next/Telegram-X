@@ -12,6 +12,7 @@
  *
  * File created on 16/10/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -770,11 +771,7 @@ public class VideoTimelineView extends View implements Destroyable, FactorAnimat
     @SuppressWarnings("deprecation")
     private void invalidate () {
       if (left != 0 || top != 0 || right != 0 || bottom != 0) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          parent.invalidate();
-        } else {
-          parent.invalidate(left, top, right, bottom);
-        }
+        parent.invalidate();
       }
     }
 
@@ -861,3 +858,4 @@ public class VideoTimelineView extends View implements Destroyable, FactorAnimat
     }
   }
 }
+// endregion

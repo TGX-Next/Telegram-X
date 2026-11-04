@@ -12,6 +12,7 @@
  *
  * File created on 21/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.attach;
 
 import android.content.Context;
@@ -22,7 +23,6 @@ import android.view.TextureView;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.thunderdog.challegram.R;
@@ -44,12 +44,10 @@ public class MediaGalleryCameraView extends FrameLayoutFix implements Destroyabl
     params.topMargin = Screen.dp(6f);
     params.rightMargin = Screen.dp(6f);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      textureView = new TextureView(context);
-      textureView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-      textureView.setSurfaceTextureListener(this);
-      addView(textureView);
-    }
+    textureView = new TextureView(context);
+    textureView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    textureView.setSurfaceTextureListener(this);
+    addView(textureView);
 
     ImageView imageView = new ImageView(context);
     imageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -61,7 +59,7 @@ public class MediaGalleryCameraView extends FrameLayoutFix implements Destroyabl
 
   // Texture stuff
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private void openCamera () {
 
   }
@@ -107,3 +105,4 @@ public class MediaGalleryCameraView extends FrameLayoutFix implements Destroyabl
 
   }
 }
+// endregion

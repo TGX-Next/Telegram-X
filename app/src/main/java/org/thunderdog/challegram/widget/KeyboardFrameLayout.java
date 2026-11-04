@@ -12,6 +12,7 @@
  *
  * File created on 12/06/2024
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 
 package org.thunderdog.challegram.widget;
 
@@ -117,7 +118,7 @@ public class KeyboardFrameLayout extends FrameLayoutFix implements ViewTreeObser
 
   public void onKeyboardStateChanged (boolean visible) {
     if (keyboardState == STATE_AWAITING_SHOW && visible) {
-      framesDropped = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? 45 : 55;
+      framesDropped = (45);
     } else if (keyboardState == STATE_AWAITING_HIDE && !visible) {
       keyboardState = STATE_NONE;
     }
@@ -261,3 +262,4 @@ public class KeyboardFrameLayout extends FrameLayoutFix implements ViewTreeObser
     }
   }
 }
+// endregion

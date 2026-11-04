@@ -12,6 +12,7 @@
  *
  * File created on 18/08/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget.emoji.header;
 
 import android.annotation.SuppressLint;
@@ -84,7 +85,7 @@ public class EmojiHeaderView extends FrameLayout implements FactorAnimator.Targe
       }
     };
     recyclerView.setItemAnimator(new CustomItemAnimator(AnimatorUtils.DECELERATE_INTERPOLATOR, 180));
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? OVER_SCROLL_IF_CONTENT_SCROLLS : OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setLayoutManager(manager);
     recyclerView.setPadding(Screen.dp(DEFAULT_PADDING), 0, Screen.dp(DEFAULT_PADDING + 44), 0);
     recyclerView.setClipToPadding(false);
@@ -613,3 +614,4 @@ public class EmojiHeaderView extends FrameLayout implements FactorAnimator.Targe
     }
   }
 }
+// endregion

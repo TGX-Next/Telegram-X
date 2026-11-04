@@ -12,6 +12,7 @@
  *
  * File created on 04/03/2016 at 03:11
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.Manifest;
@@ -407,11 +408,10 @@ public class RaiseHelper implements SensorEventListener {
   }
 
   private boolean hasPermissions () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    {
       Context context = UI.getContext();
       return context != null && context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
-    return true;
   }
 
   private boolean inRaiseMode;
@@ -495,3 +495,4 @@ public class RaiseHelper implements SensorEventListener {
     return result;
   }
 }
+// endregion

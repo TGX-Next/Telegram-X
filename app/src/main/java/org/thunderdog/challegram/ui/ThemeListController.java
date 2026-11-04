@@ -12,6 +12,7 @@
  *
  * File created on 10/11/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.ClipData;
@@ -2003,7 +2004,7 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
     }
 
     int count;
-    
+
     int totalCount = 0;
 
     // MAIN
@@ -2019,7 +2020,7 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
       ColorId.fillingPositiveContent,
     };
     totalCount += addGroup(items, R.id.theme_category_content,0, 0, mainColorIds, false, searchQuery, true, sortedIds);
-    
+
     // TEXT
 
     int[] textColorIds = new int[] {
@@ -2036,7 +2037,7 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
     totalCount += addGroup(items, R.id.theme_category_content, R.string.ThemeSectionText, 0, textColorIds, false, searchQuery, true, sortedIds);
 
     // BACKGROUND
-    
+
     int[] backgroundTextColorIds = new int[] {
       ColorId.background,
       ColorId.background_text,
@@ -2133,7 +2134,7 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
     count += addGroup(items, R.id.theme_category_navigation, count == 0 ? R.string.ThemeCategoryNavigation : 0, 0, passcodeColorIds, false, searchQuery, true, sortedIds);
     count += addGroup(items, R.id.theme_category_navigation, count == 0 ? R.string.ThemeCategoryNavigation : 0, 0, notificationColorIds, false, searchQuery, true, sortedIds);
     totalCount += count;
-    
+
     // CONTROLS
 
     int[] progressColorIds = new int[] {
@@ -2474,14 +2475,14 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
       ColorId.avatarPink_big,
       ColorId.namePink,
     };
-    
+
     count = 0;
     count += addGroup(items, R.id.theme_category_colors, 0, 0, placeholderColorIds, false, searchQuery, true, sortedIds);
     // count += addGroup(items, R.id.theme_category_colors, count == 0 ? R.string.ThemeSectionUsers : 0, 0, nameColorIds, false, searchQuery, true, sortedIds);
     totalCount += count;
-    
+
     // MEDIA
-    
+
     int[] fileColorIds = new int[] {
       ColorId.file,
       ColorId.fileYellow,
@@ -2547,9 +2548,9 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
       ColorId.ivHeader
     };
     totalCount += addGroup(items, R.id.theme_category_iv, R.string.ThemeCategoryIV, 0, ivColorIds, false, searchQuery, true, sortedIds);
-    
+
     // THEME RADIOS
-    
+
     int[] themeColorIds = new int[] {
       ColorId.themeClassic,
       ColorId.themeBlue,
@@ -2565,9 +2566,9 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
       ColorId.themeWhiteBlack,
     };
     count = addGroup(items, R.id.theme_category_other, R.string.ThemeCategoryOther, R.string.ThemeSectionRadios_info, themeColorIds, false, searchQuery, true, sortedIds);
-    
+
     // Wallpaper overlays
-    
+
     int[] wallpaperColorIds = new int[] {
       ColorId.wp_cats,
       ColorId.wp_catsPink,
@@ -2643,7 +2644,7 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
 
     // <item type="id" name="([^"]+)" />
     // R.id.$1,
-    
+
     // UNSORTED
 
     if (sortedIds != null) {
@@ -3344,3 +3345,4 @@ public class ThemeListController extends RecyclerViewController<ThemeListControl
 
 
 }
+// endregion

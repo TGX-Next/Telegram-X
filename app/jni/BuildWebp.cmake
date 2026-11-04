@@ -1,3 +1,4 @@
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 # webp
 
 set(WEBP_DIR "${THIRDPARTY_DIR}/webp")
@@ -34,14 +35,10 @@ target_compile_definitions(webpdecoder_static PRIVATE
 target_link_libraries(webpdecoder_static
   cpufeatures
 )
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
-  target_compile_definitions(webpdecoder_static PRIVATE
-    HAVE_CPU_FEATURES_H
-  )
-endif()
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
   target_compile_options(webpdecoder_static PRIVATE
     -frename-registers
     -s
   )
 endif()
+# endregion

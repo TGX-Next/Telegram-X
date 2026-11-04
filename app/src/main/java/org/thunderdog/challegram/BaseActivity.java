@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 15:23
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram;
 
 import android.Manifest;
@@ -454,12 +455,11 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   public float windowRefreshRate () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    {
       Display display = getWindowManager().getDefaultDisplay();
       Display.Mode displayMode = display.getMode();
       return displayMode.getRefreshRate();
     }
-    return 60.0f;
   }
 
   private boolean isGestureNavigationEnabled;
@@ -482,9 +482,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
 
     UI.clearActivity(this);
     updateWindowContextTheme();
-    if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
-      this.isWindowLight = !Theme.isDark();
-    }
+    this.isWindowLight = !Theme.isDark();
     // UI.resetSizes();
     setActivityState(UI.State.RESUMED);
     TdlibManager.instance().watchDog().onActivityCreate(this);
@@ -514,11 +512,9 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
     gestureController = new NavigationGestureController(this, navigation, drawer);
 
     rootView = new BaseRootLayout(this);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      rootView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-    }
+    rootView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
     rootView.setKeyboardListener(this);
-    if (Config.USE_TRANSLUCENT_NAVIGATION && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+    if ((Config.USE_TRANSLUCENT_NAVIGATION)) {
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
     rootView.init(false);
@@ -548,11 +544,9 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
       setDarkness(darkness);
     }*/
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      statusBar = new NetworkStatusBarView(this);
-      statusBar.addThemeListeners(themeList);
-      rootView.addView(statusBar);
-    }
+    statusBar = new NetworkStatusBarView(this);
+    statusBar.addThemeListeners(themeList);
+    rootView.addView(statusBar);
 
     setContentView(rootView);
 
@@ -713,12 +707,10 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private static boolean patchAlertButton (View v, ThemeDelegate theme, @ColorId int colorId) {
     if (v == null)
       return false;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      Views.makeFakeBold(v);
-      if (v instanceof TextView) {
-        ((TextView) v).setTextColor(theme.getColor(colorId));
-        return true;
-      }
+    Views.makeFakeBold(v);
+    if (v instanceof TextView) {
+      ((TextView) v).setTextColor(theme.getColor(colorId));
+      return true;
     }
     return false;
   }
@@ -743,7 +735,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
     view = dialog.findViewById(android.R.id.message);
     if (view instanceof TextView)
       ((TextView) view).setTextColor(textColor);
-    
+
     view = Views.tryFindAndroidView(context, dialog, "alertTitle");
     Views.makeFakeBold(view);
     if (view instanceof TextView)
@@ -755,7 +747,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
       patchAlertButton(dialog.findViewById(android.R.id.button2), theme, ColorId.textNeutral);
     if (!patchAlertButton(dialog.getButton(DialogInterface.BUTTON_NEGATIVE), theme, ColorId.textNeutral))
       patchAlertButton(dialog.findViewById(android.R.id.button3), theme, ColorId.textNeutral);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       Drawable drawable = dialog.getWindow().getDecorView().getBackground();
       if (drawable != null) {
         drawable.setColorFilter(new PorterDuffColorFilter(theme.getColor(ColorId.overlayFilling), PorterDuff.Mode.SRC_IN));
@@ -823,10 +815,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   @Override
   public final boolean onKeyUp (int keyCode, KeyEvent event) {
     if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !backKeyDownReceived) {
-        getOnBackPressedDispatcher().onBackPressed();
-        return true;
-      }
+
       backKeyDownReceived = false;
     }
     boolean handled = false;
@@ -861,11 +850,9 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private float photoRevealFactor;
 
   public void setPhotoRevealFactor (float revealFactor) {
-    if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
-      if (this.photoRevealFactor != revealFactor) {
-        this.photoRevealFactor = revealFactor;
-        updateNavigationBarColor();
-      }
+    if (this.photoRevealFactor != revealFactor) {
+      this.photoRevealFactor = revealFactor;
+      updateNavigationBarColor();
     }
   }
 
@@ -878,8 +865,8 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   public void setWindowDecorSystemUiVisibility (int visibility, boolean remember) {
-    boolean lightNavigationBar = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Config.USE_CUSTOM_NAVIGATION_COLOR && !Theme.isDark() && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0;
-    boolean lightStatusBar = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Theme.needLightStatusBar();
+    boolean lightNavigationBar = (!Theme.isDark()) && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0;
+    boolean lightStatusBar = (Theme.needLightStatusBar());
     UI.setLightSystemBars(getWindow(), lightNavigationBar, lightStatusBar, visibility, true);
     if (this.isWindowLight != lightNavigationBar) {
       this.isWindowLight = lightNavigationBar;
@@ -938,7 +925,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private boolean isFullscreen, cutoutIgnored;
 
   private int computeUiVisibility () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isFullscreen) {
+    if ((isFullscreen)) {
       int uiVisibility = View.SYSTEM_UI_FLAG_LOW_PROFILE;
       if (hideNavigation) {
         uiVisibility |= View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
@@ -957,26 +944,24 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   private void setFullScreen (boolean isFullscreen) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (this.isFullscreen != isFullscreen) {
-        this.isFullscreen = isFullscreen;
-        this.hideNavigation = BitwiseUtils.hasFlag(fullScreenFlags, FULLSCREEN_FLAG_HIDE_NAVIGATION);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isFullscreen && (Config.CUTOUT_ENABLED || BitwiseUtils.hasFlag(fullScreenFlags, FULLSCREEN_FLAG_CAMERA))) {
-          cutoutIgnored = true;
-          Window w = getWindow();
-          WindowManager.LayoutParams params = w.getAttributes();
-          params.layoutInDisplayCutoutMode = isFullscreen ? WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES : WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
-          w.setAttributes(params);
-        }
-        setWindowFlags(isFullscreen ? WindowManager.LayoutParams.FLAG_FULLSCREEN : 0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        int uiVisibility = computeUiVisibility();
-        setWindowDecorSystemUiVisibility(uiVisibility, true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !isFullscreen && (Config.CUTOUT_ENABLED || cutoutIgnored)) {
-          Window w = getWindow();
-          WindowManager.LayoutParams params = w.getAttributes();
-          params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
-          w.setAttributes(params);
-        }
+    if (this.isFullscreen != isFullscreen) {
+      this.isFullscreen = isFullscreen;
+      this.hideNavigation = BitwiseUtils.hasFlag(fullScreenFlags, FULLSCREEN_FLAG_HIDE_NAVIGATION);
+      if ((isFullscreen) && (Config.CUTOUT_ENABLED || BitwiseUtils.hasFlag(fullScreenFlags, FULLSCREEN_FLAG_CAMERA))) {
+        cutoutIgnored = true;
+        Window w = getWindow();
+        WindowManager.LayoutParams params = w.getAttributes();
+        params.layoutInDisplayCutoutMode = isFullscreen ? WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES : WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+        w.setAttributes(params);
+      }
+      setWindowFlags(isFullscreen ? WindowManager.LayoutParams.FLAG_FULLSCREEN : 0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      int uiVisibility = computeUiVisibility();
+      setWindowDecorSystemUiVisibility(uiVisibility, true);
+      if ((!isFullscreen) && (Config.CUTOUT_ENABLED || cutoutIgnored)) {
+        Window w = getWindow();
+        WindowManager.LayoutParams params = w.getAttributes();
+        params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+        w.setAttributes(params);
       }
     }
   }
@@ -999,11 +984,9 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private boolean hideNavigation;
 
   private void setHideNavigation (boolean hideNavigation) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (this.hideNavigation != hideNavigation) {
-        this.hideNavigation = hideNavigation;
-        setWindowDecorSystemUiVisibility(computeUiVisibility(), true);
-      }
+    if (this.hideNavigation != hideNavigation) {
+      this.hideNavigation = hideNavigation;
+      setWindowDecorSystemUiVisibility(computeUiVisibility(), true);
     }
   }
 
@@ -1300,9 +1283,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
     int mode = configMode;
     if (mode == SYSTEM_NIGHT_MODE_UNSPECIFIED)
       mode = managerMode;
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && (mode == SYSTEM_NIGHT_MODE_UNSPECIFIED || (mode == SYSTEM_NIGHT_MODE_NO && isNight))) {
-      mode = isNight ? SYSTEM_NIGHT_MODE_YES : SYSTEM_NIGHT_MODE_NO;
-    }
+
     boolean changed = this.systemNightMode != mode;
     this.systemNightMode = mode;
     boolean needApply = Settings.instance().getNightMode() == Settings.NIGHT_MODE_SYSTEM && (changed || (mode != SYSTEM_NIGHT_MODE_UNSPECIFIED && ThemeManager.instance().isCurrentThemeDark() != (mode == SYSTEM_NIGHT_MODE_YES)));
@@ -1573,37 +1554,14 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
     mIsOrientationBlocked = blocked;
 
     if (blocked) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-      } else {
-        int rotation = getWindowManager().getDefaultDisplay().getRotation();
-        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE &&
-          (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)) {
-          requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else if (currentOrientation == Configuration.ORIENTATION_PORTRAIT &&
-          (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)) {
-          requestAndroidOrientationPortrait();
-        } else if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE &&
-          (rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_270)) {
-          requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-        } else {
-          if (currentOrientation == Configuration.ORIENTATION_PORTRAIT &&
-            (rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_270)) {
-            requestAndroidOrientationPortrait();
-          }
-        }
-      }
+      requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
     } else {
       requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
   }
 
   private void requestAndroidOrientationPortrait () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT);
-    } else {
-      requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    }
+    requestAndroidOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT);
   }
 
   private void requestAndroidOrientation (int orientation) {
@@ -1924,11 +1882,9 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
       public void onAnimationEnd (Animator animation) {
         isProgressAnimating = false;
         BaseActivity.this.progressAnimator = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          if (firstTime && progressWrap != null && progressWrap.getProgress() != null) {
-            progressWrap.getProgress().setVisibility(View.GONE);
-            progressWrap.getProgress().setVisibility(View.VISIBLE);
-          }
+        if (firstTime && progressWrap != null && progressWrap.getProgress() != null) {
+          progressWrap.getProgress().setVisibility(View.GONE);
+          progressWrap.getProgress().setVisibility(View.VISIBLE);
         }
       }
     });
@@ -2635,48 +2591,36 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   public static final int REQUEST_CUSTOM_NEW = 0x09;
 
   public void requestCameraPermission () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      requestPermissions(new String[] {Manifest.permission.CAMERA}, REQUEST_USE_CAMERA);
-    }
+    requestPermissions(new String[] {Manifest.permission.CAMERA}, REQUEST_USE_CAMERA);
   }
 
   public void requestFingerprintPermission () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      requestPermissions(new String[] {Manifest.permission.USE_FINGERPRINT}, REQUEST_USE_FINGERPRINT);
-    }
+    requestPermissions(new String[] {Manifest.permission.USE_FINGERPRINT}, REQUEST_USE_FINGERPRINT);
   }
 
-  /*public void requestMicPermission () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, REQUEST_USE_MIC);
-    }
-  }*/
+
 
   private ActivityPermissionResult requestMicPermissionCallback;
 
   public void requestMicPermissionForCall (@Nullable ActivityPermissionResult after) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      this.requestMicPermissionCallback = after;
-      requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, REQUEST_USE_MIC_CALL);
-    }
+    this.requestMicPermissionCallback = after;
+    requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, REQUEST_USE_MIC_CALL);
   }
 
   private ActivityPermissionResult requestCustomPermissionCallback;
 
   public void requestCustomPermissions (String[] permissions, ActivityPermissionResult after) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      this.requestCustomPermissionCallback = after;
-      try {
-        requestPermissions(permissions, REQUEST_CUSTOM_NEW);
-      } catch (Throwable t) {
-        Log.e("Cannot check permissions: %s", TextUtils.join(", ", permissions));
-        int[] results = new int[permissions.length];
-        for (int i = 0; i < results.length; i++) {
-          results[i] = PackageManager.PERMISSION_DENIED;
-        }
-        after.onPermissionResult(REQUEST_CUSTOM_NEW, permissions, results, 0);
-        this.requestCustomPermissionCallback = null;
+    this.requestCustomPermissionCallback = after;
+    try {
+      requestPermissions(permissions, REQUEST_CUSTOM_NEW);
+    } catch (Throwable t) {
+      Log.e("Cannot check permissions: %s", TextUtils.join(", ", permissions));
+      int[] results = new int[permissions.length];
+      for (int i = 0; i < results.length; i++) {
+        results[i] = PackageManager.PERMISSION_DENIED;
       }
+      after.onPermissionResult(REQUEST_CUSTOM_NEW, permissions, results, 0);
+      this.requestCustomPermissionCallback = null;
     }
   }
 
@@ -2695,18 +2639,16 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   public void requestLocationPermission (boolean needBackground, boolean skipAlert, Runnable onCancel, ActivityPermissionResult handler) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (skipAlert) {
+    if (skipAlert) {
+      requestLocationPermissionImpl(needBackground, handler);
+    } else {
+      ModernOptions.showLocationAlert(navigation.getCurrentStackItem(), needBackground, onCancel, () -> {
         requestLocationPermissionImpl(needBackground, handler);
-      } else {
-        ModernOptions.showLocationAlert(navigation.getCurrentStackItem(), needBackground, onCancel, () -> {
-          requestLocationPermissionImpl(needBackground, handler);
-        });
-      }
+      });
     }
   }
 
-  private static String[] locationPermissions (boolean needBackground) {if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Config.REQUEST_BACKGROUND_LOCATION && needBackground) {
+  private static String[] locationPermissions (boolean needBackground) {if ((needBackground)) {
       return new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
     } else {
       return new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -2714,7 +2656,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   private void requestLocationPermissionImpl (boolean needBackground, ActivityPermissionResult handler) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    {
       String[] permissions = locationPermissions(needBackground);
       if (handler != null) {
         permissionsResultHandlers.put(REQUEST_FINE_LOCATION, handler);
@@ -2726,9 +2668,9 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   public int checkLocationPermissions (boolean needBackground) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    {
       String[] permissions;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Config.REQUEST_BACKGROUND_LOCATION && needBackground) {
+      if ((needBackground)) {
         permissions = new String[] {Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
       } else {
         permissions = new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -2982,21 +2924,14 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   public static int getAndroidOrientationPortrait () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      return ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
-    } else {
-      return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    }
+    return ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
   }
 
   private static boolean isAndroidOrientationPortrait (int orientation) {
     if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
       return true;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      return orientation == ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
-    }
-    return false;
+    return orientation == ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
   }
 
   public boolean startCameraDrag (ViewController.CameraOpenOptions options, boolean isOpen) { // User has slided enough to start dragging
@@ -3118,7 +3053,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private int savedRotationAnimation = -1;
 
   private void requestWindowRotationAnimation (int requestedAnimation) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    {
       Window window = getWindow();
       WindowManager.LayoutParams attrs = window.getAttributes();
       int pendingRotationAnimation;
@@ -3141,16 +3076,11 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private void checkCameraOrientationBlocked () {
     boolean isBlocked = ((cameraFactor < 1f && isCameraOpen) || (cameraFactor != 0f && cameraFactor != 1f) || isCameraDragging || (cameraFactor == 1f && camera != null && camera.supportsCustomRotations())) && !(camera != null && camera.hasOpenEditor());
     setOrientationLockFlagEnabled(ORIENTATION_FLAG_CAMERA, isBlocked);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    {
       boolean needCrossFadeAnimation = cameraFactor == 1f;
       int rotationAnimation;
       if (needCrossFadeAnimation) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && false) {
-          // looks bad on AOSP (Pixel Fold), and exactly like JUMPCUT on Samsung devices
-          rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_SEAMLESS;
-        } else {
-          rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_JUMPCUT;
-        }
+        rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_JUMPCUT;
       } else {
         rotationAnimation = -1;
       }
@@ -3290,7 +3220,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   }
 
   public boolean hasSoftwareKeys () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    {
       Display d = getWindowManager().getDefaultDisplay();
 
       d.getRealMetrics(metrics);
@@ -3306,11 +3236,6 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
       int barHeight = Screen.getNavigationBarHeight();
 
       return barHeight > 0 && ((realWidth - displayWidth) >= barHeight || (realHeight - displayHeight) >= barHeight);
-    } else {
-      boolean hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey();
-      boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-
-      return !hasMenuKey && !hasBackKey;
     }
   }
 
@@ -3320,17 +3245,15 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
     if (Config.USE_TRANSLUCENT_NAVIGATION) {
       return;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      if (mIsTranslucent != isTranslucent) {
-        Window window = getWindow();
-        if (window != null) {
-          if (isTranslucent) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-          } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-          }
-          mIsTranslucent = isTranslucent;
+    if (mIsTranslucent != isTranslucent) {
+      Window window = getWindow();
+      if (window != null) {
+        if (isTranslucent) {
+          window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        } else {
+          window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
+        mIsTranslucent = isTranslucent;
       }
     }
   }
@@ -3444,7 +3367,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
 
   @Override
   public boolean needsTempUpdates () {
-    return isProgressShowing || (inlineResultsView != null && inlineResultsView.areItemsVisible()) || !globalThemeListeners.isEmpty() || Config.USE_CUSTOM_NAVIGATION_COLOR;
+    return isProgressShowing || (inlineResultsView != null && inlineResultsView.areItemsVisible()) || !globalThemeListeners.isEmpty() || true;
   }
 
   private FutureInt desiredColor;
@@ -3452,21 +3375,19 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private boolean desiredAllowLight;
 
   public void setCustomNavigationColor (FutureInt runnableInt, float intensity, boolean allowLight) {
-    if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
-      if (this.desiredColor != runnableInt || this.desiredIntensityFactor != intensity || this.desiredAllowLight != allowLight) {
-        this.desiredColor = runnableInt;
-        this.desiredIntensityFactor = intensity;
-        this.desiredAllowLight = allowLight;
-        updateNavigationBarColor();
-      } else if (runnableInt != null && intensity > 0f) {
-        updateNavigationBarColor();
-      }
+    if (this.desiredColor != runnableInt || this.desiredIntensityFactor != intensity || this.desiredAllowLight != allowLight) {
+      this.desiredColor = runnableInt;
+      this.desiredIntensityFactor = intensity;
+      this.desiredAllowLight = allowLight;
+      updateNavigationBarColor();
+    } else if (runnableInt != null && intensity > 0f) {
+      updateNavigationBarColor();
     }
   }
 
   @SuppressWarnings("deprecation")
   private void updateNavigationBarColor () {
-    if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
+    {
       int color;
       boolean isLight;
       if ((lastWindowVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0) {
@@ -3514,14 +3435,12 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
     for (ThemeListenerList list : globalThemeListeners) {
       list.onThemeColorsChanged(areTemp);
     }
-    if (Config.USE_CUSTOM_NAVIGATION_COLOR) {
-      updateNavigationBarColor();
-    }
+    updateNavigationBarColor();
   }
 
   @Override
   public void onThemeChanged (ThemeDelegate oldTheme, ThemeDelegate newTheme) {
-    if (Config.USE_CUSTOM_NAVIGATION_COLOR && oldTheme.isDark() != newTheme.isDark()) {
+    if ((oldTheme.isDark() != newTheme.isDark())) {
       updateNavigationBarColor();
     }
     closeThumbnails(ThemeController.class);
@@ -3553,7 +3472,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
   private static final int LUX_SENSOR_LATENCY_FAST = 90000;
 
   private void setLightSensorFast (boolean isFast) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && this.lightSensorFast != isFast) {
+    if ((this.lightSensorFast != isFast)) {
       this.lightSensorFast = isFast;
       if (lightSensorRegistered) {
         try {
@@ -3587,11 +3506,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
       if (register) {
         inNightMode = Theme.isDark();
         autoNightModeSwitch = true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-          sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL, lightSensorFast ? LUX_SENSOR_LATENCY_FAST : LUX_SENSOR_LATENCY_REGULAR);
-        } else {
-          sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
+        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL, lightSensorFast ? LUX_SENSOR_LATENCY_FAST : LUX_SENSOR_LATENCY_REGULAR);
       } else {
         sensorManager.unregisterListener(this, lightSensor);
       }
@@ -3888,3 +3803,4 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnTo
     }
   }
 }
+// endregion

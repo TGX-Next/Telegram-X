@@ -12,6 +12,7 @@
  *
  * File created on 06/03/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -105,15 +106,7 @@ public class BubbleLayout extends AnimatedLinearLayout implements FactorAnimator
       }
     });
 
-    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @Override
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setRoundRect(view.getPaddingLeft(), view.getPaddingTop(), view.getMeasuredWidth() - view.getPaddingRight(), view.getMeasuredHeight() - view.getPaddingBottom(), Screen.dp(4f));
-        }
-      });
-    }*/
+
   }
 
   @Override
@@ -233,3 +226,4 @@ public class BubbleLayout extends AnimatedLinearLayout implements FactorAnimator
     }
   }
 }
+// endregion

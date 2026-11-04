@@ -12,6 +12,7 @@
  *
  * File created on 28/02/2019
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -315,13 +316,7 @@ public class CreatePollController extends RecyclerViewController<CreatePollContr
     items.add(settingShuffle = new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT_WITH_TOGGLER, R.id.btn_pollSetting_shuffle, 0, R.string.PollSettingShuffle).setBoolValue(true));
     settingCount++;
 
-    if (false) {
-      // TODO: limit duration
-      if (settingCount > 0)
-        items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
-      items.add(settingDuration = new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT_WITH_TOGGLER, R.id.btn_pollSetting_duration, 0, R.string.PollSettingDuration));
-      settingCount++;
-    }
+
 
     if (isChannel) {
       if (settingCount > 0)
@@ -917,3 +912,4 @@ public class CreatePollController extends RecyclerViewController<CreatePollContr
     }
   }
 }
+// endregion

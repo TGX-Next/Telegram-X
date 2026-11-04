@@ -12,6 +12,7 @@
  *
  * File created on 23/02/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -361,7 +362,7 @@ public class InstantViewController extends ViewController<InstantViewController.
     recyclerView = (RecyclerView) Views.inflate(context(), R.layout.recycler, contentView);
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     recyclerView.setItemAnimator(null);
     contentView.addView(recyclerView);
@@ -577,3 +578,4 @@ public class InstantViewController extends ViewController<InstantViewController.
     }
   }
 }
+// endregion

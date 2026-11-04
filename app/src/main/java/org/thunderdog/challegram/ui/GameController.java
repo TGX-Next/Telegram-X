@@ -12,6 +12,7 @@
  *
  * File created on 05/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.annotation.SuppressLint;
@@ -136,9 +137,7 @@ public class GameController extends WebkitController<GameController.Args> implem
       headerCell.setTitle(getArguments().game.title);
       headerCell.setSubtitle(getArguments().username);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      webView.addJavascriptInterface(new WebViewProxy(this), "TelegramWebviewProxy");
-    }
+    webView.addJavascriptInterface(new WebViewProxy(this), "TelegramWebviewProxy");
     if (getArguments() != null) {
       webView.loadUrl(getArguments().gameUrl);
     }
@@ -149,3 +148,4 @@ public class GameController extends WebkitController<GameController.Args> implem
     return y < Size.getHeaderPortraitSize() || x <= Screen.dp(15f);
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 06/03/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.annotation.SuppressLint;
@@ -746,7 +747,7 @@ public class SettingsBugController extends RecyclerViewController<SettingsBugCon
           items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.Experiment_PeerIdsInfo));
         }
 
-        if (Config.EDGE_TO_EDGE_AVAILABLE && (testerLevel >= Tdlib.TesterLevel.ADMIN || Settings.instance().getNewSetting(Settings.SETTING_FLAG_FORCE_DEFAULT_ANIMATION_FOR_RIGHT_SWIPE_EDGE))) {
+        if (((testerLevel >= Tdlib.TesterLevel.ADMIN || Settings.instance().getNewSetting(Settings.SETTING_FLAG_FORCE_DEFAULT_ANIMATION_FOR_RIGHT_SWIPE_EDGE)))) {
           if (!items.isEmpty()) {
             items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
           }
@@ -1651,3 +1652,4 @@ public class SettingsBugController extends RecyclerViewController<SettingsBugCon
     }
   }
 }
+// endregion

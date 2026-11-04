@@ -12,6 +12,7 @@
  *
  * File created on 11/05/2019
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.emoji;
 
 import android.os.Build;
@@ -56,11 +57,8 @@ public class EmojiInputConnection extends InputConnectionWrapper {
     @NonNull final InputConnection inputConnection, @NonNull final Editable editable,
     @IntRange(from = 0) final int beforeLength, @IntRange(from = 0) final int afterLength,
     final boolean inCodePoints) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      return EmojiUtils.handleDeleteSurroundingText(inputConnection, editable,
-        beforeLength, afterLength, inCodePoints);
-    } else {
-      return false;
-    }
+    return EmojiUtils.handleDeleteSurroundingText(inputConnection, editable,
+      beforeLength, afterLength, inCodePoints);
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 02/09/2022, 19:31.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 
 package org.thunderdog.challegram.data;
 
@@ -1474,7 +1475,7 @@ public final class TGMessageService extends TGMessageServiceImpl {
   }
 
   // Poll
-  
+
   public TGMessageService (MessagesManager context, TdApi.Message msg, TdApi.MessagePollOptionAdded pollOptionAdded) {
     super(context, msg);
     setPollOptionAddDeleteTextCreator(false, pollOptionAdded.text, pollOptionAdded.pollMessageId);
@@ -2924,3 +2925,4 @@ public final class TGMessageService extends TGMessageServiceImpl {
     }
   }
 }
+// endregion

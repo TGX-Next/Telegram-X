@@ -1,3 +1,4 @@
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 project(tgcalls VERSION 1.0.0 LANGUAGES C CXX)
 
@@ -144,11 +145,9 @@ target_include_directories(${TGCALLS_LIB} PRIVATE
   "${TGCALLS_DEPS_DIR}/webrtc_deps"
   "${STUB_DIR}"
 )
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a" OR ${ANDROID_ABI} STREQUAL "arm64-v8a")
-  set_target_properties(${TGCALLS_LIB} PROPERTIES
-    ANDROID_ARM_MODE arm
-  )
-endif()
+set_target_properties(${TGCALLS_LIB} PROPERTIES
+  ANDROID_ARM_MODE arm
+)
 target_compile_definitions(${TGCALLS_LIB} PUBLIC ${WEBRTC_OPTIONS})
 target_compile_definitions(${TGCALLS_LIB} PRIVATE
   TDLIB_TDAPI_CLASS_PATH="org/drinkless/tdlib/TdApi"
@@ -157,26 +156,10 @@ target_include_directories(${TGCALLS_LIB} PUBLIC
   "${WEBRTC_DIR}"
 )
 
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
-  target_compile_definitions(${TGCALLS_LIB} PUBLIC
-    WEBRTC_ARCH_ARM
-    WEBRTC_ARCH_ARM_V7
-    WEBRTC_HAS_NEON
-  )
-elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-  target_compile_definitions(${TGCALLS_LIB} PUBLIC
-    WEBRTC_ARCH_ARM64
-    WEBRTC_HAS_NEON
-  )
-elseif(${ANDROID_ABI} STREQUAL "x86")
-  target_compile_definitions(${TGCALLS_LIB} PUBLIC
-    HAVE_SSE2
-  )
-elseif(${ANDROID_ABI} STREQUAL "x86_64")
-  target_compile_definitions(${TGCALLS_LIB} PUBLIC
-    HAVE_SSE2
-  )
-endif()
+target_compile_definitions(${TGCALLS_LIB} PUBLIC
+  WEBRTC_ARCH_ARM64
+  WEBRTC_HAS_NEON
+)
 
 target_link_libraries(${TGCALLS_LIB}
   jni-utils
@@ -197,9 +180,8 @@ target_link_options(${TGCALLS_LIB} PRIVATE
   "$<$<CONFIG:Release,RelWithDebInfo,MinSizeRel>:-flto=full>"
 )
 
-if (${ANDROID_ABI} STREQUAL "arm64-v8a" OR ${ANDROID_ABI} STREQUAL "x86_64")
-  # Enable 16 KB ELF alignment.
-  target_link_options(${TGCALLS_LIB} PRIVATE
-    "-Wl,-z,max-page-size=16384"
-  )
-endif()
+# Enable 16 KB ELF alignment.
+target_link_options(${TGCALLS_LIB} PRIVATE
+  "-Wl,-z,max-page-size=16384"
+)
+# endregion

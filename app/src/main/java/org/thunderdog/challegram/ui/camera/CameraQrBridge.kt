@@ -10,12 +10,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui.camera
 
 import android.graphics.ImageFormat
 import android.graphics.RectF
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageProxy
 import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.OnFailureListener
@@ -74,7 +74,7 @@ class CameraQrBridge(manager: CameraManager<*>) {
     mlkitFailed = false
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   @Suppress("UnsafeOptInUsageError")
   fun processImage(proxy: ImageProxy) {
     proxy.use {
@@ -360,3 +360,4 @@ class CameraQrBridge(manager: CameraManager<*>) {
     return rotatedData
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 06/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.v;
 
 import android.content.Context;
@@ -184,11 +185,7 @@ public class EditText extends android.widget.EditText {
   }
 
   public void setUseIncognitoKeyboard (int imeOptions) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      imeOptions |= EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
-    } else {
-      imeOptions |= 0x1000000;
-    }
+    imeOptions |= EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING;
     setImeOptions(imeOptions);
   }
 
@@ -366,3 +363,4 @@ public class EditText extends android.widget.EditText {
     return new SpannableStringBuilder(cs);
   }
 }
+// endregion

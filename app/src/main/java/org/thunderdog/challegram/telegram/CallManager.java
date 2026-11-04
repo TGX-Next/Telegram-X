@@ -12,6 +12,7 @@
  *
  * File created on 06/04/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.Manifest;
@@ -313,31 +314,29 @@ debugCall id:long debug:string = Ok;
   }
 
   public boolean checkRecordPermissions (final Context context, final Tdlib tdlib, final @Nullable TdApi.Call call, final long userId, final @Nullable ViewController<?> makeCallContext) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (AppContext.get().checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-        BaseActivity activity = UI.getUiContext();
-        if (activity != null) {
-          activity.requestMicPermissionForCall((code, permissions, grantResults, grantCount) -> {
-            if (grantCount == permissions.length) {
-              if (makeCallContext != null) {
-                makeCall(makeCallContext, userId, null, false);
-              } else {
-                if (call != null) {
-                  TdApi.Call updatedCall = tdlib.cache().getCall(call.id);
-                  if (updatedCall != null && updatedCall.state.getConstructor() == TdApi.CallStatePending.CONSTRUCTOR) {
-                    acceptCall(context, tdlib, call.id);
-                  }
+    if (AppContext.get().checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+      BaseActivity activity = UI.getUiContext();
+      if (activity != null) {
+        activity.requestMicPermissionForCall((code, permissions, grantResults, grantCount) -> {
+          if (grantCount == permissions.length) {
+            if (makeCallContext != null) {
+              makeCall(makeCallContext, userId, null, false);
+            } else {
+              if (call != null) {
+                TdApi.Call updatedCall = tdlib.cache().getCall(call.id);
+                if (updatedCall != null && updatedCall.state.getConstructor() == TdApi.CallStatePending.CONSTRUCTOR) {
+                  acceptCall(context, tdlib, call.id);
                 }
               }
-            } else {
-              showAlert(AlertType.MICROPHONE_PERMISSION_MISSING);
             }
-          });
-        } else {
-          // context.startActivity(new Intent(context, VoIPPermissionActivity.class));
-        }
-        return false;
+          } else {
+            showAlert(AlertType.MICROPHONE_PERMISSION_MISSING);
+          }
+        });
+      } else {
+        // context.startActivity(new Intent(context, VoIPPermissionActivity.class));
       }
+      return false;
     }
     return true;
   }
@@ -381,10 +380,7 @@ debugCall id:long debug:string = Ok;
     if (userFull == null) {
       userFull = context.tdlib().cache().userFull(userId);
     }
-    if (!BuildConfig.CALLS_AVAILABLE) {
-      showAlert(AlertType.ANDROID_VERSION_UNSUPPORTED);
-      return;
-    }
+
     if (!U.deviceHasMicrophone(AppContext.get())) {
       showAlert(AlertType.MICROPHONE_HARDWARE_MISSING);
       return;
@@ -438,13 +434,9 @@ debugCall id:long debug:string = Ok;
       } else if (U.isAirplaneModeOn()) {
         b.setTitle(Lang.getString(R.string.VoipOfflineAirplaneTitle));
         b.setMessage(Lang.getString(R.string.VoipOfflineAirplane));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
-            Intents.openAirplaneSettings();
-          });
-        } else {
-          b.setNeutralButton(Lang.getString(R.string.AirplaneModeDisable), (dialog, which) -> android.provider.Settings.System.putInt(context.context().getContentResolver(), android.provider.Settings.System.AIRPLANE_MODE_ON, 0));
-        }
+        b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
+          Intents.openAirplaneSettings();
+        });
       } else {
         b.setTitle(Lang.getString(R.string.VoipOfflineTitle));
         b.setMessage(Lang.getString(R.string.VoipOffline));
@@ -494,15 +486,11 @@ debugCall id:long debug:string = Ok;
         b = new AlertDialog.Builder(context, Theme.dialogTheme());
         b.setTitle(Lang.getString(R.string.VoipOfflineAirplaneTitle));
         b.setMessage(Lang.getString(R.string.VoipOfflineAirplane));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
-            Intent i = new Intent(android.provider.Settings.ACTION_AIRPLANE_MODE_SETTINGS);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
-          });
-        } else {
-          b.setNeutralButton(Lang.getString(R.string.AirplaneModeDisable), (dialog, which) -> android.provider.Settings.System.putInt(context.getContentResolver(), android.provider.Settings.System.AIRPLANE_MODE_ON, 0));
-        }
+        b.setNeutralButton(Lang.getString(R.string.Settings), (dialog, which) -> {
+          Intent i = new Intent(android.provider.Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+          i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          context.startActivity(i);
+        });
       } else {
         b = new AlertDialog.Builder(context, Theme.dialogTheme());
         b.setTitle(Lang.getString(R.string.VoipOfflineTitle));
@@ -565,3 +553,4 @@ debugCall id:long debug:string = Ok;
     });
   }
 }
+// endregion

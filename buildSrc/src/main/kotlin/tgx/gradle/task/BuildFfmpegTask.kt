@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.gradle.task
 
 import Sdk
@@ -73,18 +74,6 @@ abstract class BuildFfmpegTask : BuildNativeLibraryTask() {
       "-fPIC",
       "-flto=full"
     )
-    val clangLibs = requireDir(
-      when (ndkVersionMajor) {
-        23 ->
-          prebuilt.resolve("lib64/clang/12.0.9/lib/linux")
-        27 ->
-          prebuilt.resolve("lib/clang/18/lib/linux")
-        30 ->
-          prebuilt.resolve("lib/clang/21/lib/linux")
-        else ->
-          fatal("Unsupported NDK version: $ndkVersion")
-      }
-    )
     val extraLibs = mutableListOf<String>()
     val ndkAbi: String
     when (abi) {
@@ -94,64 +83,6 @@ abstract class BuildFfmpegTask : BuildNativeLibraryTask() {
         extraParams.addAll(arrayOf(
           "--disable-x86asm",
           "--enable-neon"
-        ))
-      }
-      "armeabi-v7a" -> {
-        ndkAbi = "armv7a-linux-androideabi"
-        extraParams += "--enable-neon"
-
-        val cpuFeatures = requireDir(
-          ndk.resolve("sources/android/cpufeatures")
-        )
-        cFlags.addAll(listOf(
-          "-march=armv7-a",
-          "-mfloat-abi=softfp",
-          "-mfpu=neon",
-          "-marm",
-          "-mtune=cortex-a8",
-          "-I${cpuFeatures.toPosixPath()}"
-        ))
-        ldFlags.addAll(listOf(
-          "-L${clangLibs.toPosixPath()}",
-          "-Wl,--fix-cortex-a8"
-        ))
-        extraLibs.addAll(listOf(
-          "-lunwind",
-          "-lclang_rt.builtins-arm-android"
-        ))
-        extraParams.addAll(arrayOf(
-          "--enable-neon",
-          "--disable-x86asm"
-        ))
-      }
-      "x86_64" -> {
-        ndkAbi = "x86_64-linux-android"
-        cFlags.addAll(listOf(
-          "-march=x86-64",
-          "-msse4.2",
-          "-mpopcnt",
-          "-fPIC"
-        ))
-        extraParams.addAll(arrayOf(
-          "--enable-x86asm",
-          "--x86asmexe=${requireFile(
-            prebuilt.resolveNdkBinary("bin/yasm")
-          ).toPosixPath()}"
-        ))
-      }
-      "x86" -> {
-        ndkAbi = "i686-linux-android"
-        cFlags.addAll(listOf(
-          "-march=i686",
-          "-msse3",
-          "-mfpmath=sse",
-          "-fPIC"
-        ))
-        ldFlags += "-L${clangLibs.toPosixPath()}"
-        extraLibs += "-lclang_rt.builtins-i686-android"
-        extraParams.addAll(arrayOf(
-          "--disable-asm",
-          "--disable-x86asm"
         ))
       }
       else -> {
@@ -193,9 +124,6 @@ abstract class BuildFfmpegTask : BuildNativeLibraryTask() {
       "CPP" to cxx,
 
       "ASFLAGS" to "-D__ANDROID__",
-      "YASM" to requireFile(
-        prebuilt.resolveNdkBinary("bin/yasm")
-      ).toPosixPath(),
 
       "STRIP" to requireFile(
         prebuilt.resolveNdkBinary("bin/llvm-strip")
@@ -223,10 +151,6 @@ abstract class BuildFfmpegTask : BuildNativeLibraryTask() {
     val ffmpegArch = when (abi) {
       "arm64-v8a" ->
         "aarch64"
-      "armeabi-v7a" ->
-        "arm"
-      "x86_64", "x86" ->
-        abi
       else ->
         fatal("Unreachable")
     }
@@ -331,3 +255,4 @@ abstract class BuildFfmpegTask : BuildNativeLibraryTask() {
     )
   }
 }
+// endregion

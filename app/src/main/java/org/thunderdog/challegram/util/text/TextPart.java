@@ -12,6 +12,7 @@
  *
  * File created on 02/05/2015 at 13:03
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util.text;
 
 import android.graphics.Canvas;
@@ -406,7 +407,7 @@ public class TextPart {
         c.drawRect(x, textY - Screen.dp(16), x + width, textY, Paints.strokeSmallPaint(0xFF000000));
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && BiDiUtils.isValid(bidiEntity)) {
+      if ((BiDiUtils.isValid(bidiEntity))) {
         c.drawTextRun(line, start, end, 0, line.length(), x, textY, BiDiUtils.isRtl(bidiEntity), textPaint);
       } else {
         c.drawText(line, start, end, x, textY, textPaint);
@@ -450,3 +451,4 @@ public class TextPart {
     return endLinesCount;
   }
 }
+// endregion

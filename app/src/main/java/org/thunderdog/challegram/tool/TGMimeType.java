@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import androidx.annotation.Nullable;
@@ -145,7 +146,7 @@ public class TGMimeType {
     }
     return false;
   }
-  
+
   public static boolean isTransparentImageMimeType (@Nullable String mimeType) {
      if (!StringUtils.isEmpty(mimeType)) {
        switch (mimeType) {
@@ -187,3 +188,4 @@ public class TGMimeType {
   }
 
 }
+// endregion

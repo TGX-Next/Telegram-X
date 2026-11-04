@@ -12,6 +12,7 @@
  *
  * File created on 05/03/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.service;
 
 import android.app.Notification;
@@ -128,11 +129,7 @@ public class LiveLocationService extends Service implements LiveLocationManager.
   private Notification buildNotification () {
     Notification.Builder b;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      b = new Notification.Builder(this, Intents.newSimpleChannel(Intents.CHANNEL_ID_LOCATION, R.string.AttachLiveLocation));
-    } else {
-      b = new Notification.Builder(this);
-    }
+    b = new Notification.Builder(this, Intents.newSimpleChannel(Intents.CHANNEL_ID_LOCATION, R.string.AttachLiveLocation));
 
     PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, Intents.valueOfLocation(hasError), Intents.mutabilityFlags(false));
     b.setContentIntent(pendingIntent);
@@ -157,3 +154,4 @@ public class LiveLocationService extends Service implements LiveLocationManager.
     return b.build();
   }
 }
+// endregion

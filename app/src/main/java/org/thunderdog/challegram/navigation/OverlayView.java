@@ -12,6 +12,7 @@
  *
  * File created on 11/05/2015 at 20:06
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.content.Context;
@@ -60,7 +61,7 @@ public class OverlayView extends View {
   public void setData (int backgroundColor, int mode) {
     barFactor = mode == OVERLAY_MODE_DEFAULT ? (Theme.getPopupOverlayAlpha()) : .6f;
     color = backgroundColor;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       ViewController<?> c = UI.getCurrentStackItem();
       changeBarColor = (c != null && !c.usePopupMode()) && color != 0x00000000 && color != 0x00ffffffff;
       if (changeBarColor) {
@@ -101,3 +102,4 @@ public class OverlayView extends View {
     }
   }
 }
+// endregion

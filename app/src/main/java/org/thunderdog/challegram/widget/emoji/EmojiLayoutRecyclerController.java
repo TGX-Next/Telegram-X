@@ -12,6 +12,7 @@
  *
  * File created on 18/08/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget.emoji;
 
 import android.content.Context;
@@ -125,7 +126,7 @@ public class EmojiLayoutRecyclerController extends ViewController<EmojiLayoutRec
     };
     Views.applyBottomInset(recyclerView, extraBottomInset);
     recyclerView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS :View.OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(manager);
     recyclerView.setAdapter(adapter);
@@ -561,7 +562,7 @@ public class EmojiLayoutRecyclerController extends ViewController<EmojiLayoutRec
 
     final int currentSection = getStickerSetSection();
 
-    if (!animated || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || callbacks == null || Math.abs(futureSection - currentSection) > SCROLL_BY_SECTION_LIMIT) {
+    if ((!animated) || callbacks == null || Math.abs(futureSection - currentSection) > SCROLL_BY_SECTION_LIMIT) {
       if (callbacks != null) {
         callbacks.setIgnoreMovement(true);
         callbacks.setCurrentStickerSectionByPosition(controllerId, futureSection, true, true);
@@ -1077,3 +1078,4 @@ public class EmojiLayoutRecyclerController extends ViewController<EmojiLayoutRec
     float getHeaderHideFactor ();
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 25/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.annotation.SuppressLint;
@@ -928,7 +929,7 @@ public class ProfileController extends ViewController<ProfileController.Args> im
   @Override
   public void onActivityResume () {
     super.onActivityResume();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && baseAdapter != null) {
+    if ((baseAdapter != null)) {
       makeChannelChecks();
     }
   }
@@ -2537,7 +2538,7 @@ public class ProfileController extends ViewController<ProfileController.Args> im
 
   private void checkUserButtons () {
     if (headerView != null && !isEditing()) {
-      headerView.updateButtonAlpha(getMenuId(), R.id.menu_btn_call, BuildConfig.CALLS_AVAILABLE && (userFull.canBeCalled || userFull.hasPrivateCalls) ? 1f : 0f);
+      headerView.updateButtonAlpha(getMenuId(), R.id.menu_btn_call, ((userFull.canBeCalled || userFull.hasPrivateCalls)) ? 1f : 0f);
     }
   }
 
@@ -6815,3 +6816,4 @@ public class ProfileController extends ViewController<ProfileController.Args> im
     }
   }
 }
+// endregion

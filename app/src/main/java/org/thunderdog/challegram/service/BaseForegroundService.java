@@ -12,6 +12,7 @@
  *
  * File created on 24/03/2019
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.service;
 
 import android.app.PendingIntent;
@@ -281,12 +282,10 @@ public abstract class BaseForegroundService extends Service {
       TDLib.Tag.notifications(pushId, accountId, "%s.startForegroundService(%s) executed successfully (SDK %d)", Intents.getIntentClassName(intent), intent.getAction(), Build.VERSION.SDK_INT);
       return true;
     } catch (Throwable t) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        // caution: do not import to avoid crashes on pre-S
-        if (t instanceof android.app.ForegroundServiceStartNotAllowedException) {
-          TDLib.Tag.notifications(pushId, accountId, "%s.startForegroundService(%s) failed due to system settings restrictions (SDK %d):\n%s", Intents.getIntentClassName(intent), intent.getAction(), Build.VERSION.SDK_INT, Log.toString(t));
-          return false;
-        }
+      // caution: do not import to avoid crashes on pre-S
+      if (t instanceof android.app.ForegroundServiceStartNotAllowedException) {
+        TDLib.Tag.notifications(pushId, accountId, "%s.startForegroundService(%s) failed due to system settings restrictions (SDK %d):\n%s", Intents.getIntentClassName(intent), intent.getAction(), Build.VERSION.SDK_INT, Log.toString(t));
+        return false;
       }
       TDLib.Tag.notifications(pushId, accountId, "%s.startForegroundService(%s) failed due to error (SDK %d):\n%s", Intents.getIntentClassName(intent), intent.getAction(), Build.VERSION.SDK_INT, Log.toString(t));
       return false;
@@ -316,3 +315,4 @@ public abstract class BaseForegroundService extends Service {
     }
   }
 }
+// endregion

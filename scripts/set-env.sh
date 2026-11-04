@@ -1,4 +1,5 @@
 #!/bin/bash
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 set -e
 
 STYLE_END="$(tput sgr0)"
@@ -68,10 +69,8 @@ if [ ! "$IGNORE_SDK" ]; then
   fi
 
   ANDROID_NDK_VERSION_PRIMARY=$(scripts/./read-property.sh version.properties version.ndk_primary)
-  ANDROID_NDK_VERSION_LEGACY=$(scripts/./read-property.sh version.properties version.ndk_legacy)
 
   test -d "$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION_PRIMARY" || echo -e "${STYLE_WARN}Android NDK $ANDROID_NDK_VERSION_PRIMARY is not installed.${STYLE_END}"
-  test -d "$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION_LEGACY" || echo -e "${STYLE_WARN}Android NDK $ANDROID_NDK_VERSION_LEGACY is not installed.${STYLE_END}"
 
   PATH="$ANDROID_SDK_PATH/cmake/$CMAKE_VERSION/bin:$ANDROID_SDK_PATH/tools/bin:$ANDROID_SDK_PATH/platform-tools:$PATH"
 
@@ -88,7 +87,6 @@ export BUILD_PLATFORM
 
 if [ ! "$IGNORE_SDK" ]; then
   export CMAKE_VERSION
-  export ANDROID_NDK_VERSION_LEGACY
   export ANDROID_NDK_VERSION_PRIMARY
   export ANDROID_SDK_ROOT
 fi
@@ -115,3 +113,4 @@ function validate_dir {
 
 export -f validate_dir
 export -f validate_file
+# endregion

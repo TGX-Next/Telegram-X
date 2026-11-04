@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 @file:Suppress("AvoidApplyPluginMethod")
 
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -18,6 +19,7 @@ kotlin {
   }
   sourceSets.named("test") {
     kotlin.srcDir("../tests/buildSrc/checks")
+    kotlin.srcDir("../tests/unit/buildSrc")
   }
   compilerOptions {
     allWarningsAsErrors = true
@@ -62,3 +64,4 @@ if (extra["huawei"] == true) {
     implementation(libs.huawei.agconnect)
   }
 }
+// endregion

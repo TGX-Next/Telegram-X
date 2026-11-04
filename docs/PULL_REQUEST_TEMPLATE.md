@@ -8,7 +8,7 @@ The guide below provides the flow for creating a perfect pull request to the Tel
 - [ ] **Clean**. There are no unnecessary or accidental changes. Code is not duplicated: repeated logic is extracted into a short, well-named function.
 - [ ] **Consistent**. Code follows the existing style of the project, `.editorconfig` and [code style](https://github.com/TGX-Android/Telegram-X/blob/main/docs/CODE_STYLE.md). Braces with line breaks are always used, even when optional, except for short or single-expression Kotlin functions, which may use `=`.
 - [ ] **Designed**. UI changes follow the existing design. Features and visual bug fixes, e.g. of layout or glitches, include screenshots before and after the change, or screen recordings when the change can't be seen on screenshots, e.g. animations (see [screenshots and recordings](https://github.com/TGX-Android/Telegram-X/blob/main/tests/README.md#screenshots-and-recordings)).
-- [ ] **Compatible**. Changes work down to API 16: classes missing on older versions are never imported and are referenced by their full name only inside version checks, never in fields, method signatures or `catch` clauses outside them (checked by `./gradlew checkMinSdk`, for Android 4.x with `-PuseLegacyNdk=true`). Compatibility dependencies are added only to flavors that need them.
+- [ ] **Compatible**. Changes work on Android 13+ (API 33+) and arm64. APIs introduced after API 33 retain version checks. Run `./gradlew checkMinSdk` and `./gradlew :app:lintLatestDebug`.
 - [ ] **Graceful**. Features unavailable on older versions are hidden or show the required Android version, with the reason explained in the PR.
 - [ ] **Modern**. Latest APIs are used where available, with deprecated ones only as a fallback for older versions.
 - [ ] **Transparent**. Changes made with the help of LLMs are annotated with `@MadeByLLM` and the exact model used (see its documentation).
@@ -23,7 +23,7 @@ The guide below provides the flow for creating a perfect pull request to the Tel
 - [ ] **Separated**. Different bug fixes are divided into independent PRs.
 - [ ] **Linked**. The issue number is in the title, and the description links the issue.
 - [ ] **Safe**. The fix doesn't risk breaking other screens or specific devices.
-- [ ] **Targeted**. Only affected flavors are changed: code, resources and R8 rules for them are placed in the folder shared by exactly these flavors, e.g. `src/preMarshmallow` for `legacy` and `lollipop` instead of copies in `src/onlyLegacy` and `src/onlyLollipop` (see [flavors](https://github.com/TGX-Android/Telegram-X/blob/main/tests/README.md#flavors)).
+- [ ] **Targeted**. Changes target the `latest` flavor for Android 13+ and arm64.
 
 ## When adding features, keep them:
 - [ ] **Small**. Small, self-contained improvements are welcome in any part of the app.

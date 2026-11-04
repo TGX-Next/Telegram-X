@@ -12,6 +12,7 @@
  *
  * File created on 03/03/2016 at 20:44
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.player;
 
 import android.animation.ValueAnimator;
@@ -63,7 +64,7 @@ public class RecordDurationView extends View {
   public void start (long startTimeMs, long additionalDuration) {
     this.additionalDuration = additionalDuration;
     if (animator == null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      {
         final android.animation.TimeAnimator animator;
         animator = new android.animation.TimeAnimator();
         animator.setTimeListener((animation, totalTime, deltaTime) -> {
@@ -79,23 +80,6 @@ public class RecordDurationView extends View {
           }
         });
         this.animator = animator;
-      } else {
-        animator = AnimatorUtils.simpleValueAnimator();
-        animator.setDuration(1000l);
-        animator.setInterpolator(AnimatorUtils.LINEAR_INTERPOLATOR);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.addUpdateListener(animation -> {
-          long totalTime = SystemClock.uptimeMillis() - animationStart;
-          if (elapsedDeltaTime == 0l || totalTime - elapsedDeltaTime >= 15l) {
-            elapsedDeltaTime = totalTime;
-            if (processMillis(totalTime + this.additionalDuration)) {
-              invalidate();
-              if (timerCallback != null) {
-                timerCallback.onTimerTick();
-              }
-            }
-          }
-        });
       }
     }
     elapsedDeltaTime = 0l;
@@ -311,3 +295,4 @@ public class RecordDurationView extends View {
     return circleCenterX + circleRadius + circleRadius;
   }
 }
+// endregion

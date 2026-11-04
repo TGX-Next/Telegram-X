@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 
 @file:JvmName("TdUi")
 @file:JvmMultifileClass
 
 package tgx.td.ui
 
-import android.os.Build
 import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.Toast
@@ -63,12 +63,8 @@ fun <T> ViewController<T>.reportChatSponsoredMessage (
             val idToOptionId = SparseArrayCompat<ByteArray>()
             val info = ViewController.Options.Builder().apply {
               info(title)
-              result.options.forEachIndexed { index, option ->
-                val id = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                  View.generateViewId()
-                } else {
-                  index + 1
-                }
+              result.options.forEach { option ->
+                val id = View.generateViewId()
                 item(ViewController.OptionItem(id, option.text, OptionColor.NORMAL, 0))
                 idToOptionId.put(id, option.id)
               }
@@ -114,3 +110,4 @@ fun <T> ViewController<T>.reportChatSponsoredMessage (
     }
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 08/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.filegen;
 
 import android.graphics.Bitmap;
@@ -187,11 +188,7 @@ public class PhotoGenerationInfo extends GenerationInfo {
           BitmapFactory.Options regionOptions = new BitmapFactory.Options();
           regionOptions.inSampleSize = ImageReader.calculateInSampleSize(regionRect.width(), regionRect.height(), PhotoGenerationInfo.SIZE_LIMIT, PhotoGenerationInfo.SIZE_LIMIT);
 
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            decoder = BitmapRegionDecoder.newInstance(is);
-          } else {
-            decoder = BitmapRegionDecoder.newInstance(is, false);
-          }
+          decoder = BitmapRegionDecoder.newInstance(is);
           if (decoder != null) {
             bitmapRegion = decoder.decodeRegion(regionRect, regionOptions);
           } else {
@@ -462,3 +459,4 @@ public class PhotoGenerationInfo extends GenerationInfo {
     return b.toString();
   }
 }
+// endregion

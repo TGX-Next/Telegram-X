@@ -12,6 +12,7 @@
  *
  * File created on 21/07/2022, 21:27
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util;
 
 import android.os.Build;
@@ -87,7 +88,7 @@ public class Crash {
       ACCOUNT_ID = "id",
       RUNNING_TDLIB_COUNT = "td_count";
   }
-  
+
   @Retention(RetentionPolicy.SOURCE)
   @IntDef({
     Type.UNKNOWN,
@@ -421,3 +422,4 @@ public class Crash {
     }
   }
 }
+// endregion

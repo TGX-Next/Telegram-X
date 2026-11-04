@@ -12,6 +12,7 @@
  *
  * File created on 12/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.mediaview;
 
 import android.app.AlertDialog;
@@ -144,12 +145,7 @@ public class VideoPlayerView implements Player.Listener, CallManager.CurrentCall
   private @Nullable MediaItem currentItem;
 
   public void setVideo (@Nullable MediaItem mediaItem) {
-    if (!Config.VIDEO_PLAYER_AVAILABLE) {
-      if (mediaItem != null && mediaItem.isLoaded()) {
-        U.openFile(UI.getContext(context).navigation().getCurrentStackItem(), mediaItem.getSourceVideo());
-      }
-      return;
-    }
+
     prepareTextureView();
     setMuted(mediaItem != null && mediaItem.needMute());
     setLooping(forceLooping || (mediaItem != null && (mediaItem.isSecret() || mediaItem.isGifType())));
@@ -506,7 +502,7 @@ public class VideoPlayerView implements Player.Listener, CallManager.CurrentCall
     this.callback = callback;
   }
 
-  private static final int SEEK_UPDATE_MS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 24 : 42;
+  private static final int SEEK_UPDATE_MS = (24);
   private long lastPosition;
 
   private void updateTimes () {
@@ -616,3 +612,4 @@ public class VideoPlayerView implements Player.Listener, CallManager.CurrentCall
     }
   }
 }
+// endregion

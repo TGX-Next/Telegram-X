@@ -12,6 +12,7 @@
  *
  * File created on 16/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -140,7 +141,7 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
 
   @Override
   public boolean allowLayerTypeChanges () {
-    return false; // Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && USE_TEXTURE_VIEW;
+    return false;
   }
 
   @Override
@@ -217,23 +218,14 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
   private static boolean hasDefaultGlConfig, hasDefaultGlConfigChecked;
 
   public static boolean hasDefaultGlConfig () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      return true;
-    }
-    if (hasDefaultGlConfigChecked) {
-      return hasDefaultGlConfig;
-    }
-    boolean result = hasDefaultGlConfigImpl();
-    hasDefaultGlConfig = result;
-    hasDefaultGlConfigChecked = true;
-    return result;
+    return true;
   }
 
   private static boolean hasDefaultGlConfigImpl () {
     try {
       EGL10 egl = (EGL10) EGLContext.getEGL();
       EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
-      boolean isRgb888 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1;
+      boolean isRgb888 = true;
       int[] spec = {
         EGL10.EGL_RED_SIZE, isRgb888 ? 8 : 5,
         EGL10.EGL_GREEN_SIZE, isRgb888 ? 8 : 6,
@@ -914,7 +906,7 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
     FrameLayoutFix.LayoutParams params;
     params = FrameLayoutFix.newParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT);
     params.topMargin = HeaderView.getTopOffset();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && USE_TEXTURE_VIEW) {
+    if ((USE_TEXTURE_VIEW)) {
       org.thunderdog.challegram.texture.CustomTextureView textureView = new org.thunderdog.challegram.texture.CustomTextureView(context) {
         @Override
         protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
@@ -1232,7 +1224,7 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
   public void onActivityPause () {
     super.onActivityPause();
     if (surfaceView != null) {
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH && USE_TEXTURE_VIEW) {
+      if ((USE_TEXTURE_VIEW)) {
         ((org.thunderdog.challegram.texture.CustomTextureView) surfaceView).onPause();
       } else {
         ((GLSurfaceView) surfaceView).onPause();
@@ -1245,7 +1237,7 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
   public void onActivityResume () {
     super.onActivityResume();
     if (surfaceView != null) {
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH && USE_TEXTURE_VIEW) {
+      if ((USE_TEXTURE_VIEW)) {
         ((org.thunderdog.challegram.texture.CustomTextureView) surfaceView).onResume();
       } else {
         ((GLSurfaceView) surfaceView).onResume();
@@ -1840,7 +1832,7 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
 
   private void requestRender () {
     if (surfaceView != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && USE_TEXTURE_VIEW) {
+      if ((USE_TEXTURE_VIEW)) {
         ((org.thunderdog.challegram.texture.CustomTextureView) surfaceView).requestRender();
       } else {
         ((GLSurfaceView) surfaceView).requestRender();
@@ -2261,3 +2253,4 @@ public class IntroController extends ViewController<Void> implements GLSurfaceVi
     }
   }
 }
+// endregion

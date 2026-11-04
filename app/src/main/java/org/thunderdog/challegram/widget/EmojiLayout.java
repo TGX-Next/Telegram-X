@@ -12,6 +12,7 @@
  *
  * File created on 25/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -303,7 +304,7 @@ public class EmojiLayout extends FrameLayoutFix implements ViewPager.OnPageChang
 
     adapter = new Adapter(context, this, allowMedia, themeProvider);
     pager = new RtlViewPager(getContext());
-    pager.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS :View.OVER_SCROLL_NEVER);
+    pager.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     pager.addOnPageChangeListener(this);
     pager.setAdapter(adapter);
     pager.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -1390,3 +1391,4 @@ public class EmojiLayout extends FrameLayoutFix implements ViewPager.OnPageChang
   }
 
 }
+// endregion

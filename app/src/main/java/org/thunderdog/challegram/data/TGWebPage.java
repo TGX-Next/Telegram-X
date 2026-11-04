@@ -12,6 +12,7 @@
  *
  * File created on 04/08/2015 at 17:36
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.data;
 
 import android.graphics.Canvas;
@@ -257,7 +258,7 @@ public class TGWebPage implements FileProgressComponent.SimpleListener, MediaWra
 
         case TdApi.LinkPreviewTypeExternalAudio.CONSTRUCTOR:
         case TdApi.LinkPreviewTypeExternalVideo.CONSTRUCTOR:
-        
+
         case TdApi.LinkPreviewTypeChannelBoost.CONSTRUCTOR:
         case TdApi.LinkPreviewTypeInvoice.CONSTRUCTOR:
         case TdApi.LinkPreviewTypePremiumGiftCode.CONSTRUCTOR:
@@ -569,7 +570,7 @@ public class TGWebPage implements FileProgressComponent.SimpleListener, MediaWra
       parent.tdlib().ui().openUrl(parent.controller(), url, rippleButton.firstButton().openParameters(view).disableInstantView());
       return true;
     }
-    
+
     if (mediaWrapper != null && allowRipple && isTelegramType(type)) {
       MediaViewController.openFromMessage(parent);
       return true;
@@ -1364,3 +1365,4 @@ public class TGWebPage implements FileProgressComponent.SimpleListener, MediaWra
     };
   }
 }
+// endregion

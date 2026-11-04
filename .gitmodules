@@ -18,11 +18,6 @@
 	url = https://github.com/lz4/lz4
 	shallow = true
 	branch = dev
-[submodule "androidx-media"]
-	path = app/thirdparty/androidx-media/legacy
-	url = https://github.com/androidx/media
-	shallow = true
-	branch = release
 [submodule "flac"]
 	path = app/jni/third_party/flac
 	url = https://github.com/xiph/flac
@@ -50,7 +45,7 @@
 	branch = yellowbilled
 [submodule "tdlib"]
 	path = tdlib
-	url = https://github.com/TGX-Android/tdlib
+	url = https://github.com/TGX-Next/tdlib
 	shallow = true
 	branch = main
 [submodule "jni-utils"]
@@ -65,14 +60,14 @@
 	branch = main
 [submodule "vkryl/leveldb"]
 	path = vkryl/leveldb
-	url = https://github.com/TGX-Android/leveldb
+	url = https://github.com/TGX-Next/leveldb
 	shallow = true
 	branch = main
 [submodule "vkryl/core"]
 	path = vkryl/core
-	url = https://github.com/TGX-Android/X-Core
+	url = https://github.com/TGX-Next/X-Core
 	shallow = true
-	branch = main
+	branch = codex/android13-arm64
 [submodule "vkryl/td"]
 	path = vkryl/td
 	url = https://github.com/TGX-Android/tdlib-utils
@@ -80,9 +75,9 @@
 	branch = main
 [submodule "vkryl/android"]
 	path = vkryl/android
-	url = https://github.com/TGX-Android/X-Android
+	url = https://github.com/TGX-Next/X-Android
 	shallow = true
-	branch = main
+	branch = codex/android13-arm64
 [submodule "usrsctp"]
 	path = app/jni/tgvoip/third_party/usrsctp
 	url = https://github.com/sctplab/usrsctp
@@ -140,11 +135,6 @@
 	branch = main
 [submodule "thirdparty/androidx-media/latest"]
 	path = app/thirdparty/androidx-media/latest
-	url = https://github.com/androidx/media
-	shallow = true
-	branch = release
-[submodule "thirdparty/androidx-media/lollipop"]
-	path = app/thirdparty/androidx-media/lollipop
 	url = https://github.com/androidx/media
 	shallow = true
 	branch = release

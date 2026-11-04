@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.os.Build;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.tool.Drawables;
 import org.thunderdog.challegram.tool.UI;
@@ -27,7 +27,7 @@ import org.thunderdog.challegram.tool.UI;
 import me.vkryl.core.lambda.CancellableRunnable;
 import tgx.flavor.Flavor;
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 public final class SwirlView extends ImageView {
   // Keep in sync with attrs.
   public enum State {
@@ -114,3 +114,4 @@ public final class SwirlView extends ImageView {
     this.state = state;
   }
 }
+// endregion

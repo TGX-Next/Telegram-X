@@ -12,6 +12,7 @@
  *
  * File created on 17/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.theme;
 
 import android.content.Context;
@@ -32,7 +33,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.FillingDrawable;
 import org.thunderdog.challegram.R;
@@ -95,7 +95,7 @@ public class Theme {
     }
     return 0;
   }
-  
+
   public static int avatarSmallToBig (@ColorId int avatarColorId) {
     switch (avatarColorId) {
       case ColorId.avatarInactive:
@@ -543,22 +543,14 @@ public class Theme {
   }
 
   public static Drawable fillingSelector (@ColorId int backgroundColorId) {
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-      return fillingRippleSelector(backgroundColorId);
-    } else {
-      return fillingSimpleSelector(backgroundColorId);
-    }
+    return fillingRippleSelector(backgroundColorId);
   }
 
   public static Drawable fillingSelector (@ColorId int backgroundColorId, float radius) {
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-      return fillingRippleSelector(backgroundColorId, radius);
-    } else {
-      return fillingSimpleSelector(backgroundColorId, radius);
-    }
+    return fillingRippleSelector(backgroundColorId, radius);
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static Drawable fillingRippleSelector (@ColorId int backgroundColorId, float radius) {
     return new android.graphics.drawable.RippleDrawable(
       new ColorStateList(new int[][] {StateSet.WILD_CARD}, new int[] {RIPPLE_COLOR}),
@@ -566,7 +558,7 @@ public class Theme {
     );
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static Drawable fillingRippleSelector (@ColorId int backgroundColorId) {
     return new android.graphics.drawable.RippleDrawable(
       new ColorStateList(new int[][] {StateSet.WILD_CARD}, new int[] {RIPPLE_COLOR}),
@@ -579,18 +571,16 @@ public class Theme {
     if (view == null)
       return 0;
     Drawable drawable = view.getBackground();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (drawable instanceof android.graphics.drawable.RippleDrawable) {
-        android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
-        int count = ripple.getNumberOfLayers();
-        for (int i = 0; i < count; i++) {
-          Drawable d = ripple.getDrawable(i);
-          if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
-            return ((FillingDrawable) d).getColorId();
-          }
+    if (drawable instanceof android.graphics.drawable.RippleDrawable) {
+      android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
+      int count = ripple.getNumberOfLayers();
+      for (int i = 0; i < count; i++) {
+        Drawable d = ripple.getDrawable(i);
+        if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
+          return ((FillingDrawable) d).getColorId();
         }
-        return 0;
       }
+      return 0;
     }
     if (drawable instanceof CustomStateListDrawable) {
       ArrayList<Drawable> drawables = ((CustomStateListDrawable) drawable).getDrawableList();
@@ -611,18 +601,16 @@ public class Theme {
     if (view == null)
       return null;
     Drawable drawable = view.getBackground();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (drawable instanceof android.graphics.drawable.RippleDrawable) {
-        android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
-        int count = ripple.getNumberOfLayers();
-        for (int i = 0; i < count; i++) {
-          Drawable d = ripple.getDrawable(i);
-          if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
-            return (FillingDrawable) d;
-          }
+    if (drawable instanceof android.graphics.drawable.RippleDrawable) {
+      android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
+      int count = ripple.getNumberOfLayers();
+      for (int i = 0; i < count; i++) {
+        Drawable d = ripple.getDrawable(i);
+        if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
+          return (FillingDrawable) d;
         }
-        return null;
       }
+      return null;
     }
     if (drawable instanceof CustomStateListDrawable) {
       ArrayList<Drawable> drawables = ((CustomStateListDrawable) drawable).getDrawableList();
@@ -643,18 +631,16 @@ public class Theme {
     if (view == null)
       return;
     Drawable drawable = view.getBackground();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (drawable instanceof android.graphics.drawable.RippleDrawable) {
-        android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
-        int count = ripple.getNumberOfLayers();
-        for (int i = 0; i < count; i++) {
-          Drawable d = ripple.getDrawable(i);
-          if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
-            ((FillingDrawable) d).setColorId(backgroundColorId);
-          }
+    if (drawable instanceof android.graphics.drawable.RippleDrawable) {
+      android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
+      int count = ripple.getNumberOfLayers();
+      for (int i = 0; i < count; i++) {
+        Drawable d = ripple.getDrawable(i);
+        if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
+          ((FillingDrawable) d).setColorId(backgroundColorId);
         }
-        return;
       }
+      return;
     }
     if (drawable instanceof CustomStateListDrawable) {
       ArrayList<Drawable> drawables = ((CustomStateListDrawable) drawable).getDrawableList();
@@ -675,18 +661,16 @@ public class Theme {
     if (view == null)
       return;
     Drawable drawable = view.getBackground();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (drawable instanceof android.graphics.drawable.RippleDrawable) {
-        android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
-        int count = ripple.getNumberOfLayers();
-        for (int i = 0; i < count; i++) {
-          Drawable d = ripple.getDrawable(i);
-          if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
-            ((FillingDrawable) d).setForcedTheme(forcedTheme);
-          }
+    if (drawable instanceof android.graphics.drawable.RippleDrawable) {
+      android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
+      int count = ripple.getNumberOfLayers();
+      for (int i = 0; i < count; i++) {
+        Drawable d = ripple.getDrawable(i);
+        if (d instanceof FillingDrawable && ((FillingDrawable) d).getColorId() != ColorId.fillingPressed) {
+          ((FillingDrawable) d).setForcedTheme(forcedTheme);
         }
-        return;
       }
+      return;
     }
     if (drawable instanceof CustomStateListDrawable) {
       ArrayList<Drawable> drawables = ((CustomStateListDrawable) drawable).getDrawableList();
@@ -704,7 +688,7 @@ public class Theme {
   }
 
   public static void changeSelector (View view, boolean forceLegacy, @ColorId int backgroundColorId) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       if (view == null)
         return;
       Drawable d = view.getBackground();
@@ -758,22 +742,14 @@ public class Theme {
   }
 
   private static Drawable transparentSelector (final int color, final float radius) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return transparentRippleSelector(color, radius);
-    } else {
-      return transparentSimpleSelector(color, radius);
-    }
+    return transparentRippleSelector(color, radius);
   }
 
   private static Drawable transparentSelector (final int color) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return transparentRippleSelector(color);
-    } else {
-      return transparentSimpleSelector(color);
-    }
+    return transparentRippleSelector(color);
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static Drawable transparentRippleSelector (final int color) {
     return new android.graphics.drawable.RippleDrawable(
       new ColorStateList(new int[][] {StateSet.WILD_CARD}, new int[] {color}),
@@ -782,7 +758,7 @@ public class Theme {
     );
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static Drawable transparentRippleSelector (final int color, final float radius) {
     return new android.graphics.drawable.RippleDrawable(
       new ColorStateList(new int[][] {StateSet.WILD_CARD}, new int[] {color}),
@@ -802,14 +778,10 @@ public class Theme {
   // Custom selector
 
   public static Drawable customSelector (Drawable drawable, Drawable legacyPressedDrawable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return customRippleSelector(drawable);
-    } else {
-      return customSimpleSelector(drawable, legacyPressedDrawable);
-    }
+    return customRippleSelector(drawable);
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static Drawable customRippleSelector (Drawable drawable) {
     return new android.graphics.drawable.RippleDrawable(
       new ColorStateList(new int[][] {StateSet.WILD_CARD}, new int[] {0x40a0a0a0}),
@@ -825,14 +797,10 @@ public class Theme {
   // Circle selector
 
   public static Drawable circleSelector (final float size, final @ColorId int colorId) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return circleRippleSelector(size, colorId);
-    } else {
-      return circleSimpleSelector(size, colorId);
-    }
+    return circleRippleSelector(size, colorId);
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static Drawable circleRippleSelector (final float size, final @ColorId int colorId) {
     return new android.graphics.drawable.RippleDrawable(
       new ColorStateList(new int[][] {StateSet.WILD_CARD}, new int[] {0x40a0a0a0}),
@@ -848,14 +816,10 @@ public class Theme {
   // Circle selector
 
   public static Drawable rectSelector (final float size, final float padding, final @ColorId int color) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return rectRippleSelector(size, padding, color);
-    } else {
-      return rectSimpleSelector(size, padding, color);
-    }
+    return rectRippleSelector(size, padding, color);
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static Drawable rectRippleSelector (final float size, final float padding, final @ColorId int colorId) {
     return new android.graphics.drawable.RippleDrawable(
       new ColorStateList(new int[][] {StateSet.WILD_CARD}, new int[] {0x60a0a0a0}),
@@ -937,7 +901,7 @@ public class Theme {
     return Theme.getProperty(PropertyId.IMAGE_CORNER);
   }
 
-  private static final boolean BUBBLE_BIG_RADIUS_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+  private static final boolean BUBBLE_BIG_RADIUS_AVAILABLE = true;
 
   public static float getBubbleDefaultRadius () {
     return Theme.getProperty(BUBBLE_BIG_RADIUS_AVAILABLE ? PropertyId.BUBBLE_CORNER : PropertyId.BUBBLE_CORNER_LEGACY);
@@ -977,18 +941,12 @@ public class Theme {
     defaultDrawable.getPaint().setColor(defaultColor);
     ShapeDrawable pressedDrawable = new ShapeDrawable(new RoundRectShape(new float[]{rad, rad, rad, rad, rad, rad, rad, rad}, null, null));
     pressedDrawable.getPaint().setColor(maskColor);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       ColorStateList colorStateList = new ColorStateList(
         new int[][]{StateSet.WILD_CARD},
         new int[]{pressedColor}
       );
       return new android.graphics.drawable.RippleDrawable(colorStateList, defaultDrawable, pressedDrawable);
-    } else {
-      StateListDrawable stateListDrawable = new StateListDrawable();
-      stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, pressedDrawable);
-      stateListDrawable.addState(new int[]{android.R.attr.state_selected}, pressedDrawable);
-      stateListDrawable.addState(StateSet.WILD_CARD, defaultDrawable);
-      return stateListDrawable;
     }
   }
 
@@ -999,19 +957,13 @@ public class Theme {
   }
 
   public static Drawable getRoundRectSelectorDrawable(int color) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       Drawable maskDrawable = createRoundRectDrawable(Screen.dp(3), 0xffffffff);
       ColorStateList colorStateList = new ColorStateList(
         new int[][]{StateSet.WILD_CARD},
         new int[]{(color & 0x00ffffff) | 0x19000000}
       );
       return new android.graphics.drawable.RippleDrawable(colorStateList, null, maskDrawable);
-    } else {
-      StateListDrawable stateListDrawable = new StateListDrawable();
-      stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, createRoundRectDrawable(Screen.dp(3), (color & 0x00ffffff) | 0x19000000));
-      stateListDrawable.addState(new int[]{android.R.attr.state_selected}, createRoundRectDrawable(Screen.dp(3), (color & 0x00ffffff) | 0x19000000));
-      stateListDrawable.addState(StateSet.WILD_CARD, new ColorDrawable(0x00000000));
-      return stateListDrawable;
     }
   }
 
@@ -1063,3 +1015,4 @@ public class Theme {
     }
   }
 }
+// endregion

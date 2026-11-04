@@ -12,6 +12,7 @@
  *
  * File created on 14/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.app.TimePickerDialog;
@@ -196,7 +197,7 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
               break;
           }
         } else if (itemId == R.id.btn_cameraType) {
-          if (Config.CAMERA_X_AVAILABLE) {
+          {
             int type = Settings.instance().getCameraType();
             switch (type) {
               case Settings.CAMERA_TYPE_LEGACY:
@@ -209,8 +210,6 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
                 v.setData(R.string.CameraTypeXBeta);
                 break;
             }
-          } else {
-            v.getToggler().setRadioEnabled(Settings.instance().getCameraType() == Settings.CAMERA_TYPE_SYSTEM, isUpdate);
           }
         } else if (itemId == R.id.btn_systemFonts) {
           v.getToggler().setRadioEnabled(Settings.instance().useSystemFonts(), isUpdate);
@@ -448,7 +447,7 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
       items.add(new ListItem(ListItem.TYPE_RADIO_OPTION, R.id.btn_autoNightModeNone, 0, R.string.AutoNightDisabled, R.id.btn_autoNightMode, currentNightMode == Settings.NIGHT_MODE_NONE));
       if (Settings.NIGHT_MODE_DEFAULT == Settings.NIGHT_MODE_SYSTEM || (currentNightMode == Settings.NIGHT_MODE_SYSTEM || context().hasSystemNightMode())) {
         items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
-        items.add(new ListItem(ListItem.TYPE_RADIO_OPTION, R.id.btn_autoNightModeSystem, 0, Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? R.string.AutoNightSystemQ : R.string.AutoNightSystem, R.id.btn_autoNightMode, currentNightMode == Settings.NIGHT_MODE_SYSTEM));
+        items.add(new ListItem(ListItem.TYPE_RADIO_OPTION, R.id.btn_autoNightModeSystem, 0, (R.string.AutoNightSystemQ), R.id.btn_autoNightMode, currentNightMode == Settings.NIGHT_MODE_SYSTEM));
       }
 
       if (lightSensorAvailable) {
@@ -467,7 +466,7 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
           break;
         }
         case Settings.NIGHT_MODE_SYSTEM: {
-          items.add(new ListItem(ListItem.TYPE_DESCRIPTION, R.id.btn_autoNightMode_description, 0, Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? R.string.AutoNightModeDescriptionSystemQ : R.string.AutoNightModeDescriptionSystem));
+          items.add(new ListItem(ListItem.TYPE_DESCRIPTION, R.id.btn_autoNightMode_description, 0, (R.string.AutoNightModeDescriptionSystemQ)));
           break;
         }
         case Settings.NIGHT_MODE_AUTO: {
@@ -505,10 +504,8 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
       });
     } else if (mode == MODE_INTERFACE_OPTIONS) {
       items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_autoplayGIFs, 0, R.string.AutoplayGifs));
-      if (Config.IN_APP_BROWSER_AVAILABLE) {
-        items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
-        items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_useInAppBrowser, 0, R.string.UseInAppBrowser, Settings.instance().useInAppBrowser()));
-      }
+      items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+      items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_useInAppBrowser, 0, R.string.UseInAppBrowser, Settings.instance().useInAppBrowser()));
       if (Config.FORCE_TOUCH_ENABLED && Config.HOLD_TO_PREVIEW_AVAILABLE) {
         items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
         items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_useHoldToPreview, 0, R.string.HoldToPreview, Settings.instance().needPreviewChatOnHold()));
@@ -600,7 +597,7 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
       items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_earpieceModeVideo, 0, R.string.EarpieceMode));
       items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
       items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_rearRounds, 0, R.string.UseRearRoundVideos));
-      if (!Device.NEED_HQ_ROUND_VIDEOS && Config.ROUND_VIDEOS_RECORD_SUPPORTED) {
+      if ((!Device.NEED_HQ_ROUND_VIDEOS)) {
         items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
         items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_hqRounds, 0, R.string.UseHqRoundVideos));
       }
@@ -613,14 +610,10 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
       items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
       items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ConfirmCallsDesc));
 
-      if (Config.CUSTOM_CAMERA_AVAILABLE) {
+      {
         items.add(new ListItem(ListItem.TYPE_HEADER, 0, 0, R.string.Camera));
         items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
-        if (Config.CAMERA_X_AVAILABLE) {
-          items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_cameraType, 0, R.string.CameraType));
-        } else {
-          items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_cameraType, 0, R.string.CameraUseSystem));
-        }
+        items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_cameraType, 0, R.string.CameraType));
         items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
         items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_cameraSetting, 0, R.string.CameraKeepMedia).setLongId(Settings.SETTING_FLAG_CAMERA_KEEP_DISCARDED_MEDIA));
         boolean hasSettings = Settings.instance().getCameraType() != Settings.CAMERA_TYPE_SYSTEM;
@@ -849,7 +842,7 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
           }
           break;
         case Settings.NIGHT_MODE_SYSTEM:
-          descriptionChanged = descriptionItem.setStringIfChanged(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? R.string.AutoNightModeDescriptionSystemQ : R.string.AutoNightModeDescriptionSystem);
+          descriptionChanged = descriptionItem.setStringIfChanged((R.string.AutoNightModeDescriptionSystemQ));
           break;
         case Settings.NIGHT_MODE_AUTO:
           descriptionChanged = descriptionItem.setStringIfChanged(Lang.getString(R.string.AutoNightModeDescriptionAuto, currentNightPercentage));
@@ -1024,7 +1017,7 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
         return true;
       });
     } else if (viewId == R.id.btn_cameraType) {
-      if (Config.CAMERA_X_AVAILABLE) {
+      {
         int type = Settings.instance().getCameraType();
         showSettings(R.id.btn_cameraType, new ListItem[] {
           new ListItem(ListItem.TYPE_RADIO_OPTION, R.id.btn_cameraTypeX, 0, R.string.CameraTypeXBeta, R.id.btn_cameraType, type == Settings.CAMERA_TYPE_X),
@@ -1063,8 +1056,6 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
           }
           adapter.updateValuedSettingById(R.id.btn_cameraType);
         });
-      } else {
-        Settings.instance().setCameraType(adapter.toggleView(v) ? Settings.CAMERA_TYPE_SYSTEM : Settings.CAMERA_TYPE_LEGACY);
       }
     } else if (viewId == R.id.btn_systemFonts) {
       Boolean value = Fonts.areUsingSystemFonts();
@@ -1865,3 +1856,4 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
     }
   }
 }
+// endregion

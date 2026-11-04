@@ -12,6 +12,7 @@
  *
  * File created on 23/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.sticker;
 
 import android.content.Context;
@@ -35,7 +36,6 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.R;
@@ -449,23 +449,19 @@ public class StickerPreviewView extends FrameLayoutFix implements FactorAnimator
       protected void onDraw (Canvas c) {
         RectF rectF = Paints.getRectF();
         rectF.set(getPaddingLeft(), getPaddingTop(), getMeasuredWidth() - getPaddingRight(), getMeasuredHeight() - getPaddingBottom());
-        Paint paint = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? Paints.fillingPaint(Theme.fillingColor()) : Paints.shadowFillingPaint(Theme.fillingColor());
+        Paint paint = (Paints.fillingPaint(Theme.fillingColor()));
         c.drawRoundRect(rectF, Screen.dp(2f), Screen.dp(2f), paint);
       }
     };
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      menu.setElevation(Screen.dp(1f));
-      menu.setTranslationZ(Screen.dp(1f));
-      menu.setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setRoundRect(view.getPaddingLeft(), view.getPaddingTop(), view.getMeasuredWidth() - view.getPaddingRight(), view.getMeasuredHeight() - view.getPaddingBottom(), Screen.dp(2f));
-        }
-      });
-    } else {
-      Views.setLayerType(menu, LAYER_TYPE_SOFTWARE);
-    }
+    menu.setElevation(Screen.dp(1f));
+    menu.setTranslationZ(Screen.dp(1f));
+    menu.setOutlineProvider(new android.view.ViewOutlineProvider() {
+
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setRoundRect(view.getPaddingLeft(), view.getPaddingTop(), view.getMeasuredWidth() - view.getPaddingRight(), view.getMeasuredHeight() - view.getPaddingBottom(), Screen.dp(2f));
+      }
+    });
     menu.setWillNotDraw(false);
     menu.setPadding(Screen.dp(4f), Screen.dp(4f), Screen.dp(4f), Screen.dp(4f));
     menu.setOrientation(LinearLayout.HORIZONTAL);
@@ -997,3 +993,4 @@ public class StickerPreviewView extends FrameLayoutFix implements FactorAnimator
     return buttonView;
   }
 }
+// endregion

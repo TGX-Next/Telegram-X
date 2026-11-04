@@ -12,6 +12,7 @@
  *
  * File created on 21/01/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.service;
 
 import android.app.Notification;
@@ -34,7 +35,6 @@ import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.media3.common.C;
 import androidx.media3.extractor.metadata.id3.ApicFrame;
 
@@ -378,15 +378,11 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
 
     this.currentTdlib = tdlib;
     this.currentTrack = track;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (currentCover != null) {
-        this.oldCover = recycleBitmap(oldCover);
-        this.oldCover = currentCover;
-      }
-      this.currentCover = null;
-    } else {
-      this.currentCover = recycleBitmap(currentCover);
+    if (currentCover != null) {
+      this.oldCover = recycleBitmap(oldCover);
+      this.oldCover = currentCover;
     }
+    this.currentCover = null;
     this.playDuration = this.playPosition = -1;
 
     if (!hasTrack) {
@@ -491,7 +487,7 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   }
 
   private void initResources () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       android.media.session.MediaSession session = new android.media.session.MediaSession(this, "MusicService");
       session.setCallback(new android.media.session.MediaSession.Callback() {
         @Override
@@ -547,9 +543,9 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
     emptyCover = tryCreatePlaceholder();
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private void setSessionMetadata () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaSession != null) {
+    if ((mediaSession != null)) {
       TdApi.Audio audio = ((TdApi.MessageAudio) currentTrack.content).audio;
       android.media.session.MediaSession session = (android.media.session.MediaSession) mediaSession;
       android.media.MediaMetadata.Builder b = new android.media.MediaMetadata.Builder();
@@ -582,9 +578,9 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private void setSessionPlayState () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaSession != null) {
+    if ((mediaSession != null)) {
       android.media.session.MediaSession session = (android.media.session.MediaSession) mediaSession;
 
       android.media.session.PlaybackState.Builder stateBuilder = new android.media.session.PlaybackState.Builder();
@@ -613,7 +609,7 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   private void destroyResources () {
     TdlibManager.instance().player().setReduceVolume(false);
     emptyCover = recycleBitmap(emptyCover);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaSession != null) {
+    if ((mediaSession != null)) {
       android.media.session.MediaSession session = (android.media.session.MediaSession) mediaSession;
       session.setActive(false);
       session.release();
@@ -653,11 +649,7 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   private Notification buildNotification () {
     Notification.Builder b;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      b = new Notification.Builder(this, Intents.newSimpleChannel(Intents.CHANNEL_ID_PLAYBACK, R.string.NotificationChannelPlayback));
-    } else {
-      b = new Notification.Builder(this);
-    }
+    b = new Notification.Builder(this, Intents.newSimpleChannel(Intents.CHANNEL_ID_PLAYBACK, R.string.NotificationChannelPlayback));
 
     b.setContentIntent(valueOfPlayer(currentTdlib.id()));
 
@@ -679,17 +671,15 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
       b.addAction(R.drawable.baseline_stop_24_white, Lang.getString(R.string.PlayStop), stopIntent);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       b.setColor(currentTdlib.accountPlayerColor());
       int[] indexes = new int[] {0,1,2};
       b.setStyle(new Notification.MediaStyle().setShowActionsInCompactView(indexes).setMediaSession(((android.media.session.MediaSession) mediaSession).getSessionToken()));
     }
     b.setSmallIcon(R.drawable.baseline_play_circle_filled_24_white);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      b.setVisibility(Notification.VISIBILITY_PUBLIC);
-    }
+    b.setVisibility(Notification.VISIBILITY_PUBLIC);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+    {
       boolean isPlaying = playState == TGPlayerController.STATE_PLAYING && !playBuffering && playDuration != C.TIME_UNSET && playPosition != C.TIME_UNSET && trackIndex != -1;
       if (isPlaying) {
         b.setUsesChronometer(true).setWhen(System.currentTimeMillis() - playPosition);
@@ -718,7 +708,7 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
   // Apic
 
   private static int getCoverSize (boolean isEmpty) {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !isEmpty ? Math.max(1024, Screen.smallestSide()) : Screen.dp(64f);
+    return (!isEmpty) ? Math.max(1024, Screen.smallestSide()) : Screen.dp(64f);
   }
 
   private void setApic (Tdlib tdlib, TdApi.Message message, Bitmap bitmap) {
@@ -824,3 +814,4 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
     setAudioFocusState(focusChange);
   }
 }
+// endregion

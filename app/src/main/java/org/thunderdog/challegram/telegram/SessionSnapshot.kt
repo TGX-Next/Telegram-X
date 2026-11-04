@@ -1,8 +1,8 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 @file:JvmName("SessionSnapshot")
 
 package org.thunderdog.challegram.telegram
 
-import android.os.Build
 import org.thunderdog.challegram.Log
 import org.thunderdog.challegram.unsorted.AppContext
 import org.thunderdog.challegram.unsorted.Settings
@@ -101,11 +101,7 @@ fun createSnapshotWithAllAccounts(): File {
 
 @Suppress("Deprecation")
 private fun getPublicDirectory(): File =
-  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-    AppContext.get().getExternalFilesDir(null)!!
-  } else {
-    AppContext.get().externalMediaDirs.first()
-  }
+  AppContext.get().externalMediaDirs.first()
 
 fun restoreSnapshot(): Boolean {
   val publicDir = getPublicDirectory()
@@ -137,3 +133,4 @@ fun restoreSnapshot(): Boolean {
 
   return true
 }
+// endregion

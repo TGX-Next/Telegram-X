@@ -12,6 +12,7 @@
  *
  * File created on 03/05/2015 at 17:57
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.core;
 
 import android.Manifest;
@@ -58,7 +59,7 @@ import me.vkryl.core.BitwiseUtils;
 import me.vkryl.core.StringUtils;
 
 public class Media {
-  public static final String DATE_COLUMN = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? MediaStore.Images.Media.DATE_MODIFIED : MediaStore.Images.Media.DATE_TAKEN;
+  public static final String DATE_COLUMN = (MediaStore.Images.Media.DATE_MODIFIED);
 
   private static Media instance;
 
@@ -183,7 +184,7 @@ public class Media {
 
   private static String[] getGalleryProjection (boolean allowVideos) {
     String[] projection;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    {
       final List<String> projectionList = new ArrayList<>();
       if (allowVideos) {
         Collections.addAll(projectionList,
@@ -216,40 +217,8 @@ public class Media {
           MediaStore.Images.ImageColumns.HEIGHT
         );
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        projectionList.add(MediaStore.Images.ImageColumns.IS_FAVORITE);
-      }
+      projectionList.add(MediaStore.Images.ImageColumns.IS_FAVORITE);
       projection = projectionList.toArray(new String[0]);
-    } else {
-      if (allowVideos) {
-        projection = new String[] {
-          MediaStore.Files.FileColumns.MEDIA_TYPE,
-          MediaStore.Files.FileColumns.MIME_TYPE,
-
-          MediaStore.Images.Media._ID,
-          MediaStore.Images.Media.DATA,
-          DATE_COLUMN,
-          MediaStore.Images.Media.ORIENTATION,
-          MediaStore.Images.Media.BUCKET_ID,
-          MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-          MediaStore.Images.Media.WIDTH,
-          MediaStore.Images.Media.HEIGHT,
-
-          MediaStore.Video.Media.DURATION,
-          MediaStore.Video.Media.RESOLUTION
-        };
-      } else {
-        projection = new String[] {
-          MediaStore.Images.Media._ID,
-          MediaStore.Images.Media.DATA,
-          DATE_COLUMN,
-          MediaStore.Images.Media.ORIENTATION,
-          MediaStore.Images.Media.BUCKET_ID,
-          MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-          MediaStore.Images.Media.WIDTH,
-          MediaStore.Images.Media.HEIGHT
-        };
-      }
     }
     return projection;
   }
@@ -259,7 +228,7 @@ public class Media {
   }
 
   public Cursor getGalleryCursor (long startDate, boolean allowVideos, int limit) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    {
       BaseActivity context = UI.getUiContext();
 
       if (context == null) {
@@ -268,13 +237,11 @@ public class Media {
 
       if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
         boolean fail = true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          if (
-            context.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED ||
-            context.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
-          ) {
-            fail = false;
-          }
+        if (
+          context.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED ||
+          context.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
+        ) {
+          fail = false;
         }
         if (fail && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
           if (context.checkSelfPermission(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED) {
@@ -363,37 +330,18 @@ public class Media {
       durationColumn,
       resolutionColumn,
       widthColumn, heightColumn, faveColumn;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      imageIdColumn = c.getColumnIndex(MediaStore.Images.ImageColumns._ID);
-      dataColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-      dateColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED);
-      dateTakenColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
-      orientationColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.ORIENTATION);
-      bucketIdColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID);
-      bucketNameColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME);
-      widthColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH);
-      heightColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT);
-      durationColumn = c.getColumnIndex(MediaStore.Video.VideoColumns.DURATION);
-      resolutionColumn = -1;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        faveColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.IS_FAVORITE);
-      } else {
-        faveColumn = -1;
-      }
-    } else {
-      imageIdColumn = c.getColumnIndex(MediaStore.Images.Media._ID);
-      dataColumn = c.getColumnIndex(MediaStore.Images.Media.DATA);
-      dateColumn = c.getColumnIndex(DATE_COLUMN);
-      dateTakenColumn = -1;
-      orientationColumn = c.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
-      bucketIdColumn = c.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
-      bucketNameColumn = c.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-      widthColumn = c.getColumnIndex(MediaStore.Images.Media.WIDTH);
-      heightColumn = c.getColumnIndex(MediaStore.Images.Media.HEIGHT);
-      durationColumn = c.getColumnIndex(MediaStore.Video.Media.DURATION);
-      resolutionColumn = c.getColumnIndex(MediaStore.Video.Media.RESOLUTION); // TODO: check if it actually works?
-      faveColumn = -1;
-    }
+    imageIdColumn = c.getColumnIndex(MediaStore.Images.ImageColumns._ID);
+    dataColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+    dateColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED);
+    dateTakenColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
+    orientationColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.ORIENTATION);
+    bucketIdColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID);
+    bucketNameColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME);
+    widthColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH);
+    heightColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT);
+    durationColumn = c.getColumnIndex(MediaStore.Video.VideoColumns.DURATION);
+    resolutionColumn = -1;
+    faveColumn = c.getColumnIndex(MediaStore.Images.ImageColumns.IS_FAVORITE);
 
     LongSparseArray<GalleryBucket> buckets = new LongSparseArray<>();
     BitmapFactory.Options opts = null;
@@ -408,9 +356,7 @@ public class Media {
         long imageId = U.getLongOrInt(c, imageIdColumn);
         String path = c.getString(dataColumn);
         long dateTaken = U.getLongOrInt(c, dateColumn);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-          dateTaken *= 1000l;
-        }
+        dateTaken *= 1000l;
         long dateCreated = dateTakenColumn != -1 ? U.getLongOrInt(c, dateTakenColumn) : 0;
         /*if (dateCreated == 0 && dateAddedColumn != -1) {
           dateCreated = U.getLongOrInt(c, dateAddedColumn) * 1000l;
@@ -559,7 +505,7 @@ public class Media {
     if (allMedia.isEmpty())
       return null;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    {
       Comparator<ImageFile> comparator = (a, b) -> {
         ImageGalleryFile g1 = (ImageGalleryFile) a;
         ImageGalleryFile g2 = (ImageGalleryFile) b;
@@ -824,3 +770,4 @@ public class Media {
   }
 
 }
+// endregion

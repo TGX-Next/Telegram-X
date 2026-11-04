@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -149,7 +150,7 @@ public class MessageStatisticsController extends RecyclerViewController<MessageS
         } else {
           user.setCustomStatus("");
         }
-        
+
         user.chatTitleAsUserName();
 
         userView.setUser(user);
@@ -375,3 +376,4 @@ public class MessageStatisticsController extends RecyclerViewController<MessageS
     return statistics == null || pendingRequests > 0;
   }
 }
+// endregion

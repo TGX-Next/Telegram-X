@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.charts;
 
 import android.animation.ValueAnimator;
@@ -373,9 +374,7 @@ public class PieChartView extends StackLinearChartView<PieChartViewData> {
             pieLegendView.setTranslationY(yl);
 
             boolean v = false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                v = performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-            }
+            v = performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             if (!v) {
                 performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             }
@@ -564,3 +563,4 @@ public class PieChartView extends StackLinearChartView<PieChartViewData> {
         }
     }
 }
+// endregion

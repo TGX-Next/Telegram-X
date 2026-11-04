@@ -12,6 +12,7 @@
  *
  * File created on 20/02/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.os.Build;
@@ -768,7 +769,7 @@ public class TdlibAccount implements Comparable<TdlibAccount>, TdlibProvider {
       return "@" + username;
     }
     if (context.hasAccountWithFirstName(firstName, id) == TdlibAccount.NO_ID) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && firstName.length() < 12 && !StringUtils.isEmpty(lastName)) {
+      if ((firstName.length() < 12) && !StringUtils.isEmpty(lastName)) {
         return TD.getUserName(firstName, lastName);
       } else {
         return firstName;
@@ -781,3 +782,4 @@ public class TdlibAccount implements Comparable<TdlibAccount>, TdlibProvider {
   }
 
 }
+// endregion

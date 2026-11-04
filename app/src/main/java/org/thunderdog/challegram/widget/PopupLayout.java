@@ -12,6 +12,7 @@
  *
  * File created on 06/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.animation.Animator;
@@ -298,7 +299,7 @@ public class PopupLayout extends RootFrameLayout implements FactorAnimator.Targe
       View rootView = window.getContentView().getRootView();
       ViewGroup.LayoutParams layoutParams = rootView.getLayoutParams();
       boolean disallowScreenShots = shouldDisallowScreenshots();
-      if (!(layoutParams instanceof WindowManager.LayoutParams) || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !rootView.isAttachedToWindow())) {
+      if (!(layoutParams instanceof WindowManager.LayoutParams) || ((!rootView.isAttachedToWindow()))) {
         // TODO: analyze in what situations container parameters become `android.widget.FrameLayout$LayoutParams`
         // after that, uncomment code below, if it's caused by root view, not by window detachment
         /*int windowFlags =
@@ -343,7 +344,7 @@ public class PopupLayout extends RootFrameLayout implements FactorAnimator.Targe
           window.setBackgroundDrawable(new RootDrawable(UI.getContext(getContext())));
           View rootView = window.getContentView().getRootView();
           boolean updated = patchPopupWindow(rootView, needFullScreen, shouldDisallowScreenshots());
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          {
             WindowManager.LayoutParams lp = (WindowManager.LayoutParams) rootView.getLayoutParams();
             lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             updated = true;
@@ -541,7 +542,7 @@ public class PopupLayout extends RootFrameLayout implements FactorAnimator.Targe
     int cx = anchorRight != Lang.rtl() ? itemsWidth - padding : Screen.dp(17f);
     int cy = menuWrap.shouldPivotBottom() ? menuWrap.getItemsHeight() - padding : padding;
 
-    if (Config.REVEAL_ANIMATION_AVAILABLE && anchorRight) {
+    if ((anchorRight)) {
       animationType = ANIMATION_TYPE_MORE_REVEAL;
       menuWrap.setAlpha(0f);
       menuWrap.setScaleX(1f);
@@ -576,7 +577,7 @@ public class PopupLayout extends RootFrameLayout implements FactorAnimator.Targe
 
     Animator menuAnimator = null;
 
-    if (Config.REVEAL_ANIMATION_AVAILABLE && menuWrap.getAnchorMode() == MenuMoreWrap.ANCHOR_MODE_RIGHT) {
+    if ((menuWrap.getAnchorMode() == MenuMoreWrap.ANCHOR_MODE_RIGHT)) {
       try {
         menuAnimator = android.view.ViewAnimationUtils.createCircularReveal(menuWrap, (int) menuWrap.getPivotX(), (int) menuWrap.getPivotY(), menuWrap.getRevealRadius(), 0);
         menuAnimator.setInterpolator(MenuMoreWrap.REVEAL_INTERPOLATOR);
@@ -711,7 +712,7 @@ public class PopupLayout extends RootFrameLayout implements FactorAnimator.Targe
           int cx = anchorRight != Lang.rtl() ? itemsWidth - padding : Screen.dp(17f);
           int cy = menuWrap.shouldPivotBottom() ? menuWrap.getItemsHeight() - padding : padding;
 
-          if (animationType == ANIMATION_TYPE_MORE_REVEAL && Config.REVEAL_ANIMATION_AVAILABLE) {
+          if ((animationType == ANIMATION_TYPE_MORE_REVEAL)) {
             try {
               int newCx = Lang.rtl() ? (int) ((float) Screen.dp(49f) * .5f) : itemsWidth - (int) ((float) Screen.dp(49f) * .5f);
               int newCy = Size.getHeaderPortraitSize() / 2;
@@ -987,3 +988,4 @@ public class PopupLayout extends RootFrameLayout implements FactorAnimator.Targe
 
 
 }
+// endregion

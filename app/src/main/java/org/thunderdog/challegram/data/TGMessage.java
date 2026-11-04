@@ -12,6 +12,7 @@
  *
  * File created on 03/05/2015 at 10:39
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.data;
 
 import android.content.res.Resources;
@@ -2020,14 +2021,7 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
     if (hasBubble) {
       final int bubbleColor = Theme.getColor(isOutgoingBubble() && !useCircleBubble() ? ColorId.bubbleOut_background : ColorId.bubbleIn_background);
       lineFactor = Theme.getBubbleOutlineFactor();
-      /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && lineFactor < 1f) {
-        c.save();
-        int offset = Screen.dp(1.5f);
-        c.clipRect(getActualLeftContentEdge(), bottomContentEdge - (xBubblePadding + xBubblePaddingSmall) * 2, getActualRightContentEdge(), bottomContentEdge + offset * 2);
-        c.translate(0, offset);
-        drawBubble(c, Paints.fillingPaint(Utils.alphaColor((1f - lineFactor) * .2f, 0xff000000)), false);
-        c.restore();
-      }*/
+
       if (lineFactor != 1f) {
         drawBubbleShadow(c, 1f - lineFactor);
       }
@@ -3168,7 +3162,7 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
       msg.importInfo.date :
     0;
   }
-  
+
   public final boolean forceForwardOrImportInfo () {
     if (msg.importInfo != null) {
       return true;
@@ -7388,21 +7382,6 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
 
   @Nullable
   public final TdlibAccentColor getContentAccentColor () {
-    if (true) {
-      return null;
-    }
-    if (needColoredNames()) {
-      if (fAuthorNameAccentColor != null) {
-        return fAuthorNameAccentColor;
-      } else if (forwardInfo != null) {
-        return forwardInfo.getAuthorAccentColor();
-      }
-      if (hAuthorAccentColor != null) {
-        return hAuthorAccentColor;
-      } else {
-        return forceForwardOrImportInfo() ? forwardInfo.getAuthorAccentColor() : sender.getAccentColor();
-      }
-    }
     return null;
   }
 
@@ -9268,11 +9247,7 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
           offsetProvider.getOffset(p);
           context().replaceReactionPreviewCords(finishX + p.x, finishY + p.y);
           context().closeStickerPreview();
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            onQuickReactionAnimationFinish(view.isAttachedToWindow());
-          } else {
-            onQuickReactionAnimationFinish();
-          }
+          onQuickReactionAnimationFinish(view.isAttachedToWindow());
         };
         final CancellableRunnable finishAnimation = new CancellableRunnable() {
           @Override
@@ -9767,7 +9742,7 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
 
     return emojiSets.toArray();
   }
-  
+
   /* Reaction Avatars */
 
   // todo: update when supergroup updated
@@ -9998,3 +9973,4 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
     // TODO?
   }
 }
+// endregion

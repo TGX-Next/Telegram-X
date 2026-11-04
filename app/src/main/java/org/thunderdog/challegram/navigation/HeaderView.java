@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 19:23
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.animation.Animator;
@@ -41,7 +42,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.component.base.SwitchDrawable;
@@ -131,17 +131,15 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
     textTitle = genTextTitle(context);
     height = Size.getHeaderPortraitSize();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          Rect bounds = filling.getBounds();
-          outline.setRect(bounds.left, bounds.top, bounds.right, bounds.top + filling.getOutlineBottom() + getCurrentHeaderOffset());
-          outline.setAlpha(0f);
-        }
-      });
-    }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        Rect bounds = filling.getBounds();
+        outline.setRect(bounds.left, bounds.top, bounds.right, bounds.top + filling.getOutlineBottom() + getCurrentHeaderOffset());
+        outline.setAlpha(0f);
+      }
+    });
   }
 
   @Override
@@ -262,9 +260,7 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
       if (preview != null && preview != textPreview) {
         dispatchOffset(preview);
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        invalidateOutline();
-      }
+      invalidateOutline();
       if (isOwningStack) {
         setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, getSize(true) + filling.getExtraHeight(), Gravity.TOP));
       } else {
@@ -282,11 +278,7 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
 
   @SuppressWarnings("deprecation")
   private void invalidateHeader () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      invalidate();
-    } else {
-      invalidate(0, 0, getMeasuredWidth(), filling.getBottom() + filling.getExtraHeight());
-    }
+    invalidate();
   }
 
   public void resetColors (ViewController<?> c, ViewController<?> preview) {
@@ -1626,10 +1618,8 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
       filling.setPlayerAllowance(playerSwitch ? raptor : 1f - raptor);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (useBarSwitch) {
-        setStatusBarColor(window, barChanger.getColor(raptor));
-      }
+    if (useBarSwitch) {
+      setStatusBarColor(window, barChanger.getColor(raptor));
     }
 
     if (useHeightSwitch || useColorSwitch || useShadowSwitch || useBackColorSwitch) {
@@ -1647,7 +1637,7 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
   }
 
   @SuppressWarnings("deprecation")
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private static void setStatusBarColor (Window window, int color) {
     window.setStatusBarColor(color);
   }
@@ -2602,7 +2592,7 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
       getFilling().setPlayerAllowance(basePlayer ? 1f : 0f);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       int leftStatusColor = getStatusBarColor(left, !inTransformMode);
       int rightStatusColor = inTransformMode ? getStatusBarColor(left, true) : getStatusBarColor(right, !inTransformMode);
       int baseStatusColor = forward ? leftStatusColor : rightStatusColor;
@@ -2868,10 +2858,7 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
   }
 
   public static int getTopOffset () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return Screen.getStatusBarHeight();
-    }
-    return 0;
+    return Screen.getStatusBarHeight();
   }
 
   // Language
@@ -3003,3 +2990,4 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
     // TODO more
   }
 }
+// endregion

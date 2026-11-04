@@ -1,3 +1,4 @@
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 project(tgx VERSION 1.0.0 LANGUAGES C CXX)
 message(STATUS "Building ${PROJECT_NAME} ndk: r${ANDROID_NDK_MAJOR} (${ANDROID_NDK_REVISION}) platform: ${ANDROID_PLATFORM} (${ANDROID_MIN_SDK_VERSION}) abi: ${ANDROID_ABI} type: ${CMAKE_BUILD_TYPE} flavor: ${TGX_FLAVOR} (${PROJECT_SOURCE_DIR})")
@@ -14,6 +15,10 @@ if(NOT EXISTS "${ANDROID_NDK}")
   message(FATAL_ERROR "ANDROID_NDK is not set")
 endif()
 
+if (ANDROID_MIN_SDK_VERSION LESS 33 OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
+  message(FATAL_ERROR "Only Android 13+ (API 33+) and arm64-v8a are supported")
+endif()
+
 # == Include ==
 
 include("${CMAKE_HOME_DIRECTORY}/cmake/ReadVariables.cmake")
@@ -26,42 +31,15 @@ set(THIRDPARTY_DIR "${PROJECT_SOURCE_DIR}/third_party")
 set(TDLIB_DIR "${TGX_ROOT_DIR}/tdlib")
 set(UTILS_DIR "${THIRDPARTY_DIR}/jni-utils")
 
-if(ANDROID_MIN_SDK_VERSION GREATER_EQUAL 21)
-  set(ENABLE_TGVOIP yes)
-else()
-  set(ENABLE_TGVOIP no)
-endif()
-
-# Using webp only if building for 32-bit platform
-#if (${ANDROID_ABI} STREQUAL "armeabi-v7a" OR ${ANDROID_ABI} STREQUAL "x86")
-#  set(USE_WEBP yes)
-#else()
-#  set(USE_WEBP no)
-#endif()
-set(USE_WEBP yes)
-
 set(VPX_DIR "${LIBVPX_DIR}/${ANDROID_ABI}")
 set(VPX_LIB_PATH "${VPX_DIR}/lib/libvpx.a")
-
-# == Constants ==
-# $IS_ARM_FAMILY – armeabi-v7a or arm64-v8a
-
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a" OR ${ANDROID_ABI} STREQUAL "arm64-v8a")
-  set(IS_ARM_FAMILY yes)
-else()
-  set(IS_ARM_FAMILY no)
-endif()
 
 # == CMake global settings ==
 
 set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
-if (${IS_ARM_FAMILY})
-  enable_language(ASM)
-else()
-  enable_language(ASM_NASM)
-endif()
+enable_language(ASM)
 set(ORIGINAL_CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}")
 
 add_compile_options(
@@ -81,21 +59,10 @@ add_compile_options(
   "$<$<COMPILE_LANGUAGE:C,CXX,ASM>:-ffile-prefix-map=${CMAKE_BINARY_DIR}=.cxx>"
 )
 
-if (ANDROID_MIN_SDK_VERSION GREATER_EQUAL 30)
-  add_link_options(
-    "-Wl,--pack-dyn-relocs=android+relr"
-    "-Wl,--no-use-android-relr-tags"
-  )
-elseif (ANDROID_MIN_SDK_VERSION GREATER_EQUAL 28)
-  add_link_options(
-    "-Wl,--pack-dyn-relocs=android+relr"
-    "-Wl,--use-android-relr-tags"
-  )
-elseif (ANDROID_MIN_SDK_VERSION GREATER_EQUAL 23)
-  add_link_options(
-    "-Wl,--pack-dyn-relocs=android"
-  )
-endif()
+add_link_options(
+  "-Wl,--pack-dyn-relocs=android+relr"
+  "-Wl,--no-use-android-relr-tags"
+)
 
 # == Libraries ==
 
@@ -109,14 +76,12 @@ add_library(ssl SHARED IMPORTED)
 set_target_properties(ssl PROPERTIES IMPORTED_LOCATION
   ${TDLIB_DIR}/openssl/${ANDROID_NDK_REVISION}/${ANDROID_PLATFORM}/${ANDROID_ABI}/lib/libsslx.so
 )
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
-  target_include_directories(crypto INTERFACE
-    ${TDLIB_DIR}/openssl/${ANDROID_NDK_REVISION}/${ANDROID_PLATFORM}/${ANDROID_ABI}/include
-  )
-  target_include_directories(ssl INTERFACE
-    ${TDLIB_DIR}/openssl/${ANDROID_NDK_REVISION}/${ANDROID_PLATFORM}/${ANDROID_ABI}/include
-  )
-endif()
+target_include_directories(crypto INTERFACE
+  ${TDLIB_DIR}/openssl/${ANDROID_NDK_REVISION}/${ANDROID_PLATFORM}/${ANDROID_ABI}/include
+)
+target_include_directories(ssl INTERFACE
+  ${TDLIB_DIR}/openssl/${ANDROID_NDK_REVISION}/${ANDROID_PLATFORM}/${ANDROID_ABI}/include
+)
 
 add_library(tdjni SHARED IMPORTED)
 set_target_properties(tdjni PROPERTIES IMPORTED_LOCATION
@@ -168,9 +133,7 @@ endif()
 include("${PROJECT_SOURCE_DIR}/BuildLz4.cmake")
 
 # webp
-if (${USE_WEBP})
-  include("${PROJECT_SOURCE_DIR}/BuildWebp.cmake")
-endif()
+include("${PROJECT_SOURCE_DIR}/BuildWebp.cmake")
 
 # ffmpeg
 foreach(FFMPEG_LIB IN LISTS FFMPEG_LIBS)
@@ -186,11 +149,9 @@ foreach(FFMPEG_LIB IN LISTS FFMPEG_LIBS)
 endforeach()
 
 # tgcalls
-if (${ENABLE_TGVOIP})
-  add_subdirectory(
-    "${PROJECT_SOURCE_DIR}/tgvoip"
-  )
-endif()
+add_subdirectory(
+  "${PROJECT_SOURCE_DIR}/tgvoip"
+)
 
 # == Target ==
 
@@ -271,11 +232,7 @@ target_link_libraries(${NATIVE_LIB}
   tlottie
   lz4
 )
-if (${USE_WEBP})
-  target_link_libraries(${NATIVE_LIB} webpdecoder_static)
-else()
-  target_compile_definitions(${NATIVE_LIB} PRIVATE NO_WEBP)
-endif()
+target_link_libraries(${NATIVE_LIB} webpdecoder_static)
 foreach(ffmpeg_lib ${FFMPEG_LIBS})
   target_link_libraries(${NATIVE_LIB} "${ffmpeg_lib}")
 endforeach()
@@ -295,12 +252,11 @@ target_link_options(${NATIVE_LIB} PRIVATE
   "$<$<CONFIG:Release,RelWithDebInfo,MinSizeRel>:-flto=full>"
 )
 
-if (${ANDROID_ABI} STREQUAL "arm64-v8a" OR ${ANDROID_ABI} STREQUAL "x86_64")
-  # Enable 16 KB ELF alignment.
-  target_link_options(${NATIVE_LIB} PRIVATE
-    "-Wl,-z,max-page-size=16384"
-  )
-endif()
+# Enable 16 KB ELF alignment.
+target_link_options(${NATIVE_LIB} PRIVATE
+  "-Wl,-z,max-page-size=16384"
+)
 
 include(AndroidNdkModules)
 android_ndk_import_module_cpufeatures()
+# endregion

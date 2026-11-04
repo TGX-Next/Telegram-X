@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 17:11
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.os.Build;
@@ -19,7 +20,7 @@ import android.os.Build;
 import me.vkryl.core.MathUtils;
 
 public class Anim {
-  public static final boolean ANIMATORS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
+  public static final boolean ANIMATORS = true;
 
   /*public static final Interpolator QUINTIC_INTERPOLATOR = new Interpolator() {
     @Override
@@ -33,3 +34,4 @@ public class Anim {
     return MathUtils.clamp(factor, -.2f, 1f);
   }
 }
+// endregion

@@ -10,12 +10,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.td.data
 
 import android.net.Uri
-import android.os.Build
 import androidx.media3.common.MimeTypes
-import androidx.media3.decoder.vp9.VpxLibrary
 import me.vkryl.core.parseLong
 import org.drinkless.tdlib.TdApi.AlternativeVideo
 import org.drinkless.tdlib.TdApi.Video
@@ -98,15 +97,15 @@ data class HlsVideo(
     ) = when (codec.substringBefore(".")) {
       // https://developer.android.com/media/platform/supported-formats
       // AV1: Android 10
-      "av1", "av01" -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+      "av1", "av01" -> true
       // h.264: Main profile guaranteed since Android M (6.0), baseline since Android Honeycomb (3.0)
-      "h264", "avc1", "avc3" -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+      "h264", "avc1", "avc3" -> true
       // h.265: Android L (5.0)
-      "h265", "hevc", "hvc1", "hev1" -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+      "h265", "hevc", "hvc1", "hev1" -> true
       // VP9: Android KitKat (4.4)
-      "vp9", "vp09" -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT || VpxLibrary.isAvailable()
+      "vp9", "vp09" -> true
       // VP8: Streamable only in Android 4.0 and above
-      "vp8", "vp08" -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
+      "vp8", "vp08" -> true
       else -> if (failOnUnknownCodec) {
         error("Unexpected codec: $codec")
       } else {
@@ -163,3 +162,4 @@ data class HlsVideo(
     return result
   }
 }
+// endregion

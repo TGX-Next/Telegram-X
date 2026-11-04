@@ -12,6 +12,7 @@
  *
  * File created on 21/05/2015 at 18:53
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.core;
 
 import android.app.NotificationManager;
@@ -38,11 +39,7 @@ public class WatchDogHelper extends BroadcastReceiver {
     final String action = intent.getAction();
 
     if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, true);
-      } else {
-        TdlibManager.instance().player().pauseWithReason(TGPlayerController.PAUSE_REASON_NOISY);
-      }
+      TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, true);
       return;
     }
 
@@ -51,32 +48,27 @@ public class WatchDogHelper extends BroadcastReceiver {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (android.media.AudioManager.ACTION_HEADSET_PLUG.equals(action)) {
-        if (intent.getIntExtra("state", 0) == 1) {
-          TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, false);
-        }
-        return;
+    if (android.media.AudioManager.ACTION_HEADSET_PLUG.equals(action)) {
+      if (intent.getIntExtra("state", 0) == 1) {
+        TdlibManager.instance().player().setPauseReason(TGPlayerController.PAUSE_REASON_NOISY, false);
       }
+      return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      if (ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED.equals(action)) {
-        watchDog.letsHelpDoge();
-        return;
-      }
+    if (ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED.equals(action)) {
+      watchDog.letsHelpDoge();
+      return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      if (NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED.equals(action) ||
-        NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED.equals(action) ||
-        NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED.equals(action)) {
-        // Notifications turned off from the shade don't pause the activity
-        TdlibManager.instance().global().notifyResolvableProblemAvailabilityMightHaveChanged();
-        return;
-      }
+    if (NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED.equals(action) ||
+      NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED.equals(action) ||
+      NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED.equals(action)) {
+      // Notifications turned off from the shade don't pause the activity
+      TdlibManager.instance().global().notifyResolvableProblemAvailabilityMightHaveChanged();
+      return;
     }
 
     watchDog.letsHelpDoge();
   }
 }
+// endregion

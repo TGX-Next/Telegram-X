@@ -12,6 +12,7 @@
  *
  * File created on 01/09/2015 at 03:14
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.mediaview;
 
 import android.content.Context;
@@ -152,7 +153,7 @@ public class MediaCellView extends ViewGroup implements
     this.imageView = new CellImageView(context);
     this.imageView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Config.USE_HARDWARE_PHOTO_VIEWER_CONFIG) {
+    if ((Config.USE_HARDWARE_PHOTO_VIEWER_CONFIG)) {
       SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.HARDWARE);
     } else {
       SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
@@ -1928,19 +1929,14 @@ public class MediaCellView extends ViewGroup implements
   @Override
   public boolean onClick (FileProgressComponent context, View view, TdApi.File file, long messageId) {
     if (media != null && media.isVideo() && (Config.VIDEO_CLOUD_PLAYBACK_AVAILABLE || media.isLoaded())) {
-      if (Config.VIDEO_PLAYER_AVAILABLE) {
-        if ((!isPlaying && !hideStaticView && !media.isAutoplay()) || view != getParent()) {
-          setHideStaticView(true, true);
-          if (playerView != null) {
-            playerView.playPause();
-          }
-          return true;
+      if ((!isPlaying && !hideStaticView && !media.isAutoplay()) || view != getParent()) {
+        setHideStaticView(true, true);
+        if (playerView != null) {
+          playerView.playPause();
         }
-        return false;
-      } else if (media.isLoaded()) {
-        U.openFile(UI.getContext(getContext()).navigation().getCurrentStackItem(), media.getSourceVideo());
+        return true;
       }
-      return true;
+      return false;
     }
     return false;
   }
@@ -2067,29 +2063,11 @@ public class MediaCellView extends ViewGroup implements
       if (!media.isGifType()) {
         TdlibManager.instance().player().pauseWithReason(TGPlayerController.PAUSE_REASON_OPEN_VIDEO);
       }
-      if (Config.VIDEO_PLAYER_AVAILABLE) {
-        setHideStaticView(true, true);
-        if (playerView != null && !playerView.isPlaying()) {
-          playerView.playPause();
-        }
-        media.setComponentsAlpha(1f);
-      } else {
-        TdlibDelegate context = UI.getContext(getContext()).navigation().getCurrentStackItem();
-        TdApi.Video video = media.getSourceVideo();
-        if (video != null) {
-          U.openFile(context, video);
-          return;
-        }
-        TdApi.Animation animation = media.getSourceAnimation();
-        if (animation != null) {
-          U.openFile(context, animation);
-          return;
-        }
-        TdApi.Document document = media.getSourceDocument();
-        if (document != null) {
-          U.openFile(context, document.fileName, new File(document.document.local.path), document.mimeType, 0);
-        }
+      setHideStaticView(true, true);
+      if (playerView != null && !playerView.isPlaying()) {
+        playerView.playPause();
       }
+      media.setComponentsAlpha(1f);
     }
   }
 
@@ -2158,3 +2136,4 @@ public class MediaCellView extends ViewGroup implements
     }
   }
 }
+// endregion

@@ -1,3 +1,4 @@
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 # OpenH264
 
 set(OPENH264_DIR "${TGCALLS_DEPS_DIR}/openh264")
@@ -79,52 +80,27 @@ target_include_directories(openh264 PRIVATE
   "${OPENH264_DIR}/codec/processing/src/common"
 )
 
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
-  target_sources(openh264 PRIVATE
-    "${OPENH264_DIR}/codec/encoder/core/arm/intra_pred_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm/intra_pred_sad_3_opt_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm/memory_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm/pixel_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm/reconstruct_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm/svc_motion_estimation.S"
-    "${OPENH264_DIR}/codec/common/arm/copy_mb_neon.S"
-    "${OPENH264_DIR}/codec/common/arm/deblocking_neon.S"
-    "${OPENH264_DIR}/codec/common/arm/expand_picture_neon.S"
-    "${OPENH264_DIR}/codec/common/arm/intra_pred_common_neon.S"
-    "${OPENH264_DIR}/codec/common/arm/mc_neon.S"
-    "${OPENH264_DIR}/codec/processing/src/arm/adaptive_quantization.S"
-    "${OPENH264_DIR}/codec/processing/src/arm/down_sample_neon.S"
-    "${OPENH264_DIR}/codec/processing/src/arm/pixel_sad_neon.S"
-    "${OPENH264_DIR}/codec/processing/src/arm/vaa_calc_neon.S"
-  )
-  target_include_directories(openh264 PRIVATE
-    "${OPENH264_DIR}/codec/common/arm"
-  )
-  target_compile_definitions(openh264 PRIVATE
-    HAVE_NEON=1
-  )
-elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-  target_sources(openh264 PRIVATE
-    "${OPENH264_DIR}/codec/encoder/core/arm64/intra_pred_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm64/intra_pred_sad_3_opt_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm64/memory_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm64/pixel_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm64/reconstruct_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/encoder/core/arm64/svc_motion_estimation_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/common/arm64/copy_mb_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/common/arm64/deblocking_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/common/arm64/expand_picture_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/common/arm64/intra_pred_common_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/common/arm64/mc_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/processing/src/arm64/adaptive_quantization_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/processing/src/arm64/down_sample_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/processing/src/arm64/pixel_sad_aarch64_neon.S"
-    "${OPENH264_DIR}/codec/processing/src/arm64/vaa_calc_aarch64_neon.S"
-  )
-  target_include_directories(openh264 PRIVATE
-    "${OPENH264_DIR}/codec/common/arm64"
-  )
-  target_compile_definitions(openh264 PUBLIC
-    HAVE_NEON_AARCH64=1
-  )
-endif()
+target_sources(openh264 PRIVATE
+  "${OPENH264_DIR}/codec/encoder/core/arm64/intra_pred_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/encoder/core/arm64/intra_pred_sad_3_opt_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/encoder/core/arm64/memory_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/encoder/core/arm64/pixel_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/encoder/core/arm64/reconstruct_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/encoder/core/arm64/svc_motion_estimation_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/common/arm64/copy_mb_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/common/arm64/deblocking_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/common/arm64/expand_picture_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/common/arm64/intra_pred_common_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/common/arm64/mc_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/processing/src/arm64/adaptive_quantization_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/processing/src/arm64/down_sample_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/processing/src/arm64/pixel_sad_aarch64_neon.S"
+  "${OPENH264_DIR}/codec/processing/src/arm64/vaa_calc_aarch64_neon.S"
+)
+target_include_directories(openh264 PRIVATE
+  "${OPENH264_DIR}/codec/common/arm64"
+)
+target_compile_definitions(openh264 PUBLIC
+  HAVE_NEON_AARCH64=1
+)
+# endregion

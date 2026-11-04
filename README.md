@@ -1,5 +1,8 @@
 # [Telegram X](https://play.google.com/store/apps/details?id=org.thunderdog.challegram) — a slick experimental Telegram client based on [TDLib](https://core.telegram.org/tdlib).
 
+This TGX-Next fork supports Android 13+ (API 33+) and arm64-v8a only.
+See the [migration notes](docs/ANDROID_13_ARM64.md) for changes, forks and validation.
+
 ![Telegram X](/images/feature.png)
 
 This is the complete source code and the build instructions for the official alternative Android client for the Telegram messenger, based on the [Telegram API](https://core.telegram.org/api) and the [MTProto](https://core.telegram.org/mtproto) secure protocol via [TDLib](https://github.com/TGX-Android/tdlib).
@@ -55,7 +58,7 @@ This is the complete source code and the build instructions for the official alt
 
 ### Building
 
-1. `$ git clone --recursive https://github.com/TGX-Android/Telegram-X tgx`
+1. `$ git clone --recursive https://github.com/TGX-Next/Telegram-X tgx`
 2. In case you forgot the `--recursive` flag, `cd` into `tgx` directory and run: `$ git submodule update --init --recursive`
 3. Open project via **[Android Studio](https://developer.android.com/studio/)** or build manually from the command line: `./gradlew assembleLatestDebug`
 4. If build fails, follow the instructions provided in the error message.
@@ -77,7 +80,7 @@ This is the complete source code and the build instructions for the official alt
 <details>
 <summary>Reference of commands for building, testing and maintenance</summary>
 
-`-Pabi` limits native libraries to given ABIs, separated by commas: `arm64`, `arm32`, `x64` or `x86`. Without it, all ABIs are built. `Latest` in task names can be replaced with another flavor, see [flavors](/tests/README.md#flavors).
+Android 13 (API 33) or newer and `arm64-v8a` are required. The only flavor is `latest`. Native builds default to arm64; optional `-Pabi=arm64` or `-Pabi=arm64-v8a` selects the same target. Other ABIs are rejected.
 
 #### Building
 
@@ -96,12 +99,7 @@ Build and install debug build on connected device:
 ./gradlew :app:installLatestDebug -Pabi=arm64
 ```
 
-Build `legacy` flavor for Android 4.x, which requires older NDK:
-```shell
-./gradlew :app:assembleLegacyDebug -PuseLegacyNdk=true -Pabi=arm32
-```
-
-Build libvpx, FFmpeg and tlottie for all flavors and ABIs, add `-PuseLegacyNdk=true` for `legacy` flavor:
+Build libvpx, FFmpeg and tlottie for Android 13+ and arm64:
 ```shell
 ./gradlew :app:buildLibvpx
 ./gradlew :app:buildFfmpeg
@@ -131,11 +129,10 @@ Run one test on device, e.g. on connected one:
 ./gradlew :tests:ui:connectedLatestNonMinifiedReleaseAndroidTest -Pabi=arm64 -Pandroid.testInstrumentationRunnerArguments.class=tgx.test.UnauthorizedLaunchTest
 ```
 
-Find classes added after minSdk of each flavor in declarations and, for Android 4.x, in imports, and calls to them without version checks:
+Check API compatibility against Android 13 and run lint:
 ```shell
 ./gradlew checkMinSdk
-./gradlew checkMinSdk -PuseLegacyNdk=true
-./gradlew :app:lintLegacyDebug -PuseLegacyNdk=true
+./gradlew :app:lintLatestDebug
 ```
 
 Describe results of checks before and after a change for pull request, see [tests](/tests/README.md#tests-and-checks):
@@ -180,12 +177,12 @@ List devices and variants for which baseline profiles will be generated, without
 ./gradlew :app:generateBaselineProfile -Pabi=arm64 -m | grep AndroidTest
 ```
 
-Generate baseline profiles for all variants on emulator and connected device, keeping computer awake and saving log. ABIs must suit both devices: on x86_64 computers emulator is `x64`, unlike phones:
+Generate baseline profiles on an arm64 emulator or connected Android 13+ arm64 device, keeping the computer awake and saving the log:
 ```shell
 # macOS with Apple silicon
 caffeinate -i ./gradlew :app:generateBaselineProfile -Pabi=arm64 --continue 2>&1 | tee ~/baseline-profile.log
 # Ubuntu
-systemd-inhibit --what=idle:sleep ./gradlew :app:generateBaselineProfile -Pabi=arm64,x64 --continue 2>&1 | tee ~/baseline-profile.log
+systemd-inhibit --what=idle:sleep ./gradlew :app:generateBaselineProfile -Pabi=arm64 --continue 2>&1 | tee ~/baseline-profile.log
 ```
 
 </details>

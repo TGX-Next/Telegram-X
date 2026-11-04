@@ -12,6 +12,7 @@
  *
  * File created on 08/02/2016 at 08:02
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.v;
 
 import android.content.Context;
@@ -87,9 +88,7 @@ public class HeaderEditText extends EmojiEditText implements ActionMode.Callback
     setTypeface(Fonts.getRobotoRegular());
     setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
     setHighlightColor(Theme.fillingTextSelectionColor());
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      setCustomSelectionActionModeCallback(this);
-    }
+
     setFilters(new InputFilter[] {
       new CharacterStyleFilter()
     });
@@ -121,3 +120,4 @@ public class HeaderEditText extends EmojiEditText implements ActionMode.Callback
     return view;
   }
 }
+// endregion

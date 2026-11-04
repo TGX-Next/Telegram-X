@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.gradle
 
 import java.io.File
@@ -11,9 +12,6 @@ import java.io.File
 class TlottieCargo(rustDir: File, rustVersion: String, abi: String) {
   val target = when (abi) {
     "arm64-v8a" -> "aarch64-linux-android"
-    "armeabi-v7a" -> "armv7-linux-androideabi"
-    "x86_64" -> "x86_64-linux-android"
-    "x86" -> "i686-linux-android"
     else -> fatal("Unsupported abi: $abi")
   }
 
@@ -25,8 +23,6 @@ class TlottieCargo(rustDir: File, rustVersion: String, abi: String) {
   // Crates that Cargo downloads, e.g. dependencies of tlottie, have paths in its home
   private val cargoHome = File(System.getProperty("user.home"), ".cargo")
 
-  private val isArm32 = target == "armv7-linux-androideabi"
-
   fun rustFlags(source: File): MutableList<String> {
     // Paths are remapped and debug info is left out, so that the archive doesn't depend on the
     // machine
@@ -35,10 +31,6 @@ class TlottieCargo(rustDir: File, rustVersion: String, abi: String) {
       "--remap-path-prefix=${cargoHome.absolutePath}=cargo",
       "-Cdebuginfo=0"
     )
-    if (isArm32) {
-      // NEON, which the NDK enables for C++ code of armeabi-v7a, isn't a default of the target
-      flags += "-Ctarget-feature=+neon"
-    }
     return flags
   }
 
@@ -71,3 +63,4 @@ class TlottieCargo(rustDir: File, rustVersion: String, abi: String) {
     }
   }
 }
+// endregion

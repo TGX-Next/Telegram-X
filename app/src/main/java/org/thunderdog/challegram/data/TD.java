@@ -12,6 +12,7 @@
  *
  * File created on 30/04/2015 at 17:35
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.data;
 
 import android.app.DownloadManager;
@@ -197,7 +198,7 @@ public class TD {
     }
     return null;
   }
-  
+
   public static boolean checkRight (TdApi.ChatAdministratorRights rights, @RightId int id) {
     if (TdConstants.COMPILE_CHECK) {
       new TdApi.ChatAdministratorRights(
@@ -1269,25 +1270,17 @@ public class TD {
           Uri uri = Uri.parse(filePath);
           List<String> columns = new ArrayList<>();
           columns.add(MediaStore.MediaColumns.TITLE);
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            columns.add(MediaStore.MediaColumns.DURATION);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-              columns.add(MediaStore.MediaColumns.ARTIST);
-              columns.add(MediaStore.MediaColumns.AUTHOR);
-            }
-          }
+          columns.add(MediaStore.MediaColumns.DURATION);
+          columns.add(MediaStore.MediaColumns.ARTIST);
+          columns.add(MediaStore.MediaColumns.AUTHOR);
 
           try (Cursor c = UI.getContext().getContentResolver().query(uri, columns.toArray(new String[0]), null, null, null)) {
             if (c != null && c.moveToFirst()) {
               title = c.getString(0);
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                durationMs = c.getLong(1);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                  performer = c.getString(2);
-                  if (StringUtils.isEmpty(performer)) {
-                    performer = c.getString(3);
-                  }
-                }
+              durationMs = c.getLong(1);
+              performer = c.getString(2);
+              if (StringUtils.isEmpty(performer)) {
+                performer = c.getString(3);
               }
               return new TdApi.InputMessageAudio(new TdApi.InputAudio(inputFile, null, (int) TimeUnit.MILLISECONDS.toSeconds(durationMs), title, performer), caption);
             }
@@ -1324,17 +1317,15 @@ public class TD {
           List<String> columns = new ArrayList<>();
           columns.add(MediaStore.MediaColumns.WIDTH);
           columns.add(MediaStore.MediaColumns.HEIGHT);
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            columns.add(MediaStore.MediaColumns.ORIENTATION);
-            columns.add(MediaStore.MediaColumns.DURATION);
-            columns.add(MediaStore.MediaColumns.NUM_TRACKS);
-          }
+          columns.add(MediaStore.MediaColumns.ORIENTATION);
+          columns.add(MediaStore.MediaColumns.DURATION);
+          columns.add(MediaStore.MediaColumns.NUM_TRACKS);
 
           try (Cursor c = UI.getContext().getContentResolver().query(uri, columns.toArray(new String[0]), null, null, null)) {
             if (c != null && c.moveToFirst()) {
               int width = c.getInt(0);
               int height = c.getInt(1);
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+              {
                 int orientation = c.getInt(2);
                 durationMs = c.getLong(3);
                 int numTracks = c.getInt(4);
@@ -4578,7 +4569,7 @@ public class TD {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    {
       BaseActivity context = UI.getUiContext();
       if (context == null) {
         return;
@@ -5373,7 +5364,7 @@ public class TD {
     if ("monospace".equals(span.getFamily())) {
       return new TdApi.TextEntityType[] {new TdApi.TextEntityTypeCode()};
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    {
       Typeface typeface = span.getTypeface();
       if (typeface == null) {
         return null;
@@ -5406,7 +5397,7 @@ public class TD {
     if ("monospace".equals(span.getFamily())) {
       return true;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    {
       Typeface typeface = span.getTypeface();
       if (typeface == null) {
         return false;
@@ -5445,7 +5436,7 @@ public class TD {
     }
     if (span instanceof TypefaceSpan) {
       TypefaceSpan typefaceSpan = (TypefaceSpan) span;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      {
         Typeface typeface = typefaceSpan.getTypeface();
         if (typeface != null) {
           return new TypefaceSpan(typeface);
@@ -5762,7 +5753,7 @@ public class TD {
   public static boolean isStickerFromAnimatedEmojiPack (@Nullable TdApi.Sticker sticker) {
     return sticker != null && sticker.setId == TdConstants.TELEGRAM_ANIMATED_EMOJI_STICKER_SET_ID;
   }
-  
+
   public static boolean isChatListMain (@Nullable TdApi.ChatList chatList) {
     return chatList != null && chatList.getConstructor() == TdApi.ChatListMain.CONSTRUCTOR;
   }
@@ -6373,7 +6364,7 @@ public class TD {
 
   public static TdApi.InputFile getInputFile (ImageGalleryFile file, boolean asFiles) {
     if (file.isVideo()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      {
         MediaMetadataRetriever retriever = null;
         try {
           retriever = U.openRetriever(file.getFilePath());
@@ -6385,7 +6376,7 @@ public class TD {
         U.closeRetriever(retriever);
       }
 
-      return (Config.USE_VIDEO_COMPRESSION && !(asFiles && VideoGenerationInfo.isEmpty(file))) ?
+      return ((!(asFiles && VideoGenerationInfo.isEmpty(file)))) ?
         VideoGenerationInfo.newFile(file.getFilePath(), file, asFiles) :
         TD.createInputFile(file.getFilePath());
     } else {
@@ -6402,7 +6393,7 @@ public class TD {
     TdApi.InputMessageContent content;
     if (file.isVideo()) {
       boolean sendAsAnimation = file.shouldMuteVideo();
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      {
         MediaMetadataRetriever retriever = null;
         try {
           retriever = U.openRetriever(file.getFilePath());
@@ -6429,7 +6420,7 @@ public class TD {
       final int height = size[1];
 
       final TD.FileInfo fileInfo = new TD.FileInfo();
-      boolean forceVideo = Config.USE_VIDEO_COMPRESSION && !(asFiles && VideoGenerationInfo.isEmpty(file));
+      boolean forceVideo = (!(asFiles && VideoGenerationInfo.isEmpty(file)));
       final TdApi.InputFile inputVideo = forceVideo ? VideoGenerationInfo.newFile(file.getFilePath(), file, asFiles) : TD.createInputFile(file.getFilePath(), null, fileInfo);
       TdApi.FormattedText caption = file.getCaption(true, !disableMarkdown);
       if (asFiles && !forceVideo) {
@@ -6465,3 +6456,4 @@ public class TD {
     return content;
   }
 }
+// endregion

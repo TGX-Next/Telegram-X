@@ -12,6 +12,7 @@
  *
  * File created on 24/09/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.config;
 
 import android.os.Build;
@@ -180,7 +181,7 @@ public class Device {
   public static final boolean NEED_LESS_PREVIEW_MARGINS = IS_SAMSUNG_SGS8;
   public static final boolean DISABLE_FULLSCREEN_PREVIEW = IS_SAMSUNG_SGS_FAMILY;
 
-  public static final boolean HIDE_POPUP_KEYBOARD = MANUFACTURER == BLACKBERRY && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP;
+  public static final boolean HIDE_POPUP_KEYBOARD = MANUFACTURER == BLACKBERRY && false;
 
   public static final boolean NEED_HQ_ROUND_VIDEOS = IS_SAMSUNG_SGS_FAMILY || StringUtils.equalsOrBothEmpty(Build.DEVICE, "zeroflte") || StringUtils.equalsOrBothEmpty(Build.DEVICE, "zenlte");
 
@@ -193,5 +194,6 @@ public class Device {
   public static final boolean FLYME = !StringUtils.isEmpty(Build.DISPLAY) && Build.DISPLAY.toLowerCase(Locale.ROOT).contains("flyme");
 
   // Android >= 13 has builtin clipboard toasts, but MIUI/HyperOs ships without them
-  public static final boolean HAS_BUILTIN_CLIPBOARD_TOASTS = !IS_XIAOMI && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
+  public static final boolean HAS_BUILTIN_CLIPBOARD_TOASTS = (!IS_XIAOMI);
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 07/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.content.Context;
@@ -25,20 +26,7 @@ public class DrawerContentView extends FrameLayoutFix {
   public DrawerContentView (Context context) {
     super(context);
 
-    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setFitsSystemWindows(true);
-      setOnApplyWindowInsetsListener(new OnApplyWindowInsetsListener() {
-        @RequiresApi(Build.VERSION_CODES.KITKAT_WATCH)
-        @Override
-        public WindowInsets onApplyWindowInsets (View v, WindowInsets insets) {
-          lastInsets = insets;
-          setWillNotDraw(insets.getSystemWindowInsetTop() <= 0 && getBackground() == null);
-          requestLayout();
-          return insets.consumeSystemWindowInsets();
-        }
-      });
-      setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }*/
+
   }
 
   @Override
@@ -101,3 +89,4 @@ public class DrawerContentView extends FrameLayoutFix {
     return false;
   }
 }
+// endregion

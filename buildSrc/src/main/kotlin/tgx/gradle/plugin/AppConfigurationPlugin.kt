@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.gradle.plugin
 
 import ApplicationConfig
@@ -20,15 +21,10 @@ import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.of
 import tgx.gradle.findAbiFilters
-import tgx.gradle.gradleFlag
-import tgx.gradle.needEnableSplitAbi
 import tgx.gradle.source.AppConfigurationSource
 
 abstract class AppConfigurationExtension {
   abstract val config: Property<ApplicationConfig>
-  abstract val useLegacyNdk: Property<Boolean>
-  abstract val useLegacyPackaging: Property<Boolean>
-  abstract val enableSplitAbi: Property<Boolean>
   abstract val abiFilters: ListProperty<String>
 }
 
@@ -49,14 +45,9 @@ open class AppConfigurationPlugin : Plugin<Project> {
       )
     })
 
-    val useLegacyNdk = project.gradleFlag("useLegacyNdk")
-    val useLegacyPackaging = project.gradleFlag("useLegacyPackaging")
-    val abiFilters = project.findAbiFilters(useLegacyNdk)
-    val enableSplitAbi = project.needEnableSplitAbi(abiFilters)
+    val abiFilters = project.findAbiFilters()
 
-    ext.useLegacyNdk.set(useLegacyNdk)
-    ext.useLegacyPackaging.set(useLegacyPackaging)
-    ext.enableSplitAbi.set(enableSplitAbi)
     ext.abiFilters.set(abiFilters)
   }
 }
+// endregion

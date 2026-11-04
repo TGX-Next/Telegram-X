@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.gradle.plugin
 
 import Config
@@ -24,10 +25,6 @@ open class ModulePlugin : Plugin<Project> {
       project.extensions.findByType<AppConfigurationExtension>()?.config?.get()
     val doNotObfuscate =
       config?.doNotObfuscate ?: false
-    val useLegacyNdk = (
-      project.extensions.findByType<AppConfigurationExtension>()?.useLegacyNdk ?:
-      project.gradleFlag("useLegacyNdk")
-    )
     val build =
       config?.build ?:
       project.providers.of(AppBuildVersionSource::class) {
@@ -36,24 +33,13 @@ open class ModulePlugin : Plugin<Project> {
         )
       }.get()
 
-    val appliedNdkVersion = useLegacyNdk.map { useLegacyNdk ->
-      if (useLegacyNdk) {
-        build.legacyNdkVersion
-      } else {
-        build.primaryNdkVersion
-      }
-    }.get()
+    val appliedNdkVersion = build.primaryNdkVersion
 
     val globalAbiFiltersProvider = (
       project.extensions.findByType<AppConfigurationExtension>()?.abiFilters ?:
-      project.findAbiFilters(useLegacyNdk)
+      project.findAbiFilters()
     )
     val globalAbiFilters = globalAbiFiltersProvider.get()
-
-    val enableSplitAbi = (
-      project.extensions.findByType<AppConfigurationExtension>()?.enableSplitAbi ?:
-      project.needEnableSplitAbi(globalAbiFiltersProvider)
-    ).get()
 
     val libs = project.the<LibrariesForLibs>()
     project.dependencies {
@@ -129,19 +115,8 @@ open class ModulePlugin : Plugin<Project> {
               Config.MIN_SDK_VERSION,
               ndkVersion.ndkVersionToMinSdk()
             )
-            // Legacy multidex, which minSdk 16 of legacy needs until AGP 11 drops it
-            @Suppress("DEPRECATION")
-            multiDexEnabled = true
-            if (!enableSplitAbi) {
-              ndk.abiFilters += globalAbiFilters
-              externalNativeBuild.cmake.abiFilters += globalAbiFilters
-            }
-          }
-          splits.abi {
-            isEnable = enableSplitAbi
-            reset()
-            include(*globalAbiFilters.toTypedArray())
-            isUniversalApk = false
+            ndk.abiFilters += globalAbiFilters
+            externalNativeBuild.cmake.abiFilters += globalAbiFilters
           }
           flavorDimensions += "SDK"
           productFlavors {
@@ -159,14 +134,6 @@ open class ModulePlugin : Plugin<Project> {
                   "-DANDROID_STL=c++_shared",
                   "-DTGX_FLAVOR=${variant.flavor}"
                 )
-                sourceSets.getByName(variant.flavor) {
-                  val extraFolders = findExtraFolders(variant)
-                  extraFolders.forEach { folderName ->
-                    kotlin.directories += "src/$folderName/kotlin"
-                    java.directories += "src/$folderName/java"
-                    res.directories += "src/$folderName/res"
-                  }
-                }
               }
             }
           }
@@ -201,18 +168,8 @@ open class ModulePlugin : Plugin<Project> {
               ndkVersion.ndkVersionToMinSdk()
             )
             targetSdk = build.targetSdkVersion
-            @Suppress("DEPRECATION")
-            multiDexEnabled = true
-            if (!enableSplitAbi) {
-              ndk.abiFilters += globalAbiFilters
-              externalNativeBuild.cmake.abiFilters += globalAbiFilters
-            }
-          }
-          splits.abi {
-            isEnable = enableSplitAbi
-            reset()
-            include(*globalAbiFilters.toTypedArray())
-            isUniversalApk = false
+            ndk.abiFilters += globalAbiFilters
+            externalNativeBuild.cmake.abiFilters += globalAbiFilters
           }
 
           keystore?.orNull?.let { keystore ->
@@ -242,9 +199,6 @@ open class ModulePlugin : Plugin<Project> {
               isJniDebuggable = true
               isMinifyEnabled = false
 
-              @Suppress("DEPRECATION")
-              multiDexKeepProguard = requireFile(project.layout.projectDirectory.file("multidex-rules.pro").asFile)
-
               ndk.debugSymbolLevel = "full"
 
               config?.takeIf {
@@ -270,9 +224,6 @@ open class ModulePlugin : Plugin<Project> {
 
               isMinifyEnabled = !doNotObfuscate
               isShrinkResources = !doNotObfuscate
-
-              @Suppress("DEPRECATION")
-              multiDexKeepProguard = requireFile(project.layout.projectDirectory.file("multidex-rules.pro").asFile)
 
               ndk.debugSymbolLevel = "full"
 
@@ -304,8 +255,6 @@ open class ModulePlugin : Plugin<Project> {
               Config.MIN_SDK_VERSION,
               ndkVersion.ndkVersionToMinSdk()
             )
-            @Suppress("DEPRECATION")
-            multiDexEnabled = true
           }
 
           sourceSets.configureEach {
@@ -382,3 +331,4 @@ open class ModulePlugin : Plugin<Project> {
     }
   }
 }
+// endregion

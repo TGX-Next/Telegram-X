@@ -12,6 +12,7 @@
  *
  * File created on 01/02/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.app.PendingIntent;
@@ -75,7 +76,7 @@ public class TdlibNotificationUtils {
     }
   }
 
-  private static final float MAX_DENSITY = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? 1.5f : 2.5f;
+  private static final float MAX_DENSITY = (1.5f);
 
   public static int iconSize () {
     return Screen.dp(52f, MAX_DENSITY);
@@ -185,7 +186,7 @@ public class TdlibNotificationUtils {
       ImageFile file = new ImageFile(tdlib, rawFile);
       file.setSize(size);
       avatarBitmap = ImageCache.instance().getBitmap(file);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && avatarBitmap != null) {
+      if ((avatarBitmap != null)) {
         if (avatarBitmap.getConfig() == Bitmap.Config.HARDWARE) {
           avatarBitmap = null;
         }
@@ -332,3 +333,4 @@ public class TdlibNotificationUtils {
     }
   }
 }
+// endregion

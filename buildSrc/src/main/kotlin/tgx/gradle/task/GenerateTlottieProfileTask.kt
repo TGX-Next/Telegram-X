@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.gradle.task
 
 import org.gradle.api.DefaultTask
@@ -102,7 +103,7 @@ abstract class GenerateTlottieProfileTask : DefaultTask() {
       ?.firstOrNull { it.name.startsWith("libprofiler_builtins-") }
       ?: fatal("No profiler_builtins in Rust ${rustVersion.get()} for ${cargo.target}")
     val ndk = sdkDir.get().asFile.resolve("ndk/${ndkVersion.get()}")
-    val clangTarget = if (abi == "armeabi-v7a") "armv7a-linux-androideabi" else cargo.target
+    val clangTarget = cargo.target
     val runnerFile = build.resolve("profile")
     exec.exec {
       commandLine(
@@ -170,3 +171,4 @@ abstract class GenerateTlottieProfileTask : DefaultTask() {
     return out.toString().trim()
   }
 }
+// endregion

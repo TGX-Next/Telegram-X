@@ -12,6 +12,7 @@
  *
  * File created on 19/08/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -94,7 +95,7 @@ public class StickersSuggestionsLayout extends AnimatedFrameLayout implements Fa
     stickerSuggestionsView.setItemAnimator(null);
     stickerSuggestionsView.setPadding(Screen.dp(48), 0, Screen.dp(48), 0);
     stickerSuggestionsView.setClipToPadding(false);
-    stickerSuggestionsView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+    stickerSuggestionsView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     stickerSuggestionsView.setLayoutManager(manager);
 
     addView(stickerSuggestionsView);
@@ -294,3 +295,4 @@ public class StickersSuggestionsLayout extends AnimatedFrameLayout implements Fa
   }
 
 }
+// endregion

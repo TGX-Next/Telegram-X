@@ -12,6 +12,7 @@
  *
  * File created on 13/01/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.player;
 
 import android.content.Intent;
@@ -82,11 +83,7 @@ public class AudioController extends BasePlaybackController implements TGAudio.P
 
   private int determineBestPlaybackMode (boolean voiceMessages) {
     int maxSupportedMode;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      maxSupportedMode = PLAYBACK_MODE_EXOPLAYER_LIST;
-    } else {
-      maxSupportedMode = PLAYBACK_MODE_LEGACY;
-    }
+    maxSupportedMode = PLAYBACK_MODE_EXOPLAYER_LIST;
     int preferredMode = Settings.instance().getPreferredAudioPlaybackMode();
     if (preferredMode > PLAYBACK_MODE_UNSET && preferredMode <= maxSupportedMode) {
       return preferredMode;
@@ -1091,3 +1088,4 @@ public class AudioController extends BasePlaybackController implements TGAudio.P
     }
   }
 }
+// endregion

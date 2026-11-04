@@ -12,17 +12,17 @@
  *
  * File created on 25/02/2024
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.mediaview.crop;
 
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.media3.effect.Crop;
 import androidx.media3.effect.ScaleAndRotateTransformation;
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 public final class CropEffectFactory {
   private CropEffectFactory () { }
 
@@ -107,3 +107,4 @@ public final class CropEffectFactory {
     return scaleBuilder.build();
   }
 }
+// endregion

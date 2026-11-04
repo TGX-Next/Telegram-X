@@ -5,8 +5,8 @@
 Telegram X uses Gradle, Java/Kotlin, and C/C++. Application code lives in
 `app/src/main/java` and `app/src/main/kotlin`; resources and assets are in `app/src/main/res`
 and `app/src/main/assets`. Native code is in `app/jni`.
-Keep flavor-specific changes in shared `app/src/since*`, `pre*`, or `only*`
-source sets. `tdlib/`, `tgcalls/`, `vkryl/`, and `extension/` provide supporting modules;
+The only supported flavor is `latest` (Android 13+, arm64); shared application
+code and resources live in the `main` source set. `tdlib/`, `tgcalls/`, `vkryl/`, and `extension/` provide supporting modules;
 `buildSrc/` contains Gradle logic; `tests/` contains tests and benchmarks.
 
 ## Build, Test, and Development Commands
@@ -20,8 +20,8 @@ Gradle wrapper. See `README.md` for SDK/NDK and Rust prerequisites.
 - `./gradlew :app:testLatestDebugUnitTest`: run JVM unit tests.
 - `./gradlew :app:emulatorLatestDebugAndroidTest -Pabi=arm64`: run integration tests.
 - `./gradlew :tests:ui:emulatorLatestNonMinifiedReleaseAndroidTest -Pabi=arm64`: run UI tests.
-- `./gradlew checkMinSdk -PuseLegacyNdk=true`: check Android compatibility, including legacy.
-- `./gradlew :app:lintLegacyDebug -PuseLegacyNdk=true`: run legacy Android lint checks.
+- `./gradlew checkMinSdk`: check Android 13+ API compatibility.
+- `./gradlew :app:lintLatestDebug`: run Android lint checks.
 
 ## Coding Style & Naming Conventions
 
@@ -40,7 +40,7 @@ Place unit tests in `tests/unit/kotlin`, integration tests in `tests/integration
 UI tests in `tests/ui/src/main/kotlin`. Use descriptive `*Test` classes and behavior-named methods.
 Temporary checks belong in ignored `tests/*/checks` folders. Follow
 [testing guidance](tests/README.md): reproduce bugs before fixing them, verify affected flavors,
-and run relevant tests and lint before finishing. Device tests require Android 7.0+;
+and run relevant tests and lint before finishing. Device tests require Android 13+ and arm64;
 report failures, checks not run, and coverage gaps.
 
 ## Commit & Pull Request Guidelines

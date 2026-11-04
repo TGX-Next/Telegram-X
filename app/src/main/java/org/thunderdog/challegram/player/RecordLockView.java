@@ -12,6 +12,7 @@
  *
  * File created on 10/12/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.player;
 
 import android.content.Context;
@@ -25,7 +26,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.theme.ColorId;
@@ -53,15 +53,13 @@ public class RecordLockView extends View {
     drawableVoice = Drawables.get(context.getResources(), R.drawable.baseline_mic_24);
     drawableRound = Drawables.get(context.getResources(), R.drawable.deproko_baseline_msg_video_24);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @Override
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setRoundRect(0, 0, view.getMeasuredWidth(), (int) (view.getMeasuredHeight() - Screen.dp(BUTTON_EXPANDED) * collapseFactor), Screen.dp(BUTTON_SIZE / 2f));
-        }
-      });
-    }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setRoundRect(0, 0, view.getMeasuredWidth(), (int) (view.getMeasuredHeight() - Screen.dp(BUTTON_EXPANDED) * collapseFactor), Screen.dp(BUTTON_SIZE / 2f));
+      }
+    });
     setLayoutParams(new ViewGroup.LayoutParams(Screen.dp(BUTTON_SIZE), Screen.dp(BUTTON_SIZE + BUTTON_EXPANDED)));
   }
 
@@ -95,9 +93,7 @@ public class RecordLockView extends View {
       this.collapseFactor = factor;
       setPivotY(getCenterY());
       invalidate();
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        invalidateOutline();
-      }
+      invalidateOutline();
     }
   }
 
@@ -202,3 +198,4 @@ public class RecordLockView extends View {
 
 
 }
+// endregion

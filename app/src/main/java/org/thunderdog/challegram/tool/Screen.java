@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 18:51
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.content.Context;
@@ -83,7 +84,7 @@ public class Screen {
   }
 
   public static float refreshRate () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    {
       BaseActivity activity = UI.getUiContext();
       if (activity != null) {
         return activity.getDisplay().getRefreshRate();
@@ -143,10 +144,8 @@ public class Screen {
   public static int currentHeight () {
     BaseActivity context = UI.getUiContext();
     if (context != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        if (context.isInMultiWindowMode()) {
-          return context.getWindow().getDecorView().getMeasuredHeight();
-        }
+      if (context.isInMultiWindowMode()) {
+        return context.getWindow().getDecorView().getMeasuredHeight();
       }
       return context.getContentView().getMeasuredHeight();
     }
@@ -154,11 +153,7 @@ public class Screen {
   }
 
   public static int currentActualHeight () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP || true) {
-      return UI.getContext().getResources().getDisplayMetrics().heightPixels - getStatusBarHeight();
-    } else {
-      return UI.getContext().getResources().getDisplayMetrics().heightPixels;
-    }
+    return UI.getContext().getResources().getDisplayMetrics().heightPixels - getStatusBarHeight();
   }
 
   public static float currentAspectRatio () {
@@ -177,9 +172,7 @@ public class Screen {
   }
 
   public static int widestActualSide () {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      return smallestSide();
-    }
+
     DisplayMetrics m = UI.getContext().getResources().getDisplayMetrics();
     int status = getStatusBarHeight();
     return Math.max(m.widthPixels, m.heightPixels - status);
@@ -191,9 +184,7 @@ public class Screen {
   }
 
   public static int smallestActualSide () {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      return smallestSide();
-    }
+
     DisplayMetrics m = UI.getContext().getResources().getDisplayMetrics();
     int status = getStatusBarHeight();
     return Math.min(m.widthPixels, m.heightPixels - status);
@@ -217,23 +208,17 @@ public class Screen {
     }
     WindowManager windowManager = context.getWindowManager();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      try {
-        android.view.WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
-        Rect bounds = windowMetrics.getBounds();
-        return bounds.height();
-      } catch (Throwable ignored) { }
-    }
+    try {
+      android.view.WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
+      Rect bounds = windowMetrics.getBounds();
+      return bounds.height();
+    } catch (Throwable ignored) { }
 
     Display display = windowManager.getDefaultDisplay();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-      if (point == null)
-        point = new Point();
-      display.getSize(point);
-      return point.y;
-    } else {
-      return display.getHeight();
-    }
+    if (point == null)
+      point = new Point();
+    display.getSize(point);
+    return point.y;
   }
 
   public static int getOrientation () {
@@ -282,9 +267,7 @@ public class Screen {
 
   @SuppressWarnings("DiscouragedApi")
   public static boolean isGesturalNavigationEnabled (Resources resources) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      return false;
-    }
+
 
     try {
       int resourceId = resources.getIdentifier("config_navBarInteractionMode", "integer", "android");
@@ -350,3 +333,4 @@ public class Screen {
     return density() >= 2f ? getTouchSlopBig() : getTouchSlop();
   }
 }
+// endregion

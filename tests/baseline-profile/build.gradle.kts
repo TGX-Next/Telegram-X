@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 import tgx.test.TEST_DEVICE
 import tgx.test.configureAppTests
 
@@ -8,9 +9,7 @@ plugins {
   id("tgx-module")
 }
 
-configureAppTests {
-  it.usesBaselineProfile
-}
+configureAppTests()
 
 baselineProfile {
   managedDevices += TEST_DEVICE
@@ -25,3 +24,4 @@ dependencies {
 android {
   namespace = "tgx.test.baselineprofile"
 }
+// endregion

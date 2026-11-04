@@ -12,6 +12,7 @@
  *
  * File created on 21/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.attach;
 
 import android.Manifest;
@@ -176,7 +177,7 @@ public class MediaLocationMapView extends FrameLayoutFix implements OnMapReadyCa
     myLocationButton.setAlpha(0f);
     myLocationButton.setOnClickListener(this);
     myLocationButton.setLayoutParams(params);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    if ((getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
       myLocationButton.setAlpha(1f);
     } else {
       checkLocationSettings(false, false);
@@ -410,10 +411,7 @@ public class MediaLocationMapView extends FrameLayoutFix implements OnMapReadyCa
   // Callbacks
 
   private boolean checkLocationPermission () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-    return true;
+    return getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
   }
 
   @Override
@@ -520,7 +518,7 @@ public class MediaLocationMapView extends FrameLayoutFix implements OnMapReadyCa
     if (this.myLocationButtonFactor == toFactor) {
       return;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !isAttachedToWindow()) {
+    if ((!isAttachedToWindow())) {
       this.myLocationButtonFactor = toFactor;
       myLocationButton.setAlpha(toFactor);
       return;
@@ -825,3 +823,4 @@ public class MediaLocationMapView extends FrameLayoutFix implements OnMapReadyCa
     }
   }
 }
+// endregion

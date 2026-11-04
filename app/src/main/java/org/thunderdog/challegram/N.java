@@ -12,6 +12,7 @@
  *
  * File created on 26/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram;
 
 import android.graphics.Bitmap;
@@ -40,18 +41,10 @@ public final class N {
 
   // image.c
   public native static void calcCDT (ByteBuffer hsvBuffer, int width, int height, ByteBuffer buffer);
-  public native static int pinBitmap (Bitmap bitmap);
   public native static int blurBitmap (Bitmap bitmap, int radius, int unpin, int forceLess);
 
   public native static boolean hasBuiltInWebpSupport ();
   public native static boolean loadWebpImage (Bitmap bitmap, ByteBuffer buffer, int len, BitmapFactory.Options options, boolean unpin);
-
-  public static int pinBitmapIfNeeded (Bitmap bitmap) {
-    if (Config.PIN_BITMAP_ENABLED) {
-      return pinBitmap(bitmap);
-    }
-    return 0;
-  }
 
   // views.c
   public native static float iimg (float input);
@@ -151,23 +144,20 @@ public final class N {
 
   public static void setupLibraries () {
     // Crashes if any of the libraries were not properly loaded
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      OpusLibrary.setLibraries(C.CRYPTO_TYPE_UNSUPPORTED);
-      VpxLibrary.setLibraries(C.CRYPTO_TYPE_UNSUPPORTED);
-      FlacLibrary.setLibraries();
-      FfmpegLibrary.setLibraries();
-      if (BuildConfig.DEBUG) {
-        android.util.Log.v("tgx", String.format(Locale.US,
-          "leveldb %s, libopus %s, libvpx %s, ffmpeg %s, tgcalls %s",
-          LevelDB.getVersion(),
-          OpusLibrary.getVersion(),
-          VpxLibrary.getVersion(),
-          FfmpegLibrary.getVersion(),
-          BuildConfig.CALLS_AVAILABLE ?
-            TextUtils.join("+", N.getTgCallsVersions()) :
-            "disabled"
-        ));
-      }
+    OpusLibrary.setLibraries(C.CRYPTO_TYPE_UNSUPPORTED);
+    VpxLibrary.setLibraries(C.CRYPTO_TYPE_UNSUPPORTED);
+    FlacLibrary.setLibraries();
+    FfmpegLibrary.setLibraries();
+    if (BuildConfig.DEBUG) {
+      android.util.Log.v("tgx", String.format(Locale.US,
+        "leveldb %s, libopus %s, libvpx %s, ffmpeg %s, tgcalls %s",
+        LevelDB.getVersion(),
+        OpusLibrary.getVersion(),
+        VpxLibrary.getVersion(),
+        FfmpegLibrary.getVersion(),
+        (TextUtils.join("+", N.getTgCallsVersions()))
+      ));
     }
   }
 }
+// endregion

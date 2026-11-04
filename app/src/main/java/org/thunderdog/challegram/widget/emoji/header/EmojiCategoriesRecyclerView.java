@@ -12,6 +12,7 @@
  *
  * File created on 25/09/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget.emoji.header;
 
 import android.content.Context;
@@ -75,7 +76,7 @@ public class EmojiCategoriesRecyclerView extends CustomRecyclerView implements D
           float availWidth = parent.getMeasuredWidth() - minimalLeftPadding - Screen.dp(SHADOW_SIZE);
           float itemsCount = (float) (Math.floor((availWidth - Screen.dp(CATEGORY_WIDTH * 0.65f)) / Screen.dp(CATEGORY_WIDTH)) + 0.65f);
           int itemsWidth = Screen.dp(CATEGORY_WIDTH * itemsCount);
-          
+
           outRect.set(parent.getMeasuredWidth() - itemsWidth, 0, 0, 0);
         }
       }
@@ -379,3 +380,4 @@ public class EmojiCategoriesRecyclerView extends CustomRecyclerView implements D
     }
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 27/08/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
@@ -27,7 +28,6 @@ import android.view.ViewGroup;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.thunderdog.challegram.data.TD;
@@ -43,7 +43,7 @@ import me.vkryl.android.ViewUtils;
 import me.vkryl.android.widget.FrameLayoutFix;
 import me.vkryl.core.lambda.Destroyable;
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+
 public class MessageViewGroup extends ViewGroup implements Destroyable, AttachDelegate, MessagesManager.MessageProvider {
   private static class MessageBackground extends Drawable {
     private final MessageView context;
@@ -370,3 +370,4 @@ class MutedVideoView extends View implements AttachDelegate, Destroyable {
     receiver.destroy();
   }
 }
+// endregion

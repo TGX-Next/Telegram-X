@@ -12,6 +12,7 @@
  *
  * File created on 24/03/2016 at 12:01
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.graphics.Canvas;
@@ -79,7 +80,7 @@ public class RootDrawable extends Drawable {
         c.drawRect(width - rect.right, 0, width, height, paint);
       }
     } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      {
         int height = Screen.getNavigationBarHeight();
         if (height > 0 && state.context.hadSoftwareKeysOnActivityLaunch()) {
           int rotation = state.context.getWindowRotationDegrees();
@@ -157,3 +158,4 @@ public class RootDrawable extends Drawable {
     }
   }
 }
+// endregion

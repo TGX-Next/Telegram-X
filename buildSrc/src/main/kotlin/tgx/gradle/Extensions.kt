@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package tgx.gradle
 
 import Abi
@@ -18,12 +19,8 @@ import SdkVariant
 import com.android.build.api.dsl.BaseFlavor
 import com.android.build.api.dsl.VariantDimension
 import com.android.build.api.variant.*
-import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderConvertible
-import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import org.gradle.util.internal.VersionNumber
 import tgx.gradle.task.wrapInDoubleQuotes
@@ -43,187 +40,12 @@ fun VariantDimension.buildConfigLong (name: String, value: Long) =
 fun VariantDimension.buildConfigString (name: String, value: String?) =
   this.buildConfigField("String", name, value?.wrapInDoubleQuotes() ?: "null")
 
-fun DependencyHandlerScope.legacyImplementation(
-  dependency: Any,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation("legacy", dependency, dependencyConfiguration)
-
-fun DependencyHandlerScope.sinceLollipopImplementation(
-  sinceLollipop: Any,
-  sinceMarshmallow: Any? = null,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation(null,
-    sinceLollipop,
-    sinceMarshmallow ?: sinceLollipop,
-    sinceMarshmallow ?: sinceLollipop,
-    dependencyConfiguration
-  )
-
-fun DependencyHandlerScope.lollipopImplementation(
-  dependency: Any,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation("lollipop", dependency, dependencyConfiguration)
-
-fun DependencyHandlerScope.sinceMarshmallowImplementation(
-  sinceMarshmallow: Any,
-  sinceNougat: Any? = null,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation(
-    null,
-    null,
-    sinceMarshmallow,
-    sinceNougat ?: sinceMarshmallow,
-    dependencyConfiguration
-  )
-
-fun DependencyHandlerScope.preMarshmallowImplementation(
-  legacyAndLollipop: Any,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation(
-    legacyAndLollipop,
-    legacyAndLollipop,
-    null,
-    null,
-    dependencyConfiguration
-  )
-
-fun DependencyHandlerScope.sinceNougatImplementation(
-  sinceNougat: Any,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation(
-    null,
-    null,
-    null,
-    sinceNougat,
-    dependencyConfiguration
-  )
-
-fun findExtraFolders(variant: SdkVariant): Set<String> =
-  mutableSetOf<String>().apply {
-    if (variant.minSdk >= 21) {
-      this += "sinceLollipop"
-    }
-    if (variant.minSdk < 23) {
-      this += "preMarshmallow"
-    }
-    if (variant.minSdk >= 23) {
-      this += "sinceMarshmallow"
-    }
-    if (variant.minSdk >= 26 || variant.supportsSdk(26)) {
-      this += "sinceOreo"
-    }
-    this += "only${variant.flavor.uppercaseFirstChar()}"
-  }.toSet()
-
-fun <T> selectApiFlavor(
-  variant: SdkVariant,
-  legacy: T,
-  lollipop: T,
-  marshmallow: T,
-  latest: T
-): T =
-  when (variant.flavor) {
-    "legacy" -> legacy
-    "lollipop" -> lollipop
-    "marshmallow" -> marshmallow
-    "nop",
-    "qrs",
-    "latest" -> latest
-    else -> error(variant.flavor)
-  }
-
-private fun DependencyHandlerScope.flavorImplementation(
-  flavor: String,
-  dependency: Any?,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) {
-  if (dependency != null) {
-    if (dependencyConfiguration != null) {
-      when (dependency) {
-        is String ->
-          "${flavor}Implementation"(dependency) {
-            dependencyConfiguration.execute(this)
-          }
-        is Provider<*> ->
-          "${flavor}Implementation"(dependency) {
-            dependencyConfiguration.execute(this)
-          }
-        is ProviderConvertible<*> ->
-          "${flavor}Implementation"(dependency) {
-            dependencyConfiguration.execute(this)
-          }
-        else -> {
-          error("Unknown type: $dependency of ${dependency.javaClass}")
-        }
-      }
-    } else {
-      "${flavor}Implementation"(dependency)
-    }
-  }
-}
-
-fun DependencyHandlerScope.flavorImplementation(
-  legacy: Any?,
-  sinceLollipop: Any?,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation(
-    legacy,
-    sinceLollipop,
-    sinceLollipop,
-    sinceLollipop,
-    dependencyConfiguration
-  )
-
-fun DependencyHandlerScope.flavorImplementation(
-  legacy: Any?,
-  lollipop: Any?,
-  sinceMarshmallow: Any?,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) =
-  this.flavorImplementation(
-    legacy,
-    lollipop,
-    sinceMarshmallow,
-    sinceMarshmallow,
-    dependencyConfiguration
-  )
-
-fun DependencyHandlerScope.flavorImplementation(
-  legacy: Any?,
-  lollipop: Any?,
-  marshmallow: Any?,
-  latest: Any?,
-  dependencyConfiguration: Action<ExternalModuleDependency>? = null
-) {
-  Sdk.VARIANTS.values.forEach { sdkVariant ->
-    val library = selectApiFlavor(
-      sdkVariant,
-      legacy,
-      lollipop,
-      marshmallow,
-      latest
-    )
-    flavorImplementation(sdkVariant.flavor, library, dependencyConfiguration)
-  }
-}
-
 fun ApplicationAndroidComponentsExtension.disableRudimentaryVariants(
   filter: (SdkVariant) -> Boolean = { _ -> true }
 ) =
   beforeVariants { variantBuilder ->
     val sdkFlavor = variantBuilder.productFlavors.first { it.first == "SDK" }.second
     val sdkVariant = Sdk.VARIANTS.values.first { it.flavor == sdkFlavor }
-    // Only published builds are limited: debug and baseline profile builds must install on any device
-    if (sdkVariant.maxSdk != null && variantBuilder.buildType == "release") {
-      variantBuilder.maxSdk = sdkVariant.maxSdk
-    }
     variantBuilder.enable = filter(sdkVariant)
   }
 
@@ -233,10 +55,6 @@ fun TestAndroidComponentsExtension.disableRudimentaryVariants(
   beforeVariants { variantBuilder ->
     val sdkFlavor = variantBuilder.productFlavors.first { it.first == "SDK" }.second
     val sdkVariant = Sdk.VARIANTS.values.first { it.flavor == sdkFlavor }
-    // Only published builds are limited: debug and baseline profile builds must install on any device
-    if (sdkVariant.maxSdk != null && variantBuilder.buildType == "release") {
-      variantBuilder.maxSdk = sdkVariant.maxSdk
-    }
     variantBuilder.enable = filter(sdkVariant)
   }
 
@@ -275,36 +93,15 @@ fun ApplicationVariant.findAbiFilters(ifEmpty: List<String>): List<String> =
     output.findAbiFilters(ifEmpty)
   }.distinct()
 
-fun Project.needEnableSplitAbi(abiFilters: Provider<List<String>>): Provider<Boolean> =
-  providers.gradleProperty("abi")
-    .map { it.isEmpty() }
-    .orElse(true)
-    .zip(abiFilters) { enableSplitAbi, abiFilters ->
-      enableSplitAbi && abiFilters.size > 1
-    }
-
-fun Project.findAbiFilters(useLegacyNdk: Provider<Boolean>): Provider<List<String>> =
+fun Project.findAbiFilters(): Provider<List<String>> =
   providers.gradleProperty("abi")
     .map(Abi::toFilters)
     .orElse(Abi.FILTERS)
-    .zip(useLegacyNdk) { abiFilters, useLegacyNdk ->
-      abiFilters.filter { abi ->
-        abi == "armeabi-v7a" || abi == "x86" || !useLegacyNdk
-      }.ifEmpty {
-        fatal("Legacy NDK supports only 32-bit ABIs, select arm32 or x86 with -Pabi")
+    .zip(providers.gradleProperty("android.injected.build.abi").orElse("")) { filters, injected ->
+      require(injected.isEmpty() || "arm64-v8a" in injected.split(',').map { it.trim() }) {
+        "Only arm64-v8a devices are supported: $injected"
       }
-    }
-    .zip(providers.gradleProperty("android.injected.build.abi").orElse("")) { abiFilters, injectedAbiList ->
-      val injectedAbi = injectedAbiList
-        .split(",")
-        .filter {
-          it in Abi.FILTERS
-        }
-      injectedAbi.firstOrNull {
-        it in abiFilters
-      }?.let {
-        listOf(it)
-      } ?: abiFilters
+      filters
     }
 
 fun String.ndkVersionMajor(): Int =
@@ -324,3 +121,4 @@ fun Project.gradleFlag(name: String, defaultValue: Boolean = false): Provider<Bo
   providers.gradleProperty(name).map {
     it.toBoolean()
   }.orElse(defaultValue)
+// endregion

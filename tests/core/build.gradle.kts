@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 plugins {
   id("java-toolchain-convention")
   id(libs.plugins.android.library.get().pluginId)
@@ -11,9 +12,10 @@ dependencies {
   api(libs.androidx.uiautomator.shell)
   api(libs.google.truth)
   // Integration tests use RecyclerView of the app, which version depends on flavor
-  compileOnly(libs.androidx.recyclerview.legacy)
+  compileOnly(libs.androidx.recyclerview.latest)
 }
 
 android {
   namespace = "tgx.test"
 }
+// endregion

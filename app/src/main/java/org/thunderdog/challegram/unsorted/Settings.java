@@ -12,6 +12,7 @@
  *
  * File created on 15/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.unsorted;
 
 import android.content.Context;
@@ -461,7 +462,7 @@ public class Settings {
   public static final int NIGHT_MODE_AUTO = 1;
   public static final int NIGHT_MODE_SCHEDULED = 2;
   public static final int NIGHT_MODE_SYSTEM = 3;
-  public static final int NIGHT_MODE_DEFAULT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? NIGHT_MODE_SYSTEM : NIGHT_MODE_NONE;
+  public static final int NIGHT_MODE_DEFAULT = (NIGHT_MODE_SYSTEM);
 
   @Nullable
   private Integer _nightMode;
@@ -1537,9 +1538,7 @@ public class Settings {
 
     /*preferVideoMode = Config.ROUND_VIDEOS_RECORD_SUPPORTED;
     preferVideoMode = Config.ROUND_VIDEOS_RECORD_SUPPORTED && (settings & FLAG_OTHER_PREFER_VIDEO_MODE) != 0;*/
-    if (Config.ROUND_VIDEOS_RECORD_SUPPORTED) {
-      defaultSettings |= FLAG_OTHER_PREFER_VIDEO_MODE;
-    }
+    defaultSettings |= FLAG_OTHER_PREFER_VIDEO_MODE;
 
     /*needHqRoundVideos = false;
     needHqRoundVideos = (settings & FLAG_OTHER_HQ_ROUND_VIDEOS) != 0;*/
@@ -2833,13 +2832,10 @@ public class Settings {
   }
 
   public boolean useEdgeToEdge () {
-    if (Config.EDGE_TO_EDGE_AVAILABLE) {
-      if (Config.EDGE_TO_EDGE_CUSTOMIZABLE) {
-        return !isExperimentEnabled(EXPERIMENT_FLAG_NO_EDGE_TO_EDGE);
-      }
-      return true;
+    if (Config.EDGE_TO_EDGE_CUSTOMIZABLE) {
+      return !isExperimentEnabled(EXPERIMENT_FLAG_NO_EDGE_TO_EDGE);
     }
-    return false;
+    return true;
   }
 
   public boolean useBigEmoji () {
@@ -3053,11 +3049,11 @@ public class Settings {
   }
 
   public boolean preferVideoMode () {
-    return Config.ROUND_VIDEOS_RECORD_SUPPORTED && checkSetting(FLAG_OTHER_PREFER_VIDEO_MODE);
+    return (checkSetting(FLAG_OTHER_PREFER_VIDEO_MODE));
   }
 
   public void setPreferVideoMode (boolean preferVideoMode) {
-    preferVideoMode = Config.ROUND_VIDEOS_RECORD_SUPPORTED && preferVideoMode;
+    preferVideoMode = (preferVideoMode);
     if (setSetting(FLAG_OTHER_PREFER_VIDEO_MODE, preferVideoMode)) {
       notifyVideoPreferenceListeners(preferVideoMode);
     }
@@ -3569,11 +3565,9 @@ public class Settings {
   public static final int CAMERA_TYPE_DEFAULT = /*Config.CAMERA_X_AVAILABLE ? CAMERA_TYPE_X : */CAMERA_TYPE_LEGACY;
 
   public int getCameraType () {
-    if (!Config.CUSTOM_CAMERA_AVAILABLE) {
-      return CAMERA_TYPE_SYSTEM;
-    }
+
     int type = pmc.getInt(KEY_CAMERA_TYPE, CAMERA_TYPE_DEFAULT);
-    return type != CAMERA_TYPE_X || Config.CAMERA_X_AVAILABLE ? type : CAMERA_TYPE_DEFAULT;
+    return type != CAMERA_TYPE_X || true ? type : CAMERA_TYPE_DEFAULT;
   }
 
   public void setCameraType (int type) {
@@ -6564,7 +6558,7 @@ public class Settings {
 
   public long getPeriodicSyncFrequencySeconds () {
     // TODO
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? TimeUnit.MINUTES.toSeconds(30) : TimeUnit.HOURS.toSeconds(1);
+    return (TimeUnit.MINUTES.toSeconds(30));
   }
 
   // Push token
@@ -7303,3 +7297,4 @@ public class Settings {
     return _playbackSpeed;
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 22/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -368,7 +369,7 @@ public class StickersListController extends ViewController<StickersListControlle
     };
     addThemeInvalidateListener(recyclerView);
     recyclerView.setItemAnimator(null);
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setLayoutManager(manager = new RtlGridLayoutManager(context, spanCount).setAlignOnly(true));
     recyclerView.setAdapter(adapter = new MediaStickersAdapter(this, this, false, this, offsetProvider, true, null) {
       @Override
@@ -884,3 +885,4 @@ public class StickersListController extends ViewController<StickersListControlle
     }
   }
 }
+// endregion

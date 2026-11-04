@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 16:15
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.animation.Animator;
@@ -1698,11 +1699,7 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
     alert.setCancelable(false);
     AlertDialog dialog = showAlert(alert);
     if (dialog.getWindow() != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
-      } else {
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-      }
+      dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
     }
     Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
     if (button != null)
@@ -1806,7 +1803,7 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
   }
 
   public void openMissingLocationPermissionAlert (boolean needBackground) {
-    openMissingPermissionAlert(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Config.REQUEST_BACKGROUND_LOCATION && needBackground ? R.string.NoLocationAccessBackground : R.string.NoLocationAccess);
+    openMissingPermissionAlert((needBackground) ? R.string.NoLocationAccessBackground : R.string.NoLocationAccess);
   }
 
   public void openMissingMicrophonePermissionAlert () {
@@ -2027,7 +2024,7 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
         }
       });
     }
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setItemAnimator(null);
     recyclerView.setLayoutManager(new LinearLayoutManager(context(), RecyclerView.VERTICAL, false));
 
@@ -2606,7 +2603,7 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
 
     popupLayout.showSimplePopupView(optionsWrap, totalHeight);
     onCreatePopupLayout(popupLayout);
-    
+
     return popupLayout;
   }
 
@@ -3257,10 +3254,7 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
   }
 
   public final boolean inMultiWindowMode () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      return context.isInMultiWindowMode();
-    }
-    return false;
+    return context.isInMultiWindowMode();
   }
 
   @CallSuper
@@ -3945,3 +3939,4 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
   }
 
 }
+// endregion

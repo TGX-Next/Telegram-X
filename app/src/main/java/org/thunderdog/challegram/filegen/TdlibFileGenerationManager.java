@@ -12,6 +12,7 @@
  *
  * File created on 08/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.filegen;
 
 import android.graphics.Bitmap;
@@ -1035,7 +1036,7 @@ public final class TdlibFileGenerationManager {
     Bitmap bitmap = null;
     boolean needRotate = false;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && maxSize <= BIG_THUMB_RESOLUTION && info.getCropState() == null && info.getPaintState() == null) {
+    if ((maxSize <= BIG_THUMB_RESOLUTION) && info.getCropState() == null && info.getPaintState() == null) {
       android.graphics.ImageDecoder.Source source;
       if (uri != null) {
         source = android.graphics.ImageDecoder.createSource(AppContext.get().getContentResolver(), uri);
@@ -1377,74 +1378,36 @@ public final class TdlibFileGenerationManager {
   private void generatePhotoThumb (ThumbGenerationInfo info, String originalPath, int resolution) throws Throwable {
     Uri uri = originalPath.startsWith("content://") ? Uri.parse(originalPath) : null;
     boolean transparent = isTransparent(originalPath, uri);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P /*&& Config.MODERN_IMAGE_DECODER_ENABLED*/) {
-      try {
-        // int rotation = ImageReader.getRotation(originalPath);
-        android.graphics.ImageDecoder.Source source;
-        if (uri != null) {
-          source = android.graphics.ImageDecoder.createSource(AppContext.get().getContentResolver(), uri);
-        } else {
-          source = android.graphics.ImageDecoder.createSource(new File(originalPath));
-        }
-        Bitmap bitmap = android.graphics.ImageDecoder.decodeBitmap(source, new android.graphics.ImageDecoder.OnHeaderDecodedListener() {
-          @Override
-          public void onHeaderDecoded (@NonNull android.graphics.ImageDecoder decoder, @NonNull android.graphics.ImageDecoder.ImageInfo imageInfo, @NonNull android.graphics.ImageDecoder.Source source) {
-            int width = imageInfo.getSize().getWidth();
-            int height = imageInfo.getSize().getHeight();
-            float ratio = Math.min((float) SMALL_THUMB_RESOLUTION / width, (float) SMALL_THUMB_RESOLUTION / height);
-            if (ratio < 1f) {
-              width *= ratio;
-              height *= ratio;
-              decoder.setTargetSize(width, height);
-            }
+    try {
+      // int rotation = ImageReader.getRotation(originalPath);
+      android.graphics.ImageDecoder.Source source;
+      if (uri != null) {
+        source = android.graphics.ImageDecoder.createSource(AppContext.get().getContentResolver(), uri);
+      } else {
+        source = android.graphics.ImageDecoder.createSource(new File(originalPath));
+      }
+      Bitmap bitmap = android.graphics.ImageDecoder.decodeBitmap(source, new android.graphics.ImageDecoder.OnHeaderDecodedListener() {
+        @Override
+        public void onHeaderDecoded (@NonNull android.graphics.ImageDecoder decoder, @NonNull android.graphics.ImageDecoder.ImageInfo imageInfo, @NonNull android.graphics.ImageDecoder.Source source) {
+          int width = imageInfo.getSize().getWidth();
+          int height = imageInfo.getSize().getHeight();
+          float ratio = Math.min((float) SMALL_THUMB_RESOLUTION / width, (float) SMALL_THUMB_RESOLUTION / height);
+          if (ratio < 1f) {
+            width *= ratio;
+            height *= ratio;
+            decoder.setTargetSize(width, height);
           }
-        });
-        /*if (rotation != 0) {
-          bitmap = rotateBitmap(bitmap, rotation);
-        }*/
-        compress(info, bitmap, 89, transparent);
-      } catch (Throwable t) {
-        Log.e("Cannot compress photo", t);
-        failGeneration(info, ERROR_APP_FAILURE, "Cannot compress photo, see logs for details");
-      }
-      return;
-    }
-    BitmapFactory.Options opts = new BitmapFactory.Options();
-    opts.inSampleSize = 1;
-    opts.inJustDecodeBounds = true;
-    if (uri != null) {
-      try (InputStream is = UI.getContext().getContentResolver().openInputStream(uri)) {
-        BitmapFactory.decodeStream(is, null, opts);
-      }
-    } else {
-      ImageReader.decodeFile(originalPath, opts);
-    }
-    opts.inSampleSize = ImageReader.calculateInSampleSize(opts, SMALL_THUMB_RESOLUTION, SMALL_THUMB_RESOLUTION);
-    opts.inJustDecodeBounds = false;
-
-    opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-    Bitmap bitmap = null;
-
-    try (InputStream is = U.openInputStream(originalPath)) {
-      bitmap = BitmapFactory.decodeStream(is, null, opts);
+        }
+      });
+      /*if (rotation != 0) {
+        bitmap = rotateBitmap(bitmap, rotation);
+      }*/
+      compress(info, bitmap, 89, transparent);
     } catch (Throwable t) {
       Log.e("Cannot compress photo", t);
+      failGeneration(info, ERROR_APP_FAILURE, "Cannot compress photo, see logs for details");
     }
-
-    if (bitmap == null) {
-      failGeneration(info, ERROR_APP_FAILURE, "bitmap == null");
-      return;
-    }
-    if (Math.max(bitmap.getWidth(), bitmap.getHeight()) > SMALL_THUMB_RESOLUTION) {
-      bitmap = ImageReader.resizeBitmap(bitmap, SMALL_THUMB_RESOLUTION, SMALL_THUMB_RESOLUTION, false, true, true);
-    }
-
-    int outputOrientation = U.getExifOrientation(originalPath);
-
-    bitmap = orientBitmap(bitmap, outputOrientation);
-
-    compress(info, bitmap, 89, transparent);
+    return;
   }
 
   // Thumbnail 2.0
@@ -1726,3 +1689,4 @@ public final class TdlibFileGenerationManager {
     return content;
   }
 }
+// endregion

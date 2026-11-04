@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 17:48
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.content.Context;
@@ -134,7 +135,7 @@ public class NavigationGestureController implements GestureDetector.OnGestureLis
     int stackSize = navigation.getStackSize();
     if (navigation.swipeNavigationEnabled() && stackSize > 0 && c != null){
       if (c.swipeNavigationEnabled() && !c.forceFadeMode() && !c.inSelectMode() && !c.inCustomMode() && !(stackSize == 1 && c.inSearchMode()) && c.canSlideBackFrom(navigation, x, y)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        {
           RootFrameLayout rootFrameLayout = UI.getContext(navigation.getContext()).getRootView();
           Rect gestureInsets = rootFrameLayout.getSystemGesturesInsets();
           if (x < gestureInsets.left || x > rootFrameLayout.getMeasuredWidth() - gestureInsets.right) {
@@ -326,3 +327,4 @@ public class NavigationGestureController implements GestureDetector.OnGestureLis
   public void onLongPress (MotionEvent event) { }
 
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 19/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.attach;
 
 import android.app.Activity;
@@ -33,7 +34,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -113,7 +113,7 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+
   private void showSystemPicker (boolean forceDownloads) {
     RunnableData<Set<Uri>> callback = uris -> {
       if (uris != null && !uris.isEmpty()) {
@@ -658,9 +658,7 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
     return new LoadOperation(this) {
       @Override
       public Result act () {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-          return null;
-        }
+
         final String[] projection = {
           MediaStore.Downloads._ID,
           MediaStore.Downloads.DISPLAY_NAME,
@@ -1363,4 +1361,4 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
     void onFilesSelected (ArrayList<InlineResult<?>> results, boolean needShowKeyboard);
   }
 }
-
+// endregion

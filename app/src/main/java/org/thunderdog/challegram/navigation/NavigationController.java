@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 17:36
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.animation.Animator;
@@ -1566,9 +1567,7 @@ public class NavigationController implements Future<View>, ThemeChangeListener, 
   private Object actionMode;
 
   public void setActionMode (Object mode) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-      actionMode = mode;
-    }
+    actionMode = mode;
   }
 
   /*// Instance state
@@ -1677,3 +1676,4 @@ public class NavigationController implements Future<View>, ThemeChangeListener, 
     setBottomInset(systemInsets.bottom, systemInsetWithoutIme.bottom);
   }
 }
+// endregion

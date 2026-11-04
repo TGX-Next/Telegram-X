@@ -12,6 +12,7 @@
  *
  * File created on 14/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.theme;
 
 import android.app.AlertDialog;
@@ -512,7 +513,7 @@ public class ThemeManager implements FactorAnimator.Target, GlobalAccountListene
       case ThemeId.TEMPORARY:
       case ThemeId.NONE:
         break;
-        
+
       case ThemeId.CUSTOM:
       default: {
         int customThemeId = resolveCustomThemeId(themeId);
@@ -677,3 +678,4 @@ public class ThemeManager implements FactorAnimator.Target, GlobalAccountListene
     }
   }
 }
+// endregion

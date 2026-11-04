@@ -12,6 +12,7 @@
  *
  * File created on 01/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.helper;
 
 import android.Manifest;
@@ -152,9 +153,9 @@ public class LocationHelper implements ActivityResultHandler {
   public static final int ERROR_CODE_PERMISSION_CANCEL = -5;
 
   private static int checkLocationPermissions (Context context, boolean needBackground) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    {
       String[] permissions;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Config.REQUEST_BACKGROUND_LOCATION && needBackground) {
+      if ((needBackground)) {
         permissions = new String[] {Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
       } else {
         permissions = new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -173,34 +174,32 @@ public class LocationHelper implements ActivityResultHandler {
     final boolean[] sendStatus = new boolean[1];
     lastSignal = sendStatus;
     final Context context = activity != null ? activity : this.context;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (checkLocationPermissions(context, needBackground) != PackageManager.PERMISSION_GRANTED) {
-        if (allowResolution) {
-          if (activity != null) {
-            Runnable onCancel = () -> onReceiveLocationFailure(ERROR_CODE_PERMISSION_CANCEL);
+    if (checkLocationPermissions(context, needBackground) != PackageManager.PERMISSION_GRANTED) {
+      if (allowResolution) {
+        if (activity != null) {
+          Runnable onCancel = () -> onReceiveLocationFailure(ERROR_CODE_PERMISSION_CANCEL);
 
-            ActivityPermissionResult callback = (code, permissions, grantResults, grantCount) -> {
-              if (sendStatus[0]) {
-                return;
-              }
-              if (grantCount == permissions.length) {
-                receiveLocationInternal(activity, true, onlyCheck, skipAlert);
-              } else {
-                onReceiveLocationFailure(ERROR_CODE_PERMISSION);
-              }
-            };
-
-            if (permissionRequester != null) {
-              permissionRequester.requestPermissions(skipAlert, onCancel, callback);
-            } else {
-              activity.requestLocationPermission(needBackground, skipAlert, onCancel, callback);
+          ActivityPermissionResult callback = (code, permissions, grantResults, grantCount) -> {
+            if (sendStatus[0]) {
+              return;
             }
+            if (grantCount == permissions.length) {
+              receiveLocationInternal(activity, true, onlyCheck, skipAlert);
+            } else {
+              onReceiveLocationFailure(ERROR_CODE_PERMISSION);
+            }
+          };
+
+          if (permissionRequester != null) {
+            permissionRequester.requestPermissions(skipAlert, onCancel, callback);
+          } else {
+            activity.requestLocationPermission(needBackground, skipAlert, onCancel, callback);
           }
-        } else {
-          onReceiveLocationFailure(ERROR_CODE_PERMISSION);
         }
-        return;
+      } else {
+        onReceiveLocationFailure(ERROR_CODE_PERMISSION);
       }
+      return;
     }
 
     try {
@@ -517,3 +516,4 @@ public class LocationHelper implements ActivityResultHandler {
     }
   }
 }
+// endregion

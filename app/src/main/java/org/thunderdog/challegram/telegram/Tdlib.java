@@ -12,6 +12,7 @@
  *
  * File created on 14/02/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.content.Context;
@@ -1988,7 +1989,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       }
     });
   }
-  
+
   public interface MessagePropertyChecker {
     boolean checkProperty (TdApi.MessageProperties properties);
   }
@@ -5974,7 +5975,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       notificationGroupSizeMax = 1;
     } else {
       notificationGroupCountMax = 25;
-      notificationGroupSizeMax = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? 7 : 10;
+      notificationGroupSizeMax = (7);
     }
 
     Client.ResultHandler okHandler = okHandler();
@@ -7701,7 +7702,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
   private void updateMessageFactCheck (TdApi.UpdateMessageFactCheck update) {
     // TODO
   }
-  
+
   @TdlibThread
   private void updateSuggestedPostInfo (TdApi.UpdateMessageSuggestedPostInfo update) {
     // TODO
@@ -9217,10 +9218,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       }
       callback.onApplicationVerificationResult(error);
     };
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      onError.runWithData(new ApplicationVerificationException("PLAYINTEGRITY_FAILED_SDK_TOO_LOW_" + Build.VERSION.SDK_INT));
-      return;
-    }
+
     long projectId = 0;
     try {
       FirebaseOptions options = FirebaseOptions.fromResource(AppContext.get());
@@ -9263,10 +9261,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       TDLib.Tag.recaptcha("failure verificationId=%d: %s", verificationId, Log.toString(e));
       callback.onApplicationVerificationResult(e.getMessage());
     };
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      onError.runWithData(new ApplicationVerificationException("RECAPTCHA_FAILED_SDK_TOO_LOW_" + Build.VERSION.SDK_INT));
-      return;
-    }
+
     RunnableData<RecaptchaTasksClient> actor = client -> {
       client.executeTask(RecaptchaAction.custom(action))
         .addOnSuccessListener(token -> {
@@ -9465,7 +9460,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
   private void updateStarRevenueStatus (TdApi.UpdateStarRevenueStatus update) {
     listeners.updateStarRevenueStatus(update);
   }
-  
+
   @TdlibThread
   private void updateGramRevenueStatus (TdApi.UpdateGramRevenueStatus update) {
     listeners.updateGramRevenueStatus(update);
@@ -10920,11 +10915,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       return;
     }
     final String hashtag;
-    if (!BuildConfig.LATEST_FLAVOR) {
-      hashtag = abiFlavor + StringUtils.ucfirst(BuildConfig.FLAVOR);
-    } else {
-      hashtag = abiFlavor;
-    }
+    hashtag = abiFlavor;
     final String query = "#apk " +
       (Settings.instance().getNewSetting(Settings.SETTING_FLAG_DOWNLOAD_BETAS) ? "" : "#stable ") +
       "#" + hashtag;
@@ -12402,3 +12393,4 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
     }
   }
 }
+// endregion

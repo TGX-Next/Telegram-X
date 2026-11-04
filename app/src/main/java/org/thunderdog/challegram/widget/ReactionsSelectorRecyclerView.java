@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -50,7 +51,7 @@ public class ReactionsSelectorRecyclerView extends RecyclerView {
       }
     };
 
-    setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? OVER_SCROLL_IF_CONTENT_SCROLLS : OVER_SCROLL_NEVER);
+    setOverScrollMode((OVER_SCROLL_IF_CONTENT_SCROLLS));
     setPadding(Screen.dp(9), Screen.dp(7), Screen.dp(9), Screen.dp(7));
     setClipToPadding(false);
     setHasFixedSize(true);
@@ -252,3 +253,4 @@ public class ReactionsSelectorRecyclerView extends RecyclerView {
     }
   }
 }
+// endregion

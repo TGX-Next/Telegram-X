@@ -12,6 +12,7 @@
  *
  * File created on 16/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -219,15 +220,7 @@ public class SettingsCacheController extends RecyclerViewController<SettingsData
 
     ArrayList<ListItem> items = new ArrayList<>();
 
-    /*if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      TdApi.TdlibParameters parameters = tdlib.clientParameters();
-      if (parameters != null) {
-        File[] files = UI.getContext().getExternalFilesDirs(null);
-        boolean changeAvailable = files != null && files.length > 1;
-        items.add(new SettingItem(SettingItem.TYPE_VALUED_SETTING, R.id.btn_storagePath, 0, R.string.Location).setBoolValue(changeAvailable));
-        items.add(new SettingItem(SettingItem.TYPE_SEPARATOR_FULL));
-      }
-    }*/
+
 
     items.add(new ListItem(VIEW_TYPE, R.id.btn_keepMedia, 0, R.string.KeepMedia));
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
@@ -1128,3 +1121,4 @@ public class SettingsCacheController extends RecyclerViewController<SettingsData
     }
   }
 }
+// endregion

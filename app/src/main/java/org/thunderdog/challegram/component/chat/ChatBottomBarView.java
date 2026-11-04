@@ -12,6 +12,7 @@
  *
  * File created on 21/12/2019
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
@@ -25,7 +26,6 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.telegram.Tdlib;
@@ -80,22 +80,20 @@ public class ChatBottomBarView extends BaseView {
       }
     };
     ViewUtils.setBackground(this, this.drawable = Theme.customSelector(drawable, legacyPressedDrawable));
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          RectF rectF = buildRectF();
-          int radius = calculateRadius();
-          if (radius == 0) {
-            outline.setRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom);
-          } else {
-            outline.setRoundRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom, radius);
-          }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        RectF rectF = buildRectF();
+        int radius = calculateRadius();
+        if (radius == 0) {
+          outline.setRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom);
+        } else {
+          outline.setRoundRect((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom, radius);
         }
-      });
-      Views.setSimpleStateListAnimator(this);
-    }
+      }
+    });
+    Views.setSimpleStateListAnimator(this);
   }
 
   private int calculateRadius () {
@@ -268,9 +266,7 @@ public class ChatBottomBarView extends BaseView {
   }
 
   public void update () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      invalidateOutline();
-    }
+    invalidateOutline();
     drawable.invalidateSelf();
     invalidate();
   }
@@ -286,3 +282,4 @@ public class ChatBottomBarView extends BaseView {
     }
   }
 }
+// endregion

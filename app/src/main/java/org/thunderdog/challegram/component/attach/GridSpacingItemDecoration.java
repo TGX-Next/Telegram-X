@@ -12,6 +12,7 @@
  *
  * File created on 21/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.attach;
 
 import android.graphics.Canvas;
@@ -160,19 +161,7 @@ public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
         }
         outRect.bottom = spacing; // item bottom
       } else if (lookup != null) {
-        if (true) {
-          outRect.top = 0;
-        } else {
-          if (adapterPosition > spanCount) {
-            outRect.top = 0;
-          } else {
-            int topEndIndex = 0;
-            while (topEndIndex < spanCount && lookup.getSpanSize(topEndIndex) == 1) {
-              topEndIndex++;
-            }
-            outRect.top = adapterPosition < topEndIndex ? spacing : 0;
-          }
-        }
+        outRect.top = 0;
         int adapterItemCount = parent.getAdapter().getItemCount();
         if (adapterPosition < adapterItemCount - spanCount) {
           outRect.bottom = 0;
@@ -204,3 +193,4 @@ public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
     }
   }
 }
+// endregion

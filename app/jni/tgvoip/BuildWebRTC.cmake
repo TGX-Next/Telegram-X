@@ -1,3 +1,4 @@
+# region @MadeByLLM("gpt-6", id = "android13-arm64")
 # WebRTC
 
 set(WEBRTC_DIR "${TGCALLS_DEPS_DIR}/webrtc")
@@ -2470,7 +2471,7 @@ add_library(webrtc STATIC
   "${WEBRTC_DIR}/modules/video_coding/timing/rtt_filter.cc"
   "${WEBRTC_DIR}/video/config/simulcast.cc"
   "${WEBRTC_DIR}/api/video_codecs/simulcast_stream.cc"
-  
+
 
 
   "${WEBRTC_DIR}/rtc_base/network/received_packet.cc"
@@ -2499,7 +2500,7 @@ add_library(webrtc STATIC
   "${WEBRTC_DIR}/video/receive_statistics_proxy.cc"
   "${WEBRTC_DIR}/api/video_codecs/h265_profile_tier_level.cc"
   "${WEBRTC_DIR}/modules/rtp_rtcp/source/rtp_packetizer_h265.cc"
-  "${WEBRTC_DIR}/modules/rtp_rtcp/source/video_rtp_depacketizer_h265.cc" 
+  "${WEBRTC_DIR}/modules/rtp_rtcp/source/video_rtp_depacketizer_h265.cc"
   "${WEBRTC_DIR}/modules/video_coding/include/video_error_codes_utils.cc"
   "${WEBRTC_DIR}/api/video_codecs/video_decoder_factory.cc"
   "${WEBRTC_DIR}/modules/video_coding/h265_vps_sps_pps_tracker.cc"
@@ -2698,67 +2699,24 @@ target_compile_options(webrtc PRIVATE
 
 # platform-specific
 
-if(${ANDROID_ABI} STREQUAL "armeabi-v7a" OR ${ANDROID_ABI} STREQUAL "arm64-v8a")
-  target_sources(webrtc PRIVATE
-    "${WEBRTC_DIR}/modules/audio_processing/aecm/aecm_core_neon.cc"
-    "${WEBRTC_DIR}/common_audio/fir_filter_neon.cc"
-    "${WEBRTC_DIR}/common_audio/signal_processing/cross_correlation_neon.c"
-    "${WEBRTC_DIR}/common_audio/signal_processing/downsample_fast_neon.c"
-    "${WEBRTC_DIR}/common_audio/signal_processing/min_max_operations_neon.c"
-    "${WEBRTC_DIR}/common_audio/resampler/sinc_resampler_neon.cc"
-    "${WEBRTC_DIR}/common_audio/third_party/ooura/fft_size_128/ooura_fft_neon.cc"
-  )
-  if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
-    target_sources(webrtc PRIVATE
-      "${WEBRTC_DIR}/common_audio/signal_processing/complex_bit_reverse_arm.S"
-      "${WEBRTC_DIR}/common_audio/signal_processing/filter_ar_fast_q12_armv7.S"
-    )
-    target_compile_definitions(webrtc PRIVATE
-      WEBRTC_ARCH_ARM
-      WEBRTC_ARCH_ARM_V7
-      WEBRTC_HAS_NEON
-      LIBYUV_NEON
-    )
-  elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-    target_sources(webrtc PRIVATE
-      "${WEBRTC_DIR}/common_audio/signal_processing/complex_bit_reverse.c"
-      "${WEBRTC_DIR}/common_audio/signal_processing/filter_ar_fast_q12.c"
-    )
-    target_compile_definitions(webrtc PRIVATE
-      WEBRTC_ARCH_ARM64
-      WEBRTC_HAS_NEON
-      LIBYUV_NEON
-    )
-  endif()
-elseif(${ANDROID_ABI} STREQUAL "x86_64" OR ${ANDROID_ABI} STREQUAL "x86")
-  target_sources(webrtc PRIVATE
-    "${WEBRTC_DIR}/common_audio/fir_filter_sse.cc"
-    "${WEBRTC_DIR}/common_audio/resampler/sinc_resampler_sse.cc"
-    "${WEBRTC_DIR}/common_audio/signal_processing/complex_bit_reverse.c"
-    "${WEBRTC_DIR}/common_audio/signal_processing/filter_ar_fast_q12.c"
-    "${WEBRTC_DIR}/common_audio/third_party/ooura/fft_size_128/ooura_fft_sse2.cc"
-
-    "${WEBRTC_DIR}/common_audio/resampler/sinc_resampler_avx2.cc"
-    "${WEBRTC_DIR}/common_audio/fir_filter_avx2.cc"
-
-    "${WEBRTC_DIR}/modules/audio_processing/agc2/rnn_vad/vector_math_avx2.cc"
-    "${WEBRTC_DIR}/modules/audio_processing/aec3/vector_math_avx2.cc"
-    "${WEBRTC_DIR}/modules/audio_processing/aec3/adaptive_fir_filter_avx2.cc"
-    "${WEBRTC_DIR}/modules/audio_processing/aec3/adaptive_fir_filter_erl_avx2.cc"
-    "${WEBRTC_DIR}/modules/audio_processing/aec3/matched_filter_avx2.cc"
-    "${WEBRTC_DIR}/modules/audio_processing/aec3/fft_data_avx2.cc"
-  )
-  target_compile_definitions(webrtc PRIVATE
-    HAVE_SSE2
-  )
-  foreach(feature avx avx2 fma)
-    if(NOT CMAKE_CXX_FLAGS MATCHES "-m${feature}")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m${feature}")
-    endif()
-  endforeach()
-else()
-  message(FATAL_ERROR "Unknown abi: ${ANDROID_ABI}")
-endif()
+target_sources(webrtc PRIVATE
+  "${WEBRTC_DIR}/modules/audio_processing/aecm/aecm_core_neon.cc"
+  "${WEBRTC_DIR}/common_audio/fir_filter_neon.cc"
+  "${WEBRTC_DIR}/common_audio/signal_processing/cross_correlation_neon.c"
+  "${WEBRTC_DIR}/common_audio/signal_processing/downsample_fast_neon.c"
+  "${WEBRTC_DIR}/common_audio/signal_processing/min_max_operations_neon.c"
+  "${WEBRTC_DIR}/common_audio/resampler/sinc_resampler_neon.cc"
+  "${WEBRTC_DIR}/common_audio/third_party/ooura/fft_size_128/ooura_fft_neon.cc"
+)
+target_sources(webrtc PRIVATE
+  "${WEBRTC_DIR}/common_audio/signal_processing/complex_bit_reverse.c"
+  "${WEBRTC_DIR}/common_audio/signal_processing/filter_ar_fast_q12.c"
+)
+target_compile_definitions(webrtc PRIVATE
+  WEBRTC_ARCH_ARM64
+  WEBRTC_HAS_NEON
+  LIBYUV_NEON
+)
 
 target_link_libraries(webrtc PUBLIC
   ssl
@@ -2783,3 +2741,4 @@ target_include_directories(webrtc PRIVATE
 target_include_directories(webrtc PUBLIC
   "${WEBRTC_DIR}"
 )
+# endregion

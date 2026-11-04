@@ -12,6 +12,7 @@
  *
  * File created on 18/05/2015 at 04:29
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.support;
 
 import android.graphics.drawable.Drawable;
@@ -79,11 +80,9 @@ public class RippleSupport {
   }
 
   public static void invalidateRipple (Drawable drawable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (drawable instanceof android.graphics.drawable.RippleDrawable) {
-        android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
-        ripple.invalidateSelf();
-      }
+    if (drawable instanceof android.graphics.drawable.RippleDrawable) {
+      android.graphics.drawable.RippleDrawable ripple = (android.graphics.drawable.RippleDrawable) drawable;
+      ripple.invalidateSelf();
     }
   }
 
@@ -171,3 +170,4 @@ public class RippleSupport {
     }
   }
 }
+// endregion

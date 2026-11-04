@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.data;
 
 import android.util.SparseIntArray;
@@ -1602,7 +1603,7 @@ public class ContentPreview {
       case TdApi.MessagePaymentSuccessful.CONSTRUCTOR:
       case TdApi.MessagePaymentRefunded.CONSTRUCTOR:
         throw new IllegalArgumentException(Integer.toString(type));
-        
+
       case TdApi.MessageStory.CONSTRUCTOR:
       case TdApi.MessageUsersShared.CONSTRUCTOR:
       case TdApi.MessageChatShared.CONSTRUCTOR:
@@ -1650,7 +1651,7 @@ public class ContentPreview {
       case TdApi.MessageUnpaidMessagesAllowedByLink.CONSTRUCTOR:
         // TODO support these previews
         return new ContentPreview(EMOJI_QUIZ, R.string.UnsupportedMessage);
-        
+
       case TdApi.MessageUnsupported.CONSTRUCTOR:
         return new ContentPreview(EMOJI_QUIZ, R.string.UnsupportedMessageType);
 
@@ -1774,3 +1775,4 @@ public class ContentPreview {
     }
   }
 }
+// endregion

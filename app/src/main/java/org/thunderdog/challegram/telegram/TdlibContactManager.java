@@ -12,6 +12,7 @@
  *
  * File created on 12/09/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.app.AlertDialog;
@@ -791,13 +792,11 @@ public class TdlibContactManager implements CleanupStartupDelegate {
     /*b.setNeutralButton(Lang.getString(R.string.SyncLearnMore), (dialog, which) -> {
       tdlib.ui().openUrl(delegate, Lang.getStringSecure(R.string.url_contactsPrivacy), null);
     });*/
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      b.setOnDismissListener(dialog -> {
-        if (showingAlert == dialog) {
-          showingAlert = null;
-        }
-      });
-    }
+    b.setOnDismissListener(dialog -> {
+      if (showingAlert == dialog) {
+        showingAlert = null;
+      }
+    });
     b.setPositiveButton(Lang.getString(!context.permissions().canReadContacts() ? (isRetry ? R.string.Settings : R.string.SyncBtn) : R.string.SyncBtn), (dialog, which) -> {
       if (isRetry) {
         Intents.openPermissionSettings();
@@ -937,24 +936,22 @@ public class TdlibContactManager implements CleanupStartupDelegate {
     ContentResolver resolver = context.getContentResolver();
     boolean ok = false;
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        if (this.maxModificationDate == 0) {
-          ok = true;
-        } else {
-          c = resolver.query(ContactsContract.Contacts.CONTENT_URI,
-            new String[]{
-              ContactsContract.Contacts._ID
-            },
-            ContactsContract.Contacts.HAS_PHONE_NUMBER + "<>0 AND " + ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP + " > " + this.maxModificationDate,
-            null,
-            ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP + " DESC LIMIT 1"
-          );
-          if (c != null) {
-            ok = c.getCount() > 0;
-            U.closeCursor(c); c = null;
-            if (ok) {
-              Log.i(Log.TAG_CONTACT, "Found newer contact modifications, starting sync process");
-            }
+      if (this.maxModificationDate == 0) {
+        ok = true;
+      } else {
+        c = resolver.query(ContactsContract.Contacts.CONTENT_URI,
+          new String[]{
+            ContactsContract.Contacts._ID
+          },
+          ContactsContract.Contacts.HAS_PHONE_NUMBER + "<>0 AND " + ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP + " > " + this.maxModificationDate,
+          null,
+          ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP + " DESC LIMIT 1"
+        );
+        if (c != null) {
+          ok = c.getCount() > 0;
+          U.closeCursor(c); c = null;
+          if (ok) {
+            Log.i(Log.TAG_CONTACT, "Found newer contact modifications, starting sync process");
           }
         }
       }
@@ -996,18 +993,11 @@ public class TdlibContactManager implements CleanupStartupDelegate {
       ContentResolver resolver = context.getContentResolver();
 
       String[] projection;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        projection = new String[] {
-          ContactsContract.Contacts._ID,
-          ContactsContract.Contacts.DISPLAY_NAME,
-          ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP
-        };
-      } else {
-        projection = new String[] {
-          ContactsContract.Contacts._ID,
-          ContactsContract.Contacts.DISPLAY_NAME
-        };
-      }
+      projection = new String[] {
+        ContactsContract.Contacts._ID,
+        ContactsContract.Contacts.DISPLAY_NAME,
+        ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP
+      };
       c = resolver.query(ContactsContract.Contacts.CONTENT_URI,
         projection,
         ContactsContract.Contacts.HAS_PHONE_NUMBER + "<>0",
@@ -1025,9 +1015,7 @@ public class TdlibContactManager implements CleanupStartupDelegate {
       while (c.moveToNext()) {
         long _id = c.getLong(0);
         String displayName = StringUtils.trim(c.getString(1));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-          maxModificationDate = Math.max(maxModificationDate, c.getLong(2));
-        }
+        maxModificationDate = Math.max(maxModificationDate, c.getLong(2));
         contacts.add(new ContactData(_id, displayName));
       }
       U.closeCursor(c); c = null;
@@ -1079,7 +1067,7 @@ public class TdlibContactManager implements CleanupStartupDelegate {
           // TODO ?
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && USE_FULL_NAME_STYLES) {
+        if ((USE_FULL_NAME_STYLES)) {
           projection = new String[] {
             ContactsContract.Data._ID,
             ContactsContract.Data.CONTACT_ID,
@@ -1119,7 +1107,7 @@ public class TdlibContactManager implements CleanupStartupDelegate {
           String lastName = StringUtils.trim(c.getString(3));
           String middleName = StringUtils.trim(c.getString(4));
           long fullNameStyle = -1;
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && USE_FULL_NAME_STYLES) {
+          if ((USE_FULL_NAME_STYLES)) {
             fullNameStyle = c.getLong(5);
             if (!StringUtils.isEmpty(middleName)) {
               if (StringUtils.isEmpty(lastName)) {
@@ -1449,3 +1437,4 @@ public class TdlibContactManager implements CleanupStartupDelegate {
     }
   }
 }
+// endregion

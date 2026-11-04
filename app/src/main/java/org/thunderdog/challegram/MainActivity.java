@@ -12,6 +12,7 @@
  *
  * File created on 23/04/2015 at 18:23
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram;
 
 import android.content.Intent;
@@ -696,23 +697,8 @@ public class MainActivity extends BaseActivity implements GlobalAccountListener,
   }
 
   private void initWith (MainController c) {
-    if (true) {
-      navigation.initController(c);
-      return;
-    }
-    c.getValue();
-    ViewController<?> child = c.getPreparedControllerForPosition(0);
-    if (child != null && child.needAsynchronousAnimation()) {
-      setBlankViewVisible(true, false);
-      child.postOnAnimationExecute(() -> {
-        if (navigation.isEmpty()) {
-          navigation.initController(c);
-        }
-        setBlankViewVisible(false, false);
-      });
-    } else {
-      navigation.initController(c);
-    }
+    navigation.initController(c);
+    return;
   }
 
   private void insertMainController () {
@@ -1534,3 +1520,4 @@ public class MainActivity extends BaseActivity implements GlobalAccountListener,
     super.onDestroy();
   }
 }
+// endregion

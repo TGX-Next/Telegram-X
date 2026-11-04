@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.video.old;
 
 import android.media.MediaCodec;
@@ -5,7 +6,6 @@ import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 
 import com.coremedia.iso.boxes.AbstractMediaHeaderBox;
 import com.coremedia.iso.boxes.SampleDescriptionBox;
@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+
 public class Track {
 
   private static class SamplePresentationTime {
@@ -385,3 +385,4 @@ public class Track {
     return isAudio;
   }
 }
+// endregion

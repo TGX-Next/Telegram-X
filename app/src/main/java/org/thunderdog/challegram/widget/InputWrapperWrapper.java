@@ -12,6 +12,7 @@
  *
  * File created on 10/07/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.ClipDescription;
@@ -65,47 +66,11 @@ public class InputWrapperWrapper {
 
   public static void setContentMimeTypes (EditorInfo editorInfo, String[] mimeTypes) {
     EditorInfoCompat.setContentMimeTypes(editorInfo, mimeTypes);
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
-      if (editorInfo.extras == null) {
-        editorInfo.extras = new Bundle();
-      }
-      editorInfo.extras.putStringArray(CONTENT_MIME_TYPES, mimeTypes);
-    }
+
   }
 
   public static InputConnection createWrapper (InputConnection ic, EditorInfo editorInfo, InputConnectionCompat.OnCommitContentListener callback) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-      return InputConnectionCompat.createWrapper(ic, editorInfo, callback);
-    } else {
-      InputConnection wrapper = InputConnectionCompat.createWrapper(ic, editorInfo, callback);
-      return new InputConnectionWrapper(ic, false) {
-        @Override
-        public boolean performPrivateCommand (String action, Bundle data) {
-          if (StringUtils.equalsOrBothEmpty(action, COMMIT_CONTENT_ACTION) && data != null) {
-            try {
-              ResultReceiver resultReceiver = data.getParcelable(COMMIT_CONTENT_RESULT_RECEIVER);
-              final Uri contentUri = data.getParcelable(COMMIT_CONTENT_CONTENT_URI_KEY);
-              final ClipDescription description = data.getParcelable(
-                COMMIT_CONTENT_DESCRIPTION_KEY);
-              final Uri linkUri = data.getParcelable(COMMIT_CONTENT_LINK_URI_KEY);
-              final int flags = data.getInt(COMMIT_CONTENT_FLAGS_KEY);
-              final Bundle opts = data.getParcelable(COMMIT_CONTENT_OPTS_KEY);
-
-              data.putParcelable(NEW_COMMIT_CONTENT_RESULT_RECEIVER, resultReceiver);
-              data.putParcelable(NEW_COMMIT_CONTENT_CONTENT_URI_KEY, contentUri);
-              data.putParcelable(NEW_COMMIT_CONTENT_DESCRIPTION_KEY, description);
-              data.putParcelable(NEW_COMMIT_CONTENT_LINK_URI_KEY, linkUri);
-              data.putInt(NEW_COMMIT_CONTENT_FLAGS_KEY, flags);
-              data.putParcelable(NEW_COMMIT_CONTENT_OPTS_KEY, opts);
-
-              action = NEW_COMMIT_CONTENT_ACTION;
-            } catch (Throwable t) {
-              Log.w("Cannot patch event", t);
-            }
-          }
-          return wrapper.performPrivateCommand(action, data);
-        }
-      };
-    }
+    return InputConnectionCompat.createWrapper(ic, editorInfo, callback);
   }
 }
+// endregion

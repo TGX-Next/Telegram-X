@@ -12,6 +12,7 @@
  *
  * File created on 26/01/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.support;
 
 import android.graphics.Canvas;
@@ -36,12 +37,9 @@ public class CircleDrawable extends SimpleShapeDrawable {
     int radius = Screen.dp(size) / 2;
 
     final int color = getDrawColor();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (color != 0) {
-        c.drawCircle(centerX, centerY, radius, Paints.fillingPaint(color));
-      }
-    } else {
-      c.drawCircle(centerX, centerY, radius, Paints.shadowFillingPaint(color));
+    if (color != 0) {
+      c.drawCircle(centerX, centerY, radius, Paints.fillingPaint(color));
     }
   }
 }
+// endregion

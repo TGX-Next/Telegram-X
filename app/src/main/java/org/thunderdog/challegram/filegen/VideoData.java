@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.filegen;
 
 import android.graphics.Bitmap;
@@ -284,7 +285,7 @@ public class VideoData {
   }
 
   public boolean editMovie (String outPath, boolean mute, int rotateBy, double startTime, double endTime, @Nullable RunnableLong onProgress, @Nullable AtomicBoolean isCancelled) {
-    if (extractor != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if ((extractor != null)) {
       boolean success = false;
       android.media.MediaMuxer muxer = null;
       try {
@@ -305,14 +306,14 @@ public class VideoData {
           }
           if (muxer == null) {
             int outputFormat = android.media.MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && ("video/x-vnd.on2.vp8".equals(mimeType) || "video/x-vnd.on2.vp9".equals(mimeType))) {
+            if ((("video/x-vnd.on2.vp8".equals(mimeType) || "video/x-vnd.on2.vp9".equals(mimeType)))) {
               outputFormat = android.media.MediaMuxer.OutputFormat.MUXER_OUTPUT_WEBM;
             }
             muxer = new android.media.MediaMuxer(outPath, outputFormat);
           }
           boolean isVideo = mimeType.startsWith("video/");
           if (rotateBy != 0 && isVideo) {
-            final String rotationKey = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? MediaFormat.KEY_ROTATION : "rotation-degrees";
+            final String rotationKey = (MediaFormat.KEY_ROTATION);
             int currentRotation = 0;
             try {
               currentRotation = format.getInteger(rotationKey);
@@ -325,8 +326,7 @@ public class VideoData {
           } catch (Throwable t) {
             Log.i(Log.TAG_VIDEO, "Cannot retrieve max input size", t);
             bufferSize = -1;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-              throw t;
+
           }
           int outputTrackIndex = muxer.addTrack(format);
           trackMap.put(inputTrackIndex, BitwiseUtils.mergeLong(outputTrackIndex, bufferSize));
@@ -362,7 +362,7 @@ public class VideoData {
                 abort = true;
                 break;
               }
-              long minBufferSize = outputBufferSize == -1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? extractor.getSampleSize() : outputBufferSize;
+              long minBufferSize = (outputBufferSize == -1) ? extractor.getSampleSize() : outputBufferSize;
               if (buffer == null || currentBufferSize < minBufferSize) {
                 buffer = ByteBuffer.allocateDirect(currentBufferSize = (int) minBufferSize).order(ByteOrder.nativeOrder());
               }
@@ -609,3 +609,4 @@ public class VideoData {
     return movie;
   }
 }
+// endregion

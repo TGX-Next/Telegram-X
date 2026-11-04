@@ -12,6 +12,7 @@
  *
  * File created on 07/08/2015 at 19:33
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.animation.Animator;
@@ -36,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.biometric.BiometricPrompt;
 
@@ -216,7 +216,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
       setMode(forcedMode != 0 ? forcedMode : isPasscodeEnabled() ? getPasscodeMode() : Passcode.MODE_PINCODE);
     } else {
       setMode(getPasscodeMode());
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mode != Passcode.MODE_BIOMETRICS && needUnlockWithBiometrics()) {
+      if ((mode != Passcode.MODE_BIOMETRICS) && needUnlockWithBiometrics()) {
         swirlView = new SwirlView(context);
         swirlView.setOnClickListener(v -> checkBiometricsNeeded());
         swirlView.setColorFilter(ColorUtils.alphaColor(Theme.getSubtitleAlpha(), Theme.getColor(ColorId.passcodeIcon)));
@@ -244,12 +244,10 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
   private void setMode (int mode) {
     if (this.mode == mode) return;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (mode == Passcode.MODE_BIOMETRICS && BiometricAuthentication.isMissingEnrolledData(needStrongBiometrics())) {
-        UI.showToast(BiometricAuthentication.ONLY_FINGERPRINT ? R.string.fingerprint_hint3 : R.string.biometrics_hint3, Toast.LENGTH_SHORT);
-        if (controllerMode == MODE_SETUP) {
-          return;
-        }
+    if (mode == Passcode.MODE_BIOMETRICS && BiometricAuthentication.isMissingEnrolledData(needStrongBiometrics())) {
+      UI.showToast(BiometricAuthentication.ONLY_FINGERPRINT ? R.string.fingerprint_hint3 : R.string.biometrics_hint3, Toast.LENGTH_SHORT);
+      if (controllerMode == MODE_SETUP) {
+        return;
       }
     }
 
@@ -298,9 +296,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
         break;
       }
       case Passcode.MODE_BIOMETRICS: {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          showBiometricsIcon();
-        }
+        showBiometricsIcon();
         break;
       }
     }
@@ -517,7 +513,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
   private void showBiometricsIcon () {
     if (biometricsView == null) {
       biometricsView = new SwirlView(context);
@@ -550,7 +546,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
   private boolean biometricsScanCompleted;
 
   @Override
-  @RequiresApi(Build.VERSION_CODES.M)
+
   public void onAuthenticated (BiometricPrompt.AuthenticationResult result, boolean strong) {
     final int biometricsId = 0; // strong ? 1 : 0;
     isBiometricAuthenticationActive = false;
@@ -604,7 +600,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
 
   @Override
   public void onRequestPermissionResult (int requestCode, boolean success) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requestCode == BaseActivity.REQUEST_USE_FINGERPRINT) {
+    if ((requestCode == BaseActivity.REQUEST_USE_FINGERPRINT)) {
       if (controllerMode == MODE_SETUP) {
         if (success) {
           if (BiometricAuthentication.isAvailable()) {
@@ -720,14 +716,11 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
       case Passcode.MODE_PATTERN:
         return R.string.PasscodeMismatchPattern;
       case Passcode.MODE_BIOMETRICS:
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          if (BiometricAuthentication.ONLY_FINGERPRINT) {
-            return R.string.PasscodeMismatchFingerprint;
-          } else {
-            return R.string.PasscodeMismatchBiometrics;
-          }
+        if (BiometricAuthentication.ONLY_FINGERPRINT) {
+          return R.string.PasscodeMismatchFingerprint;
+        } else {
+          return R.string.PasscodeMismatchBiometrics;
         }
-        break;
     }
     throw new IllegalArgumentException("mode == " + mode);
   }
@@ -980,7 +973,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
     if (mode == Passcode.MODE_PASSWORD && !waitsForBiometrics()) {
       UI.showKeyboardDelayed(passwordView);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    {
       int biometricsDelay = controllerMode == MODE_UNLOCK_SETUP || specificChat != null ? 0 : controllerMode == MODE_UNLOCK ? 300 : 100;
       if (swirlView != null) {
         swirlView.showDelayed(biometricsDelay);
@@ -1009,13 +1002,11 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
     if (mode == Passcode.MODE_PASSWORD && isFocused()) {
       showKeyboardWithWindowFocus();
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (swirlView != null) {
-        swirlView.showError(isFatal);
-      }
-      if (biometricsView != null) {
-        biometricsView.showError(isFatal);
-      }
+    if (swirlView != null) {
+      swirlView.showError(isFatal);
+    }
+    if (biometricsView != null) {
+      biometricsView.showError(isFatal);
     }
     runOnUiThreadOptional(() -> {
       if (tooltipInfo != null) {
@@ -1025,13 +1016,11 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
         navigateBack();
       } else {
         isBiometricAuthenticationActive = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          if (swirlView != null) {
-            swirlView.setState(SwirlView.State.ON, true);
-          }
-          if (biometricsView != null) {
-            biometricsView.setState(SwirlView.State.ON, true);
-          }
+        if (swirlView != null) {
+          swirlView.setState(SwirlView.State.ON, true);
+        }
+        if (biometricsView != null) {
+          biometricsView.setState(SwirlView.State.ON, true);
         }
       }
     }, null, 2000L);
@@ -1108,22 +1097,19 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
   private boolean isBiometricAuthenticationActive;
 
   private boolean needStrongBiometrics () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (controllerMode == MODE_SETUP) {
-        return passcodeView.getState() == Passcode.STATE_CONFIRM ?
-          confirmBiometricsStrong :
-          BiometricAuthentication.isStrongAvailable(true);
-      } else if (specificChat != null) {
-        return chatPasscode != null && chatPasscode.requireStrongBiometrics();
-      } else {
-        return Passcode.instance().useStrongBiometrics();
-      }
+    if (controllerMode == MODE_SETUP) {
+      return passcodeView.getState() == Passcode.STATE_CONFIRM ?
+        confirmBiometricsStrong :
+        BiometricAuthentication.isStrongAvailable(true);
+    } else if (specificChat != null) {
+      return chatPasscode != null && chatPasscode.requireStrongBiometrics();
+    } else {
+      return Passcode.instance().useStrongBiometrics();
     }
-    return false;
   }
 
   private void checkBiometricsNeeded () {
-    boolean needBiometricsAuthentication = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !this.biometricsScanCompleted && this.needBiometrics && context.getActivityState() == UI.State.RESUMED/* && isFocused()*/;
+    boolean needBiometricsAuthentication = (!this.biometricsScanCompleted) && this.needBiometrics && context.getActivityState() == UI.State.RESUMED/* && isFocused()*/;
     if (isBiometricAuthenticationActive != needBiometricsAuthentication) {
       if (needBiometricsAuthentication) {
         boolean isStrong = needStrongBiometrics();
@@ -1147,8 +1133,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
 
   private void showKeyboardWithWindowFocus () {
     passwordView.requestFocus();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 &&
-      !passwordView.hasWindowFocus()) {
+    if ((!passwordView.hasWindowFocus())) {
       if (!showKeyboardOnFocus) {
         showKeyboardOnFocus = true;
         passwordView.getViewTreeObserver().addOnWindowFocusChangeListener(
@@ -1160,7 +1145,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+
   private static final class KeyboardOnFocus
     implements ViewTreeObserver.OnWindowFocusChangeListener {
     private final PasscodeController controller;
@@ -1183,7 +1168,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
   }
 
   private boolean waitsForBiometrics () {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !inSetupMode() &&
+    return (!inSetupMode()) &&
       mode != Passcode.MODE_BIOMETRICS && !biometricsScanCompleted && needUnlockWithBiometrics();
   }
 
@@ -1206,7 +1191,7 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
   public String[] getToggleSections () {
     if (sections == null) {
       StringList strings;
-      boolean biometricsAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && BiometricAuthentication.isAvailable();
+      boolean biometricsAvailable = (BiometricAuthentication.isAvailable());
       strings = new StringList(biometricsAvailable ? 5 : 4);
       strings.append(R.string.PasscodePIN);
       strings.append(R.string.login_Password);
@@ -1381,3 +1366,4 @@ public class PasscodeController extends ViewController<PasscodeController.Args> 
     }
   }
 }
+// endregion

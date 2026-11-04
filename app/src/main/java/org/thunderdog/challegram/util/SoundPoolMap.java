@@ -12,6 +12,7 @@
  *
  * File created on 25/05/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util;
 
 import android.media.SoundPool;
@@ -46,20 +47,7 @@ public class SoundPoolMap {
   @SuppressWarnings("deprecation")
   public int get (@RawRes int res) {
     if (soundPool == null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && false) {
-        // Unused, because there was a sound glitch bug present in AOSP
-        // FIXME[sdk]: test with recent Android versions
-        android.media.AudioAttributes attributes = new android.media.AudioAttributes.Builder()
-          .setUsage(android.media.AudioAttributes.USAGE_VOICE_COMMUNICATION)
-          .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SPEECH)
-          .build();
-        soundPool = new SoundPool.Builder()
-          .setMaxStreams(1)
-          .setAudioAttributes(attributes)
-          .build();
-      } else {
-        soundPool = new SoundPool(1, stream, 0);
-      }
+      soundPool = new SoundPool(1, stream, 0);
     }
     int sound = sounds.get(res);
     if (sound == 0) {
@@ -121,3 +109,4 @@ public class SoundPoolMap {
 
 
 }
+// endregion

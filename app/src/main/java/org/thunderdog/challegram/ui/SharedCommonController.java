@@ -12,6 +12,7 @@
  *
  * File created on 25/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -119,7 +120,7 @@ public class SharedCommonController extends SharedBaseController<InlineResult<?>
         toggleSelected(item);
         return;
       }
-      
+
       InlineResult<?> result = (InlineResult<?>) item.getData();
       switch (result.getType()) {
         case InlineResult.TYPE_AUDIO:
@@ -328,3 +329,4 @@ public class SharedCommonController extends SharedBaseController<InlineResult<?>
     return item.setThumbLocation(location, view, index, mediaItem);
   }
 }
+// endregion

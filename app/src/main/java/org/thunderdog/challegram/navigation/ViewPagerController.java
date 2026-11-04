@@ -12,6 +12,7 @@
  *
  * File created on 21/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.content.Context;
@@ -245,7 +246,7 @@ public abstract class ViewPagerController<T> extends TelegramViewController<T> i
     addFocusListener(focusListener);
     pager = new RtlViewPager(context);
     pager.setLayoutParams(params);
-    pager.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? View.OVER_SCROLL_IF_CONTENT_SCROLLS : View.OVER_SCROLL_NEVER);
+    pager.setOverScrollMode((View.OVER_SCROLL_IF_CONTENT_SCROLLS));
     pager.addOnPageChangeListener(new androidx.viewpager.widget.ViewPager.OnPageChangeListener() {
       @Override
       public void onPageScrolled (int position, float positionOffset, int positionOffsetPixels) {
@@ -864,3 +865,4 @@ public abstract class ViewPagerController<T> extends TelegramViewController<T> i
     }
   }
 }
+// endregion

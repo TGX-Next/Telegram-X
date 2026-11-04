@@ -12,6 +12,7 @@
  *
  * File created on 27/05/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.content.Context;
@@ -214,7 +215,7 @@ public class ViewPagerHeaderViewCompact extends FrameLayoutFix implements PagerH
       }
     });
     recyclerView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, Size.getHeaderPortraitSize(), Gravity.TOP));
-    recyclerView.setOverScrollMode(Config.HAS_NICE_OVER_SCROLL_EFFECT ? OVER_SCROLL_IF_CONTENT_SCROLLS :OVER_SCROLL_NEVER);
+    recyclerView.setOverScrollMode((OVER_SCROLL_IF_CONTENT_SCROLLS));
     recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, Lang.rtl()));
     recyclerView.setAdapter(adapter);
     addView(recyclerView);
@@ -533,3 +534,4 @@ public class ViewPagerHeaderViewCompact extends FrameLayoutFix implements PagerH
     return Math.min((int) duration, 2000);
   }
 }
+// endregion

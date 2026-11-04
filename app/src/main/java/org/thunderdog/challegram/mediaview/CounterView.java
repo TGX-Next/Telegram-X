@@ -12,6 +12,7 @@
  *
  * File created on 10/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.mediaview;
 
 import android.content.Context;
@@ -32,9 +33,7 @@ public class CounterView extends CounterHeaderView {
   public CounterView (Context context) {
     super(context);
     init(14f, ColorId.white, Screen.dp(16f), 0, Screen.dp(9f) + Screen.dp(10f));
-    if (Config.HARDWARE_CLIP_PATH_FIX) {
-      Views.setLayerType(this, LAYER_TYPE_HARDWARE);
-    }
+    Views.setLayerType(this, LAYER_TYPE_HARDWARE);
   }
 
   @Override
@@ -42,7 +41,7 @@ public class CounterView extends CounterHeaderView {
     return true;
   }
 
-  private Path path = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? new Path() : null;
+  private Path path = (new Path());
   private float lastLeft, lastRight;
 
   @Override
@@ -67,7 +66,7 @@ public class CounterView extends CounterHeaderView {
     c.drawRoundRect(rectF, radius, radius, Paints.fillingPaint(0xa0000000));
     c.drawRoundRect(rectF, radius, radius, Paints.getProgressPaint(0xffffffff, strokeWidth));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && path != null) {
+    if ((path != null)) {
       if (lastLeft != left || lastRight != right) {
         lastLeft = left;
         lastRight = right;
@@ -101,3 +100,4 @@ public class CounterView extends CounterHeaderView {
     return Views.isValid(this) && super.onTouchEvent(event);
   }
 }
+// endregion

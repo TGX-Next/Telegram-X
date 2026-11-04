@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util;
 
 import android.Manifest;
@@ -110,9 +111,7 @@ public class Permissions {
   }
 
   public boolean requestPermissions (@Nullable RunnableInt after, String... permissions) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return false;
-    }
+
     List<String> missingPermissions = null;
     for (String permission : permissions) {
       if (!checkPermission(permission)) {
@@ -146,43 +145,36 @@ public class Permissions {
   }
 
   public boolean requestReadExternalStorage (@ReadType int type, @Nullable RunnableInt after) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      // No permission management before Marshmallow
-      return false;
-    }
+
     List<String> permissions = new ArrayList<>();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      switch (type) {
-        case ReadType.ALL:
-          permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-          permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-          permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
-          break;
-        case ReadType.IMAGES:
-          permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-          break;
-        case ReadType.VIDEOS:
-          permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-          break;
-        case ReadType.IMAGES_AND_VIDEOS:
-          permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-          permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-          break;
-        case ReadType.AUDIO:
-          permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
-          break;
-        case ReadType.EXTERNAL_FILE:
-        case ReadType.EXTERNAL_IMAGES:
-        case ReadType.EXTERNAL_AUDIO:
-        case ReadType.EXTERNAL_CAMERA_PHOTO:
-        case ReadType.EXTERNAL_CAMERA_VIDEO:
-          // No permissions required?
-          break;
-        default:
-          throw new IllegalArgumentException(Integer.toString(type));
-      }
-    } else {
-      permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+    switch (type) {
+      case ReadType.ALL:
+        permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+        permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+        permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
+        break;
+      case ReadType.IMAGES:
+        permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+        break;
+      case ReadType.VIDEOS:
+        permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+        break;
+      case ReadType.IMAGES_AND_VIDEOS:
+        permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+        permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+        break;
+      case ReadType.AUDIO:
+        permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
+        break;
+      case ReadType.EXTERNAL_FILE:
+      case ReadType.EXTERNAL_IMAGES:
+      case ReadType.EXTERNAL_AUDIO:
+      case ReadType.EXTERNAL_CAMERA_PHOTO:
+      case ReadType.EXTERNAL_CAMERA_VIDEO:
+        // No permissions required?
+        break;
+      default:
+        throw new IllegalArgumentException(Integer.toString(type));
     }
     if (permissions.isEmpty()) {
       return false;
@@ -193,7 +185,7 @@ public class Permissions {
         missingPermissions.add(permission);
       }
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !missingPermissions.isEmpty()) {
+    if ((!missingPermissions.isEmpty())) {
       if (checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
         return false;
       }
@@ -212,7 +204,7 @@ public class Permissions {
       }
     };
     context.requestCustomPermissions(missingPermissions.toArray(new String[0]), (code, requestedPermissions, grantResults, grantCount) -> {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && grantCount != requestedPermissions.length) {
+      if ((grantCount != requestedPermissions.length)) {
         context.requestCustomPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, (code1, requestedPermissions1, grantResults1, grantCount1) -> {
           onResult.runWithBool(grantCount1 == requestedPermissions1.length);
         });
@@ -224,20 +216,12 @@ public class Permissions {
   }
 
   public boolean requestWriteExternalStorage (@WriteType int type, @Nullable RunnableBool after) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      // WRITE_EXTERNAL_STORAGE no longer gives any effect
-      return false;
-    } else {
-      return requestPermissions(after, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
+    // WRITE_EXTERNAL_STORAGE no longer gives any effect
+    return false;
   }
 
   public boolean requestPostNotifications (@Nullable RunnableBool after) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      return requestPermissions(after, Manifest.permission.POST_NOTIFICATIONS);
-    } else {
-      return false;
-    }
+    return requestPermissions(after, Manifest.permission.POST_NOTIFICATIONS);
   }
 
   public boolean requestReadContacts (@Nullable RunnableBool after) {
@@ -245,28 +229,18 @@ public class Permissions {
   }
 
   public boolean requestForegroundService (@NonNull RunnableBool after) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      return requestPermissions(after, Manifest.permission.FOREGROUND_SERVICE);
-    } else {
-      return false;
-    }
+    return requestPermissions(after, Manifest.permission.FOREGROUND_SERVICE);
   }
 
   public boolean canManageStorage () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      return
-        Environment.isExternalStorageLegacy() ||
-        Environment.isExternalStorageManager() ||
-        checkPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      // Q allows for requestExternalStorage ?
-    }
-    return true;
+    return
+      Environment.isExternalStorageLegacy() ||
+      Environment.isExternalStorageManager() ||
+      checkPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
   }
 
   public boolean requestManageStorage (Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !canManageStorage()) {
+    if ((!canManageStorage())) {
       Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
       intent.setData(Uri.parse("package:" + context.getPackageName()));
       ((Activity) context).startActivityForResult(intent, Intents.ACTIVITY_RESULT_MANAGE_STORAGE);
@@ -276,11 +250,7 @@ public class Permissions {
   }
 
   private boolean shouldShowPermissionRationale (String permission) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return context.shouldShowRequestPermissionRationale(permission);
-    } else {
-      return false;
-    }
+    return context.shouldShowRequestPermissionRationale(permission);
   }
 
   public boolean requestRecordAudioPermissions (@Nullable RunnableBool after) {
@@ -333,7 +303,7 @@ public class Permissions {
   public boolean shouldShowBackgroundLocationRationale () {
     // Build.VERSION_CODES.Q: permission introduced, but automatically granted after request
     // Build.VERSION_CODES.R+: proper permission request prompt required
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && shouldShowPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    return (shouldShowPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
   }
 
   // can
@@ -347,13 +317,7 @@ public class Permissions {
   }
 
   public boolean canRequestDownloadsAccess () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      return canManageStorage();
-    } else {
-      // Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> downloads can be queried through content provider
-      // pre-Build.VERSION_CODES.R -> direct access to downloads folder
-      return true;
-    }
+    return canManageStorage();
   }
 
   public boolean canAccessLocation () {
@@ -364,11 +328,7 @@ public class Permissions {
   }
 
   public boolean canAccessLocationInBackground () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      return checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-    } else {
-      return true;
-    }
+    return checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
   }
 
   public boolean canAccessCamera () {
@@ -383,3 +343,4 @@ public class Permissions {
     return canAccessCamera() && canRecordAudio();
   }
 }
+// endregion

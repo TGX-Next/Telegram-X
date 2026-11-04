@@ -12,6 +12,7 @@
  *
  * File created on 29/04/2015 at 15:21
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.tool;
 
 import android.content.Context;
@@ -39,7 +40,7 @@ public class TGCountry {
       this.name = name;
     }
   }
-  
+
   private static TGCountry instance;
 
   public static TGCountry instance () {
@@ -307,27 +308,8 @@ public class TGCountry {
       if (manager == null) {
         return null;
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        // FIXME
-        return null;
-      }
-      String rawNumber = manager.getLine1Number();
-      if (rawNumber == null || rawNumber.isEmpty()) {
-        return null;
-      }
-      String number = Strings.getNumber(rawNumber);
-      if (number.isEmpty()) {
-        return null;
-      }
-
-      String countryISO = manager.getSimCountryIso();
-      Country country = find(countryISO);
-
-      if (country == null) {
-        return null;
-      }
-
-      return new String[] { country.number, number.substring(country.number.length())};
+      // FIXME
+      return null;
     } catch (Throwable t) {
       Log.w("Cannot getLine1Number", t);
     }
@@ -410,3 +392,4 @@ public class TGCountry {
     return countryList;
   }
 }
+// endregion

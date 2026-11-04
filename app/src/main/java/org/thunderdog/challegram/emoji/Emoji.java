@@ -12,6 +12,7 @@
  *
  * File created on 13/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.emoji;
 
 import android.content.SharedPreferences;
@@ -1023,7 +1024,7 @@ public class Emoji {
         } else if (startIndex == -1) {
           startLength = 0;
         }
-        if (abort || (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && emojiCount >= 1000)) {
+        if ((abort)) {
           break;
         }
       }
@@ -1138,3 +1139,4 @@ public class Emoji {
     return null;
   }
 }
+// endregion

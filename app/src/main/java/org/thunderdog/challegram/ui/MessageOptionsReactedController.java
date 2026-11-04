@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -57,7 +58,7 @@ public class MessageOptionsReactedController extends BottomSheetViewController.B
     adapter = new SettingsAdapter(this) {
       @Override
       protected void setUser (ListItem item, int position, UserView userView, boolean isUpdate) {
-        TdApi.MessageSender senderId = (TdApi.MessageSender) item.getData();       
+        TdApi.MessageSender senderId = (TdApi.MessageSender) item.getData();
         TGUser user;
         if (senderId.getConstructor() == TdApi.MessageSenderUser.CONSTRUCTOR) {
           user = new TGUser(tdlib, tdlib.cache().userStrict(((TdApi.MessageSenderUser) senderId).userId));
@@ -181,3 +182,4 @@ public class MessageOptionsReactedController extends BottomSheetViewController.B
     return adapter.measureHeight(-1);
   }
 }
+// endregion

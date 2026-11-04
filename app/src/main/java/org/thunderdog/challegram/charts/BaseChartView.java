@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.charts;
 
 import android.animation.Animator;
@@ -69,8 +70,8 @@ public abstract class BaseChartView<T extends ChartData, L extends LineViewData>
     int hintLinePaintAlpha;
     int chartActiveLineAlpha;
 
-    public final static boolean USE_LINES = Build.VERSION.SDK_INT < Build.VERSION_CODES.P;
-    protected final static boolean ANIMATE_PICKER_SIZES = Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP;
+    public final static boolean USE_LINES = false;
+    protected final static boolean ANIMATE_PICKER_SIZES = true;
     public static FastOutSlowInInterpolator INTERPOLATOR = new FastOutSlowInInterpolator();
 
     int chartBottom;
@@ -1612,3 +1613,4 @@ public abstract class BaseChartView<T extends ChartData, L extends LineViewData>
         }
     }
 }
+// endregion

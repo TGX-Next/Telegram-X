@@ -12,6 +12,7 @@
  *
  * File created on 14/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.filegen;
 
 import android.os.Build;
@@ -173,11 +174,11 @@ public class VideoGenerationInfo extends GenerationInfo implements AbstractVideo
   private static boolean isSupportedOutputFormat (ImageGalleryFile file, String mimeType) {
     // TODO: video/x-matroska + api-independent detection
     return !StringUtils.isEmpty(mimeType) && (
-      (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && "video/mp4".equals(mimeType)) ||
+      (("video/mp4".equals(mimeType))) ||
         (file.getPostRotate() == 0 && (
-      (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && "video/webm".equals(mimeType)) ||
-      (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && "video/3gpp".equals(mimeType)) ||
-      (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && "video/ogg".equals(mimeType))
+      (("video/webm".equals(mimeType))) ||
+      (("video/3gpp".equals(mimeType))) ||
+      (("video/ogg".equals(mimeType)))
     )));
   }
 
@@ -185,17 +186,7 @@ public class VideoGenerationInfo extends GenerationInfo implements AbstractVideo
     if (file == null) {
       return false;
     }
-    if (Config.MODERN_VIDEO_TRANSCODING_ENABLED) {
-      return true;
-    }
-    if (file.hasCrop()) {
-      return false;
-    }
-    if (!(file.hasTrim() || file.getPostRotate() != 0 || file.shouldMuteVideo())) {
-      return true;
-    }
-    String mimeType = TGMimeType.mimeTypeForExtension(U.getExtension(file.getFilePath()));
-    return isSupportedOutputFormat(file, mimeType);
+    return true;
   }
 
   public static String makeConversion (int sourceFileId, boolean mute, int postRotate, long startTimeUs, long endTimeUs, boolean noTranscoding, @Nullable CropState cropState, long lastModified) {
@@ -264,3 +255,4 @@ public class VideoGenerationInfo extends GenerationInfo implements AbstractVideo
     return b.toString();
   }
 }
+// endregion

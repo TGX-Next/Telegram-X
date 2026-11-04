@@ -1,3 +1,4 @@
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 plugins {
   id("java-toolchain-convention")
   id(libs.plugins.android.library.get().pluginId)
@@ -6,15 +7,6 @@ plugins {
 
 dependencies {
   implementation(libs.androidx.annotation)
-}
-
-androidComponents {
-  // Legacy flavor of the app has no calls
-  beforeVariants { variant ->
-    if (variant.productFlavors.any { (_, flavor) -> flavor == "legacy" }) {
-      variant.enable = false
-    }
-  }
 }
 
 tasks.withType(JavaCompile::class.java).configureEach {
@@ -55,3 +47,4 @@ android {
 
   namespace = "tgx.tgcalls"
 }
+// endregion

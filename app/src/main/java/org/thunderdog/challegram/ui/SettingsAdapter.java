@@ -12,6 +12,7 @@
  *
  * File created on 16/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.content.Context;
@@ -2082,12 +2083,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingHolder> impleme
   }
 
   public void moveItem (final int fromIndex, final int toIndex) {
-    if (false && isComputingLayout()) {
-      UI.post(() -> moveItem(fromIndex, toIndex));
-    } else {
-      ArrayUtils.move(items, fromIndex, toIndex);
-      notifyItemMoved(fromIndex, toIndex);
-    }
+    ArrayUtils.move(items, fromIndex, toIndex);
+    notifyItemMoved(fromIndex, toIndex);
   }
 
   public void removeItem (final int index) {
@@ -2525,3 +2522,4 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingHolder> impleme
     return getItem(indexOfViewById(id));
   }
 }
+// endregion

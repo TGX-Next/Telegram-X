@@ -12,6 +12,7 @@
  *
  * File created on 06/05/2015 at 18:45
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.loader;
 
 import android.content.ContentUris;
@@ -59,7 +60,6 @@ public class ImageReader {
     return instance;
   }
 
-  private static byte[] bytesThumb;
 
   private final ImageReaderThread imageThread, videoThread, memThread;
 
@@ -151,16 +151,12 @@ public class ImageReader {
     }
 
     if (bitmap != null) {
-      boolean inPurgeable = !file.needBlur() && Config.PIN_BITMAP_ENABLED;
-      
       if (file.needDecodeSquare()) {
         bitmap = cropSquare(bitmap);
       }
 
       if (!file.isWebp() && file.shouldUseBlur() && file.needBlur()) {
-        U.blurBitmap(bitmap, file.getBlurRadius(), inPurgeable ? 0 : 1);
-      } else if (inPurgeable) {
-        N.pinBitmapIfNeeded(bitmap);
+        U.blurBitmap(bitmap, file.getBlurRadius(), 1);
       }
     }
 
@@ -182,7 +178,7 @@ public class ImageReader {
       exifFile.setRotation(rotation = U.getRotation(exifPath));
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && Config.MODERN_IMAGE_DECODER_ENABLED && rotation == 0 && !needSquare && !(Config.useBundledWebp() && file.isWebp())) {
+    if ((Config.MODERN_IMAGE_DECODER_ENABLED) && rotation == 0 && !needSquare && !(Config.useBundledWebp() && file.isWebp())) {
       try {
         final boolean forceSw = file.isSwOnly();
         android.graphics.ImageDecoder.Source source = android.graphics.ImageDecoder.createSource(new File(path));
@@ -237,7 +233,7 @@ public class ImageReader {
     BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inSampleSize = 1;
 
-    if (!file.isWebp() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !Config.useBundledWebp())) {
+    if (!file.isWebp() || ((!Config.useBundledWebp()))) {
       opts.inJustDecodeBounds = true;
       decodeFile(path, opts);
       int limitSize = file.getSize(); // != 0 ? file.getSize() : ;
@@ -262,10 +258,6 @@ public class ImageReader {
       opts.inPreferredConfig = Bitmap.Config.RGB_565;
     }
 
-    if (file.shouldBeCached() && !file.isWebp() && !file.needBlur() && Config.PIN_BITMAP_ENABLED) {
-      opts.inPurgeable = true;
-    }
-
     File cacheFile = new File(path);
 
     Bitmap bitmap = null;
@@ -281,7 +273,7 @@ public class ImageReader {
           bmOptions.inJustDecodeBounds = true;
           N.loadWebpImage(null, buffer, buffer.limit(), bmOptions, true);
           bitmap = Bitmap.createBitmap(bmOptions.outWidth, bmOptions.outHeight, Bitmap.Config.ARGB_8888);
-          N.loadWebpImage(bitmap, buffer, buffer.limit(), null, !opts.inPurgeable);
+          N.loadWebpImage(bitmap, buffer, buffer.limit(), null, true);
         } catch (Throwable t) {
           Log.e(Log.TAG_IMAGE_LOADER, "#%s: Cannot load bitmap, config: %s", t, file.toString(), opts.inPreferredConfig.toString());
           webpDecoderFailed = true;
@@ -297,68 +289,39 @@ public class ImageReader {
       }
 
       if (!isWebP) {
-        if (opts.inPurgeable) {
-          RandomAccessFile f = null;
-          for (int attempt = 0; attempt < 2; attempt++) { // fixme stupid fix for EACCESS on early applaunch requests
-            try {
-              f = new RandomAccessFile(cacheFile, "r");
-              break;
-            } catch (Throwable t) {
-              if (attempt + 1 == 2) {
-                Log.e(Log.TAG_IMAGE_LOADER, "#%s: Cannot access image file", t, file.toString());
-              }
-              try { Thread.sleep(100); } catch (Throwable ignored) { }
-            }
-          }
-          if (f == null) {
-            bitmap = null;
+        bitmap = null;
+
+        if (needSquare && opts.outWidth != opts.outHeight && opts.outWidth > 0) {
+          Rect rect = new Rect();
+          if (opts.outWidth > opts.outHeight) {
+            rect.top = 0; rect.bottom = opts.outHeight;
+            rect.left = opts.outWidth / 2 - opts.outHeight / 2;
+            rect.right = rect.left + opts.outHeight;
           } else {
-            int len = (int) f.length();
-            byte[] data = bytesThumb != null && bytesThumb.length >= len ? bytesThumb : null;
-            if (data == null) {
-              bytesThumb = data = new byte[len];
-            }
-            f.readFully(data, 0, len);
-            bitmap = BitmapFactory.decodeByteArray(data, 0, len, opts);
-            f.close();
+            rect.left = 0; rect.right = opts.outWidth;
+            rect.top = opts.outHeight / 2 - opts.outWidth / 2;
+            rect.bottom = rect.top + opts.outWidth;
           }
-        } else {
-          bitmap = null;
+          int oldSampleSize = opts.inSampleSize;
+          try {
+            if (opts.inSampleSize != 1 && file.getSize() != 0) {
+              int sizeLimit = file.getSize();
+              int minSide = Math.min(opts.outWidth, opts.outHeight);
+              opts.inSampleSize = calculateInSampleSize(minSide, minSide, sizeLimit, sizeLimit);
+            }
+            bitmap = U.tryDecodeRegion(cacheFile.getPath(), rect, opts);
 
-          if (needSquare && opts.outWidth != opts.outHeight && opts.outWidth > 0) {
-            Rect rect = new Rect();
-            if (opts.outWidth > opts.outHeight) {
-              rect.top = 0; rect.bottom = opts.outHeight;
-              rect.left = opts.outWidth / 2 - opts.outHeight / 2;
-              rect.right = rect.left + opts.outHeight;
-            } else {
-              rect.left = 0; rect.right = opts.outWidth;
-              rect.top = opts.outHeight / 2 - opts.outWidth / 2;
-              rect.bottom = rect.top + opts.outWidth;
-            }
-            int oldSampleSize = opts.inSampleSize;
-            try {
-              if (opts.inSampleSize != 1 && file.getSize() != 0) {
-                int sizeLimit = file.getSize();
-                int minSide = Math.min(opts.outWidth, opts.outHeight);
-                opts.inSampleSize = calculateInSampleSize(minSide, minSide, sizeLimit, sizeLimit);
-              }
-              bitmap = U.tryDecodeRegion(cacheFile.getPath(), rect, opts);
-              /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && rotation != 0) {
-                bitmap = TdlibFileGenerationManager.rotateBitmap(bitmap, -rotation);
-              }*/
-            } catch (Throwable t) {
-              Log.w(Log.TAG_IMAGE_LOADER, "Cannot decode region", t);
-            }
-            if (bitmap == null) {
-              opts.inSampleSize = oldSampleSize;
-            }
+          } catch (Throwable t) {
+            Log.w(Log.TAG_IMAGE_LOADER, "Cannot decode region", t);
           }
-
           if (bitmap == null) {
-            try (FileInputStream is = new FileInputStream(cacheFile)) {
-              bitmap = BitmapFactory.decodeStream(is, null, opts);
-            }
+            opts.inSampleSize = oldSampleSize;
+          }
+        }
+
+        if (bitmap == null) {
+          try (FileInputStream is = new FileInputStream(cacheFile)) {
+            bitmap = BitmapFactory.decodeStream(is, null, opts);
           }
         }
       }
@@ -382,12 +345,10 @@ public class ImageReader {
         bitmap = TdlibFileGenerationManager.cropSquare(bitmap);
       }
       if (file.isPrivate() || (!file.isWebp() && file.shouldUseBlur() && (file.needBlur() || (bitmap.getWidth() < 100 && bitmap.getHeight() < 100)))) {
-        int res = N.blurBitmap(bitmap, file.isPrivate() ? 7 : file.getBlurRadius(), opts.inPurgeable ? 0 : 1, file.isPrivate() ? 1 : 0);
+        int res = N.blurBitmap(bitmap, file.isPrivate() ? 7 : file.getBlurRadius(), 1, file.isPrivate() ? 1 : 0);
         if (res != 0) {
           Log.i(Log.TAG_IMAGE_LOADER, "#%s: Couldn't blur bitmap, resultCode: %d", file.toString(), res);
         }
-      } else if (opts.inPurgeable) {
-        N.pinBitmapIfNeeded(bitmap);
       }
     }
 
@@ -442,9 +403,7 @@ public class ImageReader {
       }
       if (allowBlur && (bitmap.getWidth() < 100 || bitmap.getHeight() < 100)) {
         U.blurBitmap(bitmap, 3, 1);
-      } else if (Config.PIN_BITMAP_ENABLED) {
-        N.pinBitmapIfNeeded(bitmap);
-      }
+      } else {}
     }
 
     return bitmap;
@@ -508,13 +467,12 @@ public class ImageReader {
     int size = file.getSize();
     opts.inSampleSize = size == 0 ? 1 : Math.max(1, Math.round(521f / (float) size)); // Math.min(521 / size, 384 / size)
     opts.inDither = false;
-    opts.inPurgeable = !file.needBlur() && Config.PIN_BITMAP_ENABLED;
     opts.inPreferredConfig = !file.needBlur() ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
 
     Bitmap bitmap;
 
     if (file.isVideo()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      {
         MediaMetadataRetriever retriever = null;
         try {
           retriever = U.openRetriever(file.getFilePath());
@@ -542,7 +500,7 @@ public class ImageReader {
           t.printStackTrace();
         }
       }
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    } else {
       Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId);
       try {
         bitmap = AppContext.get().getContentResolver().loadThumbnail(uri, new android.util.Size(512, 512), actor.getCancellationSignal());
@@ -586,13 +544,6 @@ public class ImageReader {
           Log.i(Log.TAG_IMAGE_LOADER, "#%s: Couldn't load file: %d", t, file.toString());
         }
       }
-    } else {
-      try {
-        bitmap = MediaStore.Images.Thumbnails.getThumbnail(AppContext.get().getContentResolver(), imageId, MediaStore.Images.Thumbnails.MINI_KIND, opts);
-      } catch (Throwable t) {
-        t.printStackTrace();
-        bitmap = null;
-      }
     }
     if (!U.isValidBitmap(bitmap) && !file.isVideo()) {
       bitmap = decodeFile(file.getFilePath(), opts);
@@ -600,9 +551,7 @@ public class ImageReader {
 
     if (bitmap != null) {
       if (!file.isWebp() && file.shouldUseBlur() && file.needBlur()) {
-        U.blurBitmap(bitmap, file.getBlurRadius(), opts.inPurgeable ? 0 : 1);
-      } else if (opts.inPurgeable) {
-        N.pinBitmapIfNeeded(bitmap);
+        U.blurBitmap(bitmap, file.getBlurRadius(), 1);
       }
     }
 
@@ -625,7 +574,7 @@ public class ImageReader {
     opts.inSampleSize = 1;
     opts.inJustDecodeBounds = true;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && path.startsWith("content://")) {
+    if ((path.startsWith("content://"))) {
       boolean done = false;
       // Trying to resolve additional information
       try (Cursor c = UI.getContext().getContentResolver().query(Uri.parse(path), new String[] {
@@ -868,9 +817,6 @@ public class ImageReader {
         if (allowRecycle && !bitmap.isRecycled()) {
           bitmap.recycle();
         }
-        if (pin) {
-          N.pinBitmapIfNeeded(resized);
-        }
       }
     } catch (Throwable t) {
       Log.w("Cannot resize bitmap", t);
@@ -895,3 +841,4 @@ public class ImageReader {
     void onImageLoaded (boolean success, Bitmap result);
   }
 }
+// endregion

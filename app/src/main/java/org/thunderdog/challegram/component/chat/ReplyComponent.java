@@ -12,6 +12,7 @@
  *
  * File created on 21/02/2016 at 16:37
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.graphics.Canvas;
@@ -444,12 +445,8 @@ public class ReplyComponent implements Client.ResultHandler, Destroyable {
         receiver.setBounds(imageX, startY, imageX + height, startY + height);
       }
       final int restoreToCount;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        layoutPath(receiver.getLeft(), receiver.getTop(), receiver.getRight(), receiver.getBottom());
-        restoreToCount = ViewSupport.clipPath(c, path);
-      } else {
-        restoreToCount = Integer.MIN_VALUE;
-      }
+      layoutPath(receiver.getLeft(), receiver.getTop(), receiver.getRight(), receiver.getBottom());
+      restoreToCount = ViewSupport.clipPath(c, path);
       if (receiver.needPlaceholder() && mediaPreview != null) {
         receiver.drawPlaceholderContour(c, mediaPreview.contour);
       }
@@ -1178,3 +1175,4 @@ public class ReplyComponent implements Client.ResultHandler, Destroyable {
     this.isDestroyed = true;
   }
 }
+// endregion

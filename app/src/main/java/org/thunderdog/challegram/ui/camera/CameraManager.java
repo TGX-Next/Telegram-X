@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui.camera;
 
 import android.content.Context;
@@ -286,11 +287,7 @@ public abstract class CameraManager <T extends View> {
     }
 
     if (!delegate.usePrivateFolder()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        U.copyToGallery(UI.getContext(context), resultFile.getFilePath(), isVideo ? U.TYPE_VIDEO : U.TYPE_PHOTO, false, resultFile::trackCopy);
-      } else {
-        U.addToGallery(new File(resultFile.getFilePath()));
-      }
+      U.copyToGallery(UI.getContext(context), resultFile.getFilePath(), isVideo ? U.TYPE_VIDEO : U.TYPE_PHOTO, false, resultFile::trackCopy);
     }
 
     if (isVideo) {
@@ -307,7 +304,7 @@ public abstract class CameraManager <T extends View> {
   }
 
   private boolean inPrivateMode () {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || delegate.usePrivateFolder();
+    return true;
   }
 
   public final File getOutputFile (boolean isVideo) {
@@ -543,7 +540,7 @@ public abstract class CameraManager <T extends View> {
     }
     Bitmap oldBitmap = outputBitmap;
     boolean reused = false;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && oldBitmap != null && !outputInUse) {
+    if ((oldBitmap != null) && !outputInUse) {
       try {
         oldBitmap.reconfigure(width, height, Bitmap.Config.ARGB_8888);
         reused = true;
@@ -620,3 +617,4 @@ public abstract class CameraManager <T extends View> {
     }
   }
 }
+// endregion

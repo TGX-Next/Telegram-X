@@ -12,6 +12,7 @@
  *
  * File created on 10/12/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.player;
 
 import android.graphics.Canvas;
@@ -96,7 +97,7 @@ public class RecordAudioVideoController implements
   TdlibFilesManager.SimpleListener,
   BaseActivity.ActivityListener,
   ThemeChangeListener {
-  private static final int MAX_HQ_ROUND_RESOLUTION = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ? 360 : 480;
+  private static final int MAX_HQ_ROUND_RESOLUTION = (480);
   private static final int MAX_ROUND_RESOLUTION = 280;
   private static final int MAX_ROUND_DURATION_MS = 59500;
 
@@ -424,10 +425,8 @@ public class RecordAudioVideoController implements
         }
       });
       this.videoLayout.setTransparentOutline(false);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        this.videoLayout.setTranslationZ(Screen.dp(1.5f));
-        this.videoLayout.setElevation(Screen.dp(1f));
-      }
+      this.videoLayout.setTranslationZ(Screen.dp(1.5f));
+      this.videoLayout.setElevation(Screen.dp(1f));
       this.videoLayout.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER_HORIZONTAL));
       this.rootLayout.addView(videoLayout);
 
@@ -465,10 +464,8 @@ public class RecordAudioVideoController implements
           videoTimelineView.performSliderUp(isEnd);
         }
       });
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        this.progressView.setTranslationZ(Screen.dp(2f));
-        this.progressView.setElevation(Screen.dp(1.5f));
-      }
+      this.progressView.setTranslationZ(Screen.dp(2f));
+      this.progressView.setElevation(Screen.dp(1.5f));
       this.rootLayout.addView(progressView);
 
       this.deleteButton = new ImageView(context) {
@@ -2012,3 +2009,4 @@ public class RecordAudioVideoController implements
     sendButton.destroySlowModeCounterController();
   }
 }
+// endregion

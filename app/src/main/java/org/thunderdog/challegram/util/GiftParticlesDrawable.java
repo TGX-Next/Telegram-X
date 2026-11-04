@@ -12,6 +12,7 @@
  *
  * File created on 05/01/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util;
 
 import android.graphics.Canvas;
@@ -155,7 +156,7 @@ public class GiftParticlesDrawable extends Drawable {
       this.angle = angle;
     }
   }
-  
+
   /* * */
 
   static boolean isValidPoint(PointF[][] grid, int width, int height, float cellsize,
@@ -247,3 +248,4 @@ public class GiftParticlesDrawable extends Drawable {
     return points;
   }
 }
+// endregion

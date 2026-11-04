@@ -12,6 +12,7 @@
  *
  * File created on 06/03/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
@@ -405,9 +406,7 @@ public class EmojiToneHelper implements FactorAnimator.Target {
     });
     RippleSupport.setTransparentBlackSelector(sendView);
     // FIXME rounded corners when button is pressed
-    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      sendView.setOutlineProvider(applyButton.getOutlineProvider());
-    }*/
+
     sendView.setPadding(Screen.dp(16f), 0, Screen.dp(16f), 0);
     sendView.setGravity(Gravity.CENTER);
     sendView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -511,3 +510,4 @@ public class EmojiToneHelper implements FactorAnimator.Target {
     }
   }
 }
+// endregion

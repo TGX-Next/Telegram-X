@@ -12,6 +12,7 @@
  *
  * File created on 30/08/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.chat;
 
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.data.TGMessage;
 import org.thunderdog.challegram.data.TGMessageVideo;
@@ -29,15 +29,13 @@ public class MessageOverlayView extends View {
 
   public MessageOverlayView (Context context) {
     super(context);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @Override
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setEmpty();
-        }
-      });
-    }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+      @Override
+
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setEmpty();
+      }
+    });
   }
 
   public MessageOverlayView setBoundView (MessageView boundView) {
@@ -90,3 +88,4 @@ public class MessageOverlayView extends View {
     }
   }
 }
+// endregion

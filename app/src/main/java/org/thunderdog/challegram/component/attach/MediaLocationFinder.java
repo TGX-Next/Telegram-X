@@ -12,6 +12,7 @@
  *
  * File created on 21/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.attach;
 
 import android.Manifest;
@@ -60,7 +61,7 @@ public class MediaLocationFinder {
     if (manager == null) {
       return null;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && AppContext.get().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    if ((AppContext.get().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
       return null;
     }
     List<String> providers = manager.getProviders(true);
@@ -117,3 +118,4 @@ public class MediaLocationFinder {
     void onNearbyPlacesErrorLoading (CancellableResultHandler call, Location location, TdApi.Error error);
   }
 }
+// endregion

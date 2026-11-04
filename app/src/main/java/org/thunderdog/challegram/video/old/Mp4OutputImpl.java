@@ -12,13 +12,13 @@
  *
  * File created on 15/10/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.video.old;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 
 import com.coremedia.iso.BoxParser;
 import com.coremedia.iso.IsoFile;
@@ -60,7 +60,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+
 public class Mp4OutputImpl extends Mp4Output {
 
   private InterleaveChunkMdat mdat = null;
@@ -482,4 +482,4 @@ public class Mp4OutputImpl extends Mp4Output {
     stbl.addBox(stco);
   }
 }
-
+// endregion

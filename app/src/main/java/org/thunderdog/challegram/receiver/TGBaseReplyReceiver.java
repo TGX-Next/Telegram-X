@@ -12,6 +12,7 @@
  *
  * File created on 08/04/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.receiver;
 
 import android.content.BroadcastReceiver;
@@ -20,19 +21,18 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.telegram.TdlibManager;
 import org.thunderdog.challegram.telegram.TdlibNotificationExtras;
 
 public abstract class TGBaseReplyReceiver extends BroadcastReceiver {
   public static final String EXTRA_VOICE_REPLY = "extra_voice_reply";
-  // public static final boolean READ_IMMEDIATELY = Build.VERSION.SDK_INT < Build.VERSION_CODES.P || !BuildConfig.DEBUG;
+
 
   @Override
-  @RequiresApi(Build.VERSION_CODES.KITKAT_WATCH)
+
   public void onReceive (Context context, Intent intent) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+    {
       final Bundle remoteInput = android.app.RemoteInput.getResultsFromIntent(intent);
       if (remoteInput == null) {
         return;
@@ -43,3 +43,4 @@ public abstract class TGBaseReplyReceiver extends BroadcastReceiver {
     }
   }
 }
+// endregion

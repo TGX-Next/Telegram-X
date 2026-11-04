@@ -12,6 +12,7 @@
  *
  * File created on 26/04/2015 at 11:27
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -44,7 +45,7 @@ public class SpinnerView extends ImageView implements Runnable {
     if (!started && getVisibility() != View.GONE) {
       started = true;
 
-      if (Anim.ANIMATORS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      if ((Anim.ANIMATORS)) {
         startAnimator();
       } else {
         startSimpleAnimation();
@@ -78,7 +79,7 @@ public class SpinnerView extends ImageView implements Runnable {
   public void stop () {
     if (started) {
       started = false;
-      if (Anim.ANIMATORS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      if ((Anim.ANIMATORS)) {
         stopAnimator();
       } else {
         stopSimpleAnimation();
@@ -132,3 +133,4 @@ public class SpinnerView extends ImageView implements Runnable {
     start();
   }
 }
+// endregion

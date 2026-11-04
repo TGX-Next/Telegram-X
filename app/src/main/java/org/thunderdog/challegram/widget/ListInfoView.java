@@ -12,6 +12,7 @@
  *
  * File created on 27/04/2015 at 15:36
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
@@ -54,15 +55,9 @@ public class ListInfoView extends FrameLayoutFix {
     textView.setTextColor(Theme.textDecent2Color());
     textView.setVisibility(View.GONE);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      progress = new ProgressBar(getContext());
-      progress.setIndeterminate(true);
-      addView(progress, new LayoutParams(Screen.dp(32f), Screen.dp(32f), Gravity.CENTER));
-    } else {
-      spinnerView = new SpinnerView(context);
-      spinnerView.setImageResource(R.drawable.spinner_48_inner);
-      addView(spinnerView, new LayoutParams(Screen.dp(32f), Screen.dp(32f), Gravity.CENTER));
-    }
+    progress = new ProgressBar(getContext());
+    progress.setIndeterminate(true);
+    addView(progress, new LayoutParams(Screen.dp(32f), Screen.dp(32f), Gravity.CENTER));
 
     addView(textView, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
   }
@@ -84,11 +79,7 @@ public class ListInfoView extends FrameLayoutFix {
 
   public void showProgress () {
     isEmptyView = false;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      progress.setVisibility(View.VISIBLE);
-    } else {
-      spinnerView.setVisibility(View.VISIBLE);
-    }
+    progress.setVisibility(View.VISIBLE);
     textView.setVisibility(View.GONE);
     int height = getMeasuredHeight();
     if (height != 0 && height != getCurrentHeight()) {
@@ -113,11 +104,7 @@ public class ListInfoView extends FrameLayoutFix {
   }
 
   private void setText (CharSequence text) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      progress.setVisibility(View.GONE);
-    } else {
-      spinnerView.setVisibility(View.GONE);
-    }
+    progress.setVisibility(View.GONE);
     textView.setText(text);
     textView.setVisibility(View.VISIBLE);
     int height = getMeasuredHeight();
@@ -130,3 +117,4 @@ public class ListInfoView extends FrameLayoutFix {
     return textView.getText();
   }
 }
+// endregion

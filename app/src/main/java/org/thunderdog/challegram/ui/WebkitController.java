@@ -12,6 +12,7 @@
  *
  * File created on 15/11/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui;
 
 import android.annotation.SuppressLint;
@@ -73,58 +74,29 @@ public class WebkitController<T> extends ViewController<T> {
     webView.getSettings().setDomStorageEnabled(true);
     webView.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      // FIXME maybe better to remove?
-      webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-      CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-    }
+    // FIXME maybe better to remove?
+    webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+    CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
     if (hasSpecialProcessing()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        webView.setWebViewClient(new WebViewClient() {
-          @Override
-          public void onPageFinished (WebView view, String url) {
-            Uri uri;
-            try {
-              uri = Uri.parse(url);
-            } catch (Throwable t) {
-              uri = null;
-            }
-            if (uri == null || !processSpecial(uri))
-              super.onPageFinished(view, url);
+      webView.setWebViewClient(new WebViewClient() {
+        @Override
+        public void onPageFinished (WebView view, String url) {
+          Uri uri;
+          try {
+            uri = Uri.parse(url);
+          } catch (Throwable t) {
+            uri = null;
           }
+          if (uri == null || !processSpecial(uri))
+            super.onPageFinished(view, url);
+        }
 
-          @Override
-          public boolean shouldOverrideUrlLoading (WebView view, android.webkit.WebResourceRequest request) {
-            return processSpecial(request.getUrl()) || super.shouldOverrideUrlLoading(view, request);
-          }
-        });
-      } else {
-        webView.setWebViewClient(new WebViewClient() {
-          @Override
-          public void onPageFinished (WebView view, String url) {
-            Uri uri;
-            try {
-              uri = Uri.parse(url);
-            } catch (Throwable t) {
-              uri = null;
-            }
-            if (uri == null || !processSpecial(uri))
-              super.onPageFinished(view, url);
-          }
-
-          @Override
-          public boolean shouldOverrideUrlLoading (WebView view, String url) {
-            Uri uri;
-            try {
-              uri = Uri.parse(url);
-            } catch (Throwable t) {
-              uri = null;
-            }
-            return (uri != null && processSpecial(uri)) || super.shouldOverrideUrlLoading(view, url);
-          }
-        });
-      }
+        @Override
+        public boolean shouldOverrideUrlLoading (WebView view, android.webkit.WebResourceRequest request) {
+          return processSpecial(request.getUrl()) || super.shouldOverrideUrlLoading(view, request);
+        }
+      });
     } else {
       webView.setWebViewClient(new WebViewClient());
     }
@@ -187,3 +159,4 @@ public class WebkitController<T> extends ViewController<T> {
     return false; // override
   }
 }
+// endregion

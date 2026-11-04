@@ -12,6 +12,7 @@
  *
  * File created on 26/08/2015 at 01:42
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.widget;
 
 import android.animation.Animator;
@@ -25,7 +26,6 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.theme.ColorId;
 import org.thunderdog.challegram.theme.Theme;
@@ -83,15 +83,13 @@ public class CheckView extends View {
     if (mediaRadius == 0) {
       initSizes();
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setOutlineProvider(new android.view.ViewOutlineProvider() {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline (View view, android.graphics.Outline outline) {
-          outline.setOval(padding + getPaddingLeft(), padding + getPaddingTop(), mediaRadius * 2, mediaRadius * 2);
-        }
-      });
-    }
+    setOutlineProvider(new android.view.ViewOutlineProvider() {
+
+      @Override
+      public void getOutline (View view, android.graphics.Outline outline) {
+        outline.setOval(padding + getPaddingLeft(), padding + getPaddingTop(), mediaRadius * 2, mediaRadius * 2);
+      }
+    });
   }
 
   @Override
@@ -451,12 +449,10 @@ public class CheckView extends View {
         }
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        /*if (mode == MODE_MEDIA || mode == MODE_USER) {
-          setElevation(elevation * factor);
-          setTranslationZ(2f * factor);
-        }*/
-      }
+      /*if (mode == MODE_MEDIA || mode == MODE_USER) {
+        setElevation(elevation * factor);
+        setTranslationZ(2f * factor);
+      }*/
 
       invalidate();
 
@@ -546,3 +542,4 @@ public class CheckView extends View {
     void onCheckableFinished (boolean isCheckable);
   }
 }
+// endregion

@@ -12,6 +12,7 @@
  *
  * File created on 08/08/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.ui.camera;
 
 import android.Manifest;
@@ -86,27 +87,18 @@ import me.vkryl.core.StringUtils;
 import me.vkryl.core.lambda.CancellableRunnable;
 
 public class CameraController extends ViewController<Void> implements CameraDelegate, SensorEventListener, FactorAnimator.Target, View.OnClickListener, CameraButton.RecordListener, CameraOverlayView.FlashListener, Settings.SettingsChangeListener {
-  public static final String[] VIDEO_PERMISSIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ? new String[] {
-    Manifest.permission.CAMERA,
-    Manifest.permission.RECORD_AUDIO,
-    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    Manifest.permission.READ_EXTERNAL_STORAGE
-  } : new String[] {
+  public static final String[] VIDEO_PERMISSIONS = (new String[] {
     Manifest.permission.CAMERA,
     Manifest.permission.RECORD_AUDIO,
     Manifest.permission.WRITE_EXTERNAL_STORAGE
-  };
+  });
 
-  public static final String[] VIDEO_ONLY_PERMISSIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? new String[] {
+  public static final String[] VIDEO_ONLY_PERMISSIONS = (new String[] {
     Manifest.permission.CAMERA,
     Manifest.permission.WRITE_EXTERNAL_STORAGE
-  } : new String[] {
-    Manifest.permission.CAMERA,
-    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    Manifest.permission.READ_EXTERNAL_STORAGE
-  };
+  });
 
-  private static final boolean ALLOW_EARLY_INITIALIZATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+  private static final boolean ALLOW_EARLY_INITIALIZATION = true;
 
   public interface ReadyListener {
     void onCameraCompletelyReady (CameraController camera);
@@ -266,7 +258,7 @@ public class CameraController extends ViewController<Void> implements CameraDele
     contentView.addView(manager.getView());
     switchCameraButton.setCameraIconRes(manager.preferFrontFacingCamera());
     contentView.addView(cameraOverlayView);
-    
+
     updateQrButtonHide();
     updateControlMargins();
     updateControlsFactor();
@@ -286,7 +278,7 @@ public class CameraController extends ViewController<Void> implements CameraDele
   }
 
   private boolean needLegacy () {
-    if (forceLegacy || !Config.CAMERA_X_AVAILABLE)
+    if ((forceLegacy))
       return true;
     int type = Settings.instance().getCameraType();
     return type == Settings.CAMERA_TYPE_SYSTEM ? Settings.CAMERA_TYPE_DEFAULT == Settings.CAMERA_TYPE_LEGACY : type == Settings.CAMERA_TYPE_LEGACY;
@@ -1285,9 +1277,7 @@ public class CameraController extends ViewController<Void> implements CameraDele
   public void onFactorChangeFinished (int id, float finalFactor, FactorAnimator callee) {
     switch (id) {
       case ANIMATOR_ROTATION:
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 && finalFactor % 90.0f == 0.0f) {
-          applyFakeRotation();
-        }
+        {}
         break;
     }
   }
@@ -1558,11 +1548,7 @@ public class CameraController extends ViewController<Void> implements CameraDele
       setOpenEditor(c, item);
     };
 
-    if (false && awaitLayout) {
-      scheduleAnimation(act, 100);
-    } else {
-      act.run();
-    }
+    act.run();
   }
 
   private long videoStartTime;
@@ -1898,3 +1884,4 @@ public class CameraController extends ViewController<Void> implements CameraDele
     }
   }
 }
+// endregion

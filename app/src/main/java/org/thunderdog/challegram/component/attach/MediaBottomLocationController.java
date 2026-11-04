@@ -12,6 +12,7 @@
  *
  * File created on 19/10/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.component.attach;
 
 import android.app.Activity;
@@ -573,24 +574,7 @@ public class MediaBottomLocationController extends MediaBottomBaseController<Voi
   private void setMapHidden (boolean hidden) {
     if (this.mapHidden != hidden) {
       this.mapHidden = hidden;
-      if (true) {
-        return;
-      }
-
-      useTranslation = hasPlaces();
-      if (hidden) {
-        selectPlace(null, true);
-      } else {
-        if (useTranslation) {
-          setHidePadding(false);
-        } else {
-          showNearbyPlaces();
-        }
-        mapView.onResumeMap();
-        mapWrap.setVisibility(View.VISIBLE);
-      }
-
-      animateMapFactor(hidden ? 0f : 1f);
+      return;
     }
   }
 
@@ -846,3 +830,4 @@ public class MediaBottomLocationController extends MediaBottomBaseController<Voi
     });
   }
 }
+// endregion

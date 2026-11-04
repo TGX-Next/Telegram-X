@@ -12,6 +12,7 @@
  *
  * File created on 28/08/2023
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.emoji;
 
 import android.text.InputFilter;
@@ -33,7 +34,7 @@ public class PreserveCustomEmojiFilter implements InputFilter {
   }
 
   public interface RecoverableSpan {
-    
+
   }
 
   @Override
@@ -88,3 +89,4 @@ public class PreserveCustomEmojiFilter implements InputFilter {
     return null;
   }
 }
+// endregion

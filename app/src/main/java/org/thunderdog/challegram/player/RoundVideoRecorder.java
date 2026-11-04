@@ -12,6 +12,7 @@
  *
  * File created on 14/10/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.player;
 
 import android.graphics.SurfaceTexture;
@@ -33,7 +34,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.view.Surface;
 
-import androidx.annotation.RequiresApi;
 
 import org.thunderdog.challegram.Log;
 import org.thunderdog.challegram.U;
@@ -62,7 +62,7 @@ import javax.microedition.khronos.opengles.GL;
 
 import me.vkryl.core.BitwiseUtils;
 
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+
 public class RoundVideoRecorder {
   public interface Delegate {
     /**
@@ -1096,13 +1096,7 @@ public class RoundVideoRecorder {
           int inputBufferIndex = audioEncoder.dequeueInputBuffer(0);
           if (inputBufferIndex >= 0) {
             ByteBuffer inputBuffer;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-              inputBuffer = audioEncoder.getInputBuffer(inputBufferIndex);
-            } else {
-              ByteBuffer[] inputBuffers = audioEncoder.getInputBuffers();
-              inputBuffer = inputBuffers[inputBufferIndex];
-              inputBuffer.clear();
-            }
+            inputBuffer = audioEncoder.getInputBuffer(inputBufferIndex);
             long startWriteTime = input.offset[input.lastWroteBuffer];
             for (int a = input.lastWroteBuffer; a <= input.results; a++) {
               if (a < input.results) {
@@ -1472,9 +1466,7 @@ public class RoundVideoRecorder {
             break;
           }
         } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-          if (Build.VERSION.SDK_INT < 21) {
-            encoderOutputBuffers = videoEncoder.getOutputBuffers();
-          }
+
         } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
           MediaFormat newFormat = videoEncoder.getOutputFormat();
           if (videoTrackIndex == -5) {
@@ -1482,11 +1474,7 @@ public class RoundVideoRecorder {
           }
         } else if (encoderStatus >= 0) {
           ByteBuffer encodedData;
-          if (Build.VERSION.SDK_INT < 21) {
-            encodedData = encoderOutputBuffers[encoderStatus];
-          } else {
-            encodedData = videoEncoder.getOutputBuffer(encoderStatus);
-          }
+          encodedData = videoEncoder.getOutputBuffer(encoderStatus);
           if (encodedData == null) {
             throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
           }
@@ -1542,9 +1530,7 @@ public class RoundVideoRecorder {
             break;
           }
         } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-          if (Build.VERSION.SDK_INT < 21) {
-            encoderOutputBuffers = audioEncoder.getOutputBuffers();
-          }
+
         } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
           MediaFormat newFormat = audioEncoder.getOutputFormat();
           if (audioTrackIndex == -5) {
@@ -1552,11 +1538,7 @@ public class RoundVideoRecorder {
           }
         } else if (encoderStatus >= 0) {
           ByteBuffer encodedData;
-          if (Build.VERSION.SDK_INT < 21) {
-            encodedData = encoderOutputBuffers[encoderStatus];
-          } else {
-            encodedData = audioEncoder.getOutputBuffer(encoderStatus);
-          }
+          encodedData = audioEncoder.getOutputBuffer(encoderStatus);
           if (encodedData == null) {
             throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
           }
@@ -1596,3 +1578,4 @@ public class RoundVideoRecorder {
 
   private static final int[] SAMPLE_RATES = {44100, 22050, 11025, 8000};
 }
+// endregion

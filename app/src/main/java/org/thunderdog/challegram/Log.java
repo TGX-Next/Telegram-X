@@ -12,9 +12,9 @@
  *
  * File created on 07/09/2017
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram;
 
-import static tgx.flavor.VideoTransformer.setLegacyTranscoderLogLevel;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -418,11 +418,6 @@ public class Log {
 
   // == Settings ==
 
-  private static void setThirdPartyLogLevels (int level) {
-    if (Config.LEGACY_VIDEO_TRANSCODING_ENABLED) {
-      setLegacyTranscoderLogLevel(level);
-    }
-  }
 
   private static void load () {
     if (!loaded) {
@@ -452,7 +447,6 @@ public class Log {
 
       setLogLevelImpl(level);
       setLogTagsImpl(tags);
-      setThirdPartyLogLevels(level);
 
       androidx.media3.common.util.Log.setLogger(new androidx.media3.common.util.Log.Logger() {
         @Override
@@ -491,7 +485,6 @@ public class Log {
     if (getLogLevel() != level) {
       Log.level = level;
       setLogLevelImpl(level);
-      setThirdPartyLogLevels(level);
       Settings.instance().putInt(Settings.KEY_LOG_LEVEL, level);
     }
   }
@@ -1302,3 +1295,4 @@ public class Log {
     }
   }
 }
+// endregion

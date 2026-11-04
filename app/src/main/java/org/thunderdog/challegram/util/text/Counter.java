@@ -12,6 +12,7 @@
  *
  * File created on 06/03/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.util.text;
 
 import android.graphics.Canvas;
@@ -201,7 +202,7 @@ public class Counter implements FactorAnimator.Target, CounterAnimator.Callback<
 
   @ColorId
   private final int textColorId, mutedTextColorId, failedTextColorId, outlineColorId;
-  
+
   private final TextColorSet colorSet;
 
   private Counter (float textSize, Callback callback, int flags,
@@ -445,3 +446,4 @@ public class Counter implements FactorAnimator.Target, CounterAnimator.Callback<
     return 0;
   }
 }
+// endregion

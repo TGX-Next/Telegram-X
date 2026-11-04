@@ -12,6 +12,7 @@
  *
  * File created on 31/08/2022, 22:07.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 
 package org.thunderdog.challegram.widget;
 
@@ -71,7 +72,7 @@ public class EmojiEditText extends EditText implements Destroyable {
   @Override
   public final InputConnection onCreateInputConnection (EditorInfo editorInfo) {
     InputConnection ic = createInputConnection(editorInfo);
-    if (ic != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !(ic instanceof EmojiInputConnection)) {
+    if ((ic != null) && !(ic instanceof EmojiInputConnection)) {
       return new EmojiInputConnection(this, ic);
     } else {
       return ic;
@@ -82,3 +83,4 @@ public class EmojiEditText extends EditText implements Destroyable {
     return super.onCreateInputConnection(editorInfo);
   }
 }
+// endregion

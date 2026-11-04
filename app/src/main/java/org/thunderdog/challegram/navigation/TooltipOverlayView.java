@@ -10,6 +10,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.navigation;
 
 import android.content.Context;
@@ -797,11 +798,7 @@ public class TooltipOverlayView extends ViewGroup {
         }
         this.attachedToView = view;
         if (view != null) {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.viewAttachedToWindow = view.isAttachedToWindow();
-          } else {
-            this.viewAttachedToWindow = true;
-          }
+          this.viewAttachedToWindow = view.isAttachedToWindow();
           view.addOnLayoutChangeListener(onLayoutChangeListener);
           view.addOnAttachStateChangeListener(onAttachStateChangeListener);
           if (view instanceof BaseView) {
@@ -1466,3 +1463,4 @@ public class TooltipOverlayView extends ViewGroup {
     }
   }
 }
+// endregion

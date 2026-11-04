@@ -12,6 +12,7 @@
  *
  * File created on 10/12/2016
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.mediaview.gl;
 
 import android.graphics.Bitmap;
@@ -496,15 +497,15 @@ public class EGLEditorContext {
   private EGLConfig eglConfig;
   private EGLContext eglContext;
   private EGLSurface eglSurface;
-  
-  
+
+
   // UI-related
 
   private long lastRenderCallTime;
   private SurfaceTexture surfaceTexture;
   private @Nullable Bitmap currentBitmap;
-  
-  
+
+
   // Programs
 
   private int rgbToHsvShaderProgram;
@@ -1520,3 +1521,4 @@ public class EGLEditorContext {
     return true;
   }
 }
+// endregion

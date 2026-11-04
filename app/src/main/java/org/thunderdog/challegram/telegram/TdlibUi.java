@@ -12,6 +12,7 @@
  *
  * File created on 18/02/2018
  */
+// region @MadeByLLM("gpt-6", id = "android13-arm64")
 package org.thunderdog.challegram.telegram;
 
 import android.app.AlertDialog;
@@ -208,16 +209,12 @@ public class TdlibUi extends Handler {
   }
 
   public static int[] getAvailablePriorityOrImportanceList () {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      return new int[] {
-        android.app.NotificationManager.IMPORTANCE_HIGH, // Sound and pop-up (default)
-        android.app.NotificationManager.IMPORTANCE_DEFAULT, // Sound
-        android.app.NotificationManager.IMPORTANCE_LOW, // Silent
-        android.app.NotificationManager.IMPORTANCE_MIN, // Silent and minimized
-      };
-    } else {
-      return getAvailablePriorityListLegacy();
-    }
+    return new int[] {
+      android.app.NotificationManager.IMPORTANCE_HIGH, // Sound and pop-up (default)
+      android.app.NotificationManager.IMPORTANCE_DEFAULT, // Sound
+      android.app.NotificationManager.IMPORTANCE_LOW, // Silent
+      android.app.NotificationManager.IMPORTANCE_MIN, // Silent and minimized
+    };
   }
 
   @SuppressWarnings("deprecation")
@@ -231,26 +228,15 @@ public class TdlibUi extends Handler {
 
   @IdRes
   public static int getPriorityOrImportanceId (int priorityOrImportance) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      switch (priorityOrImportance) {
-        case android.app.NotificationManager.IMPORTANCE_HIGH: // Sound and pop-up (default)
-          return R.id.btn_importanceHigh;
-        case android.app.NotificationManager.IMPORTANCE_DEFAULT: // Sound
-          return R.id.btn_importanceDefault;
-        case android.app.NotificationManager.IMPORTANCE_LOW: // Silent
-          return R.id.btn_importanceLow;
-        case android.app.NotificationManager.IMPORTANCE_MIN: // Silent and minimized
-          return R.id.btn_importanceMin;
-      }
-    } else {
-      switch (priorityOrImportance) {
-        case android.app.Notification.PRIORITY_MAX:
-          return R.id.btn_priorityMax;
-        case android.app.Notification.PRIORITY_HIGH: // (default)
-          return R.id.btn_priorityHigh;
-        case android.app.Notification.PRIORITY_LOW:
-          return R.id.btn_priorityLow;
-      }
+    switch (priorityOrImportance) {
+      case android.app.NotificationManager.IMPORTANCE_HIGH: // Sound and pop-up (default)
+        return R.id.btn_importanceHigh;
+      case android.app.NotificationManager.IMPORTANCE_DEFAULT: // Sound
+        return R.id.btn_importanceDefault;
+      case android.app.NotificationManager.IMPORTANCE_LOW: // Silent
+        return R.id.btn_importanceLow;
+      case android.app.NotificationManager.IMPORTANCE_MIN: // Silent and minimized
+        return R.id.btn_importanceMin;
     }
     throw new IllegalArgumentException("priorityOrImportance == " + priorityOrImportance);
   }
@@ -259,32 +245,20 @@ public class TdlibUi extends Handler {
   public static int getPriorityOrImportanceString (int priorityOrImportance, boolean hasSound, boolean hasVibration) {
     if (priorityOrImportance == TdlibNotificationManager.PRIORITY_OR_IMPORTANCE_UNSET)
       return R.string.Default;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      switch (priorityOrImportance) {
-        case android.app.NotificationManager.IMPORTANCE_MAX:
-        case android.app.NotificationManager.IMPORTANCE_HIGH:
-          return hasSound ? R.string.NotificationImportanceHigh : hasVibration ? R.string.NotificationImportanceHighNoSound : R.string.NotificationImportanceHighMuted;
-        case android.app.NotificationManager.IMPORTANCE_DEFAULT:
-          return hasSound ? R.string.NotificationImportanceDefault : hasVibration ? R.string.NotificationImportanceDefaultNoSound : R.string.NotificationImportanceDefaultMuted;
-        case android.app.NotificationManager.IMPORTANCE_LOW:
-          return hasSound || hasVibration ? R.string.NotificationImportanceLow : R.string.NotificationImportanceLowMuted;
-        case android.app.NotificationManager.IMPORTANCE_MIN:
-          return R.string.NotificationImportanceMin;
-        case android.app.NotificationManager.IMPORTANCE_NONE:
-          return R.string.NotificationImportanceNone;
-        default:
-          throw new IllegalArgumentException("priorityOrImportance == " + priorityOrImportance);
-      }
-    } else {
-      switch (priorityOrImportance) {
-        case android.app.Notification.PRIORITY_LOW:
-          return R.string.PriorityLow;
-        case android.app.Notification.PRIORITY_MAX:
-          return R.string.PriorityUrgent;
-        case android.app.Notification.PRIORITY_HIGH:
-        default:
-          return R.string.PriorityRegular;
-      }
+    switch (priorityOrImportance) {
+      case android.app.NotificationManager.IMPORTANCE_MAX:
+      case android.app.NotificationManager.IMPORTANCE_HIGH:
+        return hasSound ? R.string.NotificationImportanceHigh : hasVibration ? R.string.NotificationImportanceHighNoSound : R.string.NotificationImportanceHighMuted;
+      case android.app.NotificationManager.IMPORTANCE_DEFAULT:
+        return hasSound ? R.string.NotificationImportanceDefault : hasVibration ? R.string.NotificationImportanceDefaultNoSound : R.string.NotificationImportanceDefaultMuted;
+      case android.app.NotificationManager.IMPORTANCE_LOW:
+        return hasSound || hasVibration ? R.string.NotificationImportanceLow : R.string.NotificationImportanceLowMuted;
+      case android.app.NotificationManager.IMPORTANCE_MIN:
+        return R.string.NotificationImportanceMin;
+      case android.app.NotificationManager.IMPORTANCE_NONE:
+        return R.string.NotificationImportanceNone;
+      default:
+        throw new IllegalArgumentException("priorityOrImportance == " + priorityOrImportance);
     }
   }
 
@@ -1151,7 +1125,7 @@ public class TdlibUi extends Handler {
       if (settings == null) {
         view.setData(Lang.getString(R.string.LoadingInformation));
       } else {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && allowStyle && settings.muteFor == 0) {
+        if ((allowStyle) && settings.muteFor == 0) {
           int importance = tdlib.notifications().getDefaultPriorityOrImportance(scope);
           if (importance < android.app.NotificationManager.IMPORTANCE_DEFAULT) {
             int stringRes = getPriorityOrImportanceString(importance, tdlib.notifications().isDefaultSoundEnabled(scope), tdlib.notifications().isDefaultVibrateModeEnabled(scope));
@@ -3173,7 +3147,7 @@ public class TdlibUi extends Handler {
   public void openUrl (final TdlibDelegate context, final String url, @Nullable UrlOpenParameters options) {
     openUrl(context, url, options, null);
   }
-  
+
   public void openUrl (final TdlibDelegate context, final String url, @Nullable UrlOpenParameters options, @Nullable RunnableBool after) {
     openTelegramUrl(context, url, options, processed -> {
       if (!processed) {
@@ -7048,9 +7022,7 @@ public class TdlibUi extends Handler {
               int index = 0;
               for (TdApi.ReportOption option : optionRequired.options) {
                 int id = ++index;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                  id = View.generateViewId();
-                }
+                id = View.generateViewId();
                 b.item(new ViewController.OptionItem(id, option.text, ViewController.OptionColor.NORMAL, 0));
                 idToOptionId.put(id, option.id);
               }
@@ -8249,3 +8221,4 @@ public class TdlibUi extends Handler {
     }
   }
 }
+// endregion
