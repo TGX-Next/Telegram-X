@@ -123,10 +123,6 @@ abstract class AppConfigurationSource : ValueSource<ApplicationConfig, AppConfig
         apiId,
       telegramApiHash =
         apiHash,
-      safetyNetToken =
-        properties.getProperty("safetynet.api_key", "").takeIf {
-          keystoreFilePath != null
-        },
       appDownloadUrl =
         getOrDefault(properties, "app.download_url", defaults),
       googlePlayUrl =

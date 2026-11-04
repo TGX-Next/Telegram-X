@@ -75,7 +75,6 @@ google-play-services-base-latest = "18.11.1"
 google-play-services-basement-latest = "18.12.0"
 google-play-services-maps-latest = "20.1.0"
 google-play-services-location-latest = "21.4.0"
-google-play-services-safetynet-latest = "18.1.0"
 google-play-services-mlkit-barcode-scanning-latest = "18.3.1"
 
 google-mlkit-language-id-latest = "17.0.6"
@@ -163,7 +162,6 @@ google-play-services-mlkit-barcode-scanning-latest = { module = "com.google.andr
 
 google-mlkit-language-id-latest = { module = "com.google.mlkit:language-id", version.ref = "google-mlkit-language-id-latest" }
 
-google-play-services-safetynet-latest = { module = "com.google.android.gms:play-services-safetynet", version.ref = "google-play-services-safetynet-latest" }
 
 huawei-agconnect = { module = "com.huawei.agconnect:agcp", version.ref = "huawei-agcp" }
 huawei-hms = { module = "com.huawei.hms:push", version.ref = "huawei-hms" }

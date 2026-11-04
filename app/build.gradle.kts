@@ -416,7 +416,6 @@ android {
     resValue("string", "content_authority", "${config.applicationId}.sync.provider")
 
     buildConfigString("PROJECT_NAME", config.applicationName)
-    buildConfigString("SAFETYNET_API_KEY", config.safetyNetToken)
 
     buildConfigString("DOWNLOAD_URL", config.appDownloadUrl)
     buildConfigString("GOOGLE_PLAY_URL", config.googlePlayUrl)
@@ -985,7 +984,6 @@ dependencies {
   implementation(libs.google.play.services.basement.latest)
   implementation(libs.google.play.services.maps.latest)
   implementation(libs.google.play.services.location.latest)
-  implementation(libs.google.play.services.safetynet.latest)
   // ML Kit: https://developers.google.com/ml-kit/release-notes
   implementation(libs.google.play.services.mlkit.barcode.scanning.latest)
   implementation(libs.google.mlkit.language.id.latest)

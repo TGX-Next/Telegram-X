@@ -316,8 +316,6 @@ public class Config {
 
   public static final boolean USE_HARDWARE_PHOTO_VIEWER_CONFIG = false;
 
-  public static final boolean REQUIRE_FIREBASE_SERVICES_FOR_SAFETYNET = false;
-
   public static final boolean USE_INPUT_VIEW_CLIPPING_FIX = false;
 
   public static final boolean ALLOW_SPONSORED_MESSAGE_LINK_COPY = true;

@@ -5994,22 +5994,12 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
     return deviceToken == null ? Settings.instance().getDeviceToken() : deviceToken;
   }
 
-  public String safetyNetApiKey () {
-    // TODO: server config
-    return BuildConfig.SAFETYNET_API_KEY;
-  }
-
+  // @MadeByLLM("gpt-6")
   public TdApi.PhoneNumberAuthenticationSettings phoneNumberAuthenticationSettings (Context context) {
-    TdApi.FirebaseAuthenticationSettings firebaseAuthenticationSettings = null;
-    String safetyNetApiKey = safetyNetApiKey();
-    if (StringUtils.isEmpty(safetyNetApiKey)) {
-      TDLib.Tag.safetyNet("Ignoring Firebase authentication, because SafetyNet API_KEY is unset");
-    } else if (Config.REQUIRE_FIREBASE_SERVICES_FOR_SAFETYNET && !U.isGooglePlayServicesAvailable(context)) {
-      TDLib.Tag.safetyNet("Ignoring Firebase authentication, because Firebase services are unavailable");
-    } else {
-      TDLib.Tag.safetyNet("Enabling Firebase authentication for the next request");
-      firebaseAuthenticationSettings = new TdApi.FirebaseAuthenticationSettingsAndroid();
-    }
+    FirebaseOptions options = FirebaseOptions.fromResource(context);
+    TdApi.FirebaseAuthenticationSettings firebaseAuthenticationSettings =
+      options != null && !StringUtils.isEmpty(options.getGcmSenderId()) ?
+        new TdApi.FirebaseAuthenticationSettingsAndroid() : null;
     return new TdApi.PhoneNumberAuthenticationSettings(
       false, // TODO transparently request permission & enter flash call
       true,

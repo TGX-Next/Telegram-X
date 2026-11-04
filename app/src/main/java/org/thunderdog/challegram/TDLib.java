@@ -93,10 +93,6 @@ public final class TDLib {
     private static void internal (String tag, String format, Object[] formatArgs) {
       i("[%s]: %s", tag, format(format, formatArgs));
     }
-    public static void safetyNet (String format, Object... formatArgs) {
-      internal("safetynet", format, formatArgs);
-    }
-
     public static void playIntegrity (String format, Object... formatArgs) {
       internal("play-integrity", format, formatArgs);
     }
@@ -107,15 +103,13 @@ public final class TDLib {
 
     public static void integrity (TdApi.FirebaseDeviceVerificationParameters parameters, String format, Object... formatArgs) {
       switch (parameters.getConstructor()) {
-        case TdApi.FirebaseDeviceVerificationParametersSafetyNet.CONSTRUCTOR:
-          safetyNet(format, formatArgs);
-          break;
         case TdApi.FirebaseDeviceVerificationParametersPlayIntegrity.CONSTRUCTOR:
           playIntegrity(format, formatArgs);
           break;
         default:
-          Td.assertFirebaseDeviceVerificationParameters_21a9fc9c();
-          throw Td.unsupported(parameters);
+          // @MadeByLLM("gpt-6")
+          internal("firebase-verification", format, formatArgs);
+          break;
       }
     }
 
