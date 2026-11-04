@@ -66,7 +66,6 @@ firebase-messaging-latest = "26.0.1"
 
 google-recaptcha-latest = "18.9.4"
 
-google-play-billing-latest = "9.1.0"
 google-play-integrity-latest = "1.6.0"
 google-play-services-base-latest = "18.11.1"
 google-play-services-basement-latest = "18.12.0"
@@ -141,8 +140,6 @@ google-recaptcha-latest = { module = "com.google.android.recaptcha:recaptcha", v
 google-firebase-messaging-latest = { module = "com.google.firebase:firebase-messaging", version.ref = "firebase-messaging-latest" }
 
 google-zxing-core = { module = "com.google.zxing:core", version.ref = "google-zxing" }
-
-google-play-billing-latest = { module = "com.android.billingclient:billing-ktx", version.ref = "google-play-billing-latest" }
 
 google-play-integrity-latest = { module = "com.google.android.play:integrity", version.ref = "google-play-integrity-latest" }
 

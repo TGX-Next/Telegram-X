@@ -1004,8 +1004,6 @@ dependencies {
   implementation(libs.androidx.media.exoplayer.latest)
   implementation(libs.androidx.media.exoplayer.hls.latest)
   implementation(libs.androidx.media.inspector.latest)
-  // Play Billing: https://developer.android.com/google/play/billing/release-notes
-  implementation(libs.google.play.billing.latest)
   // The Checker Framework: https://checkerframework.org/CHANGELOG.md
   compileOnly(libs.annotations.checkerframework)
   // OkHttp: https://github.com/square/okhttp/blob/master/CHANGELOG.md
