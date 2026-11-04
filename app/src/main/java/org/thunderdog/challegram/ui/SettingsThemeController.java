@@ -687,7 +687,7 @@ public class SettingsThemeController extends RecyclerViewController<SettingsThem
   }
 
   @Override
-  public void onAppUpdateStateChanged (int state, int oldState, boolean isApk) {
+  public void onAppUpdateStateChanged (int state, int oldState) {
     if (oldState == AppUpdater.State.CHECKING && state == AppUpdater.State.NONE) {
       // Slight delay
       runOnUiThread(() ->

@@ -376,7 +376,7 @@ public class MainController extends ViewPagerController<Void> implements Menu, M
 
     context().appUpdater().addListener(this);
     if (context().appUpdater().state() == AppUpdater.State.READY_TO_INSTALL) {
-      onAppUpdateAvailable(context().appUpdater().flowType() == AppUpdater.FlowType.TELEGRAM_CHANNEL, true);
+      onAppUpdateAvailable(true);
     }
   }
 
@@ -1067,7 +1067,7 @@ public class MainController extends ViewPagerController<Void> implements Menu, M
 
   private SnackBar updateSnackBar;
 
-  private void onAppUpdateAvailable (boolean isApk, boolean immediate) {
+  private void onAppUpdateAvailable (boolean immediate) {
     if (updateSnackBar == null) {
       updateSnackBar = new SnackBar(context);
       Views.setPaddingBottom(updateSnackBar, extraBottomInsetWithoutIme);
@@ -1107,14 +1107,17 @@ public class MainController extends ViewPagerController<Void> implements Menu, M
       updateSnackBar.setText(Lang.getString(R.string.AppUpdateReady));
       mainWrap.addView(updateSnackBar);
     }
-    updateSnackBar.setAction(Lang.getString(isApk ? R.string.AppUpdateInstall : R.string.AppUpdateRestart), context().appUpdater()::installUpdate, !isApk);
+    // @MadeByLLM("gpt-6")
+    updateSnackBar.setAction(
+      Lang.getString(R.string.AppUpdateInstall), context().appUpdater()::installUpdate, false
+    );
     updateSnackBar.showSnackBar(!immediate && isFocused());
   }
 
   @Override
-  public void onAppUpdateStateChanged (int state, int oldState, boolean isApk) {
+  public void onAppUpdateStateChanged (int state, int oldState) {
     if (state == AppUpdater.State.READY_TO_INSTALL) {
-      onAppUpdateAvailable(isApk, false);
+      onAppUpdateAvailable(false);
     } else if (updateSnackBar != null) {
       updateSnackBar.dismissSnackBar(isFocused());
     }
