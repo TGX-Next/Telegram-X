@@ -655,7 +655,7 @@ public class TdlibNotificationManager implements UI.StateListener, Passcode.Lock
     }
     boolean hasPushServices = hasRemotePushService();
     if (!hasPushServices) {
-      // Sync matters only when push service (firebase, hms, ...) unavailable
+      // Sync matters only when push service unavailable
       if (isSyncDisabledGlobally())
         return Status.DISABLED_SYNC;
       if (isSyncDisabledForApp())

@@ -8,9 +8,6 @@ dependencyResolutionManagement {
     gradlePluginPortal()
     google()
     mavenCentral()
-    if (extra["huawei"] == true) {
-      maven(url = "https://developer.huawei.com/repo/")
-    }
   }
 
 	versionCatalogs {

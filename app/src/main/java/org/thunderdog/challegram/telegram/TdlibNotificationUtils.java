@@ -290,8 +290,6 @@ public class TdlibNotificationUtils {
     return switch (deviceToken.getConstructor()) {
       case TdApi.DeviceTokenFirebaseCloudMessaging.CONSTRUCTOR ->
         DeviceTokenType.FIREBASE_CLOUD_MESSAGING;
-      case TdApi.DeviceTokenHuaweiPush.CONSTRUCTOR ->
-        DeviceTokenType.HUAWEI_PUSH_SERVICE;
       case TdApi.DeviceTokenSimplePush.CONSTRUCTOR ->
         DeviceTokenType.SIMPLE_PUSH_SERVICE;
       default -> {

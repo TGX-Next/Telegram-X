@@ -6570,9 +6570,6 @@ public class Settings {
       case DeviceTokenType.FIREBASE_CLOUD_MESSAGING:
         tokenOrEndpoint = ((TdApi.DeviceTokenFirebaseCloudMessaging) deviceToken).token;
         break;
-      case DeviceTokenType.HUAWEI_PUSH_SERVICE:
-        tokenOrEndpoint = ((TdApi.DeviceTokenHuaweiPush) deviceToken).token;
-        break;
       case DeviceTokenType.SIMPLE_PUSH_SERVICE:
         tokenOrEndpoint = ((TdApi.DeviceTokenSimplePush) deviceToken).endpoint;
         break;
@@ -6611,8 +6608,6 @@ public class Settings {
         return new TdApi.DeviceTokenFirebaseCloudMessaging(tokenOrEndpoint, true);
       case DeviceTokenType.SIMPLE_PUSH_SERVICE:
         return new TdApi.DeviceTokenSimplePush(tokenOrEndpoint);
-      case DeviceTokenType.HUAWEI_PUSH_SERVICE:
-        return new TdApi.DeviceTokenHuaweiPush(tokenOrEndpoint, true);
     }
     return null;
   }

@@ -6041,14 +6041,6 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
             case TdApi.DeviceTokenFirebaseCloudMessaging.CONSTRUCTOR:
               tokenOrEndpoint = ((TdApi.DeviceTokenFirebaseCloudMessaging) deviceToken).token;
               break;
-            case TdApi.DeviceTokenHuaweiPush.CONSTRUCTOR: {
-              tokenOrEndpoint = ((TdApi.DeviceTokenHuaweiPush) deviceToken).token;
-              final String huaweiTokenPrefix = "huawei://";
-              if (!tokenOrEndpoint.startsWith(huaweiTokenPrefix)) {
-                tokenOrEndpoint = huaweiTokenPrefix + tokenOrEndpoint;
-              }
-              break;
-            }
             case TdApi.DeviceTokenSimplePush.CONSTRUCTOR:
               tokenOrEndpoint = ((TdApi.DeviceTokenSimplePush) deviceToken).endpoint;
               break;

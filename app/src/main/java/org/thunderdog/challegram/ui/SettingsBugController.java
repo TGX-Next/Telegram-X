@@ -420,10 +420,6 @@ public class SettingsBugController extends RecyclerViewController<SettingsBugCon
         TdApi.DeviceTokenFirebaseCloudMessaging fcm = (TdApi.DeviceTokenFirebaseCloudMessaging) deviceToken;
         return "Firebase: " + fcm.token + ", encrypt: " + fcm.encrypt;
       }
-      case TdApi.DeviceTokenHuaweiPush.CONSTRUCTOR: {
-        TdApi.DeviceTokenHuaweiPush huaweiPush = (TdApi.DeviceTokenHuaweiPush) deviceToken;
-        return "Huawei: " + huaweiPush.token + ", encrypt: " + huaweiPush.encrypt;
-      }
       case TdApi.DeviceTokenSimplePush.CONSTRUCTOR: {
         TdApi.DeviceTokenSimplePush simplePush = (TdApi.DeviceTokenSimplePush) deviceToken;
         return "Simple Push: " + simplePush.endpoint;

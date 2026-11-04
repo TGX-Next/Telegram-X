@@ -89,7 +89,6 @@ data class ApplicationConfig(
   val majorVersion: Int,
 
   val isExperimentalBuild: Boolean,
-  val isHuaweiBuild: Boolean,
   val forceOptimize: Boolean,
   val doNotObfuscate: Boolean,
   val build: BuildVersions,

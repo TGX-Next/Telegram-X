@@ -46,7 +46,7 @@ abstract class AppConfigurationSource : ValueSource<ApplicationConfig, AppConfig
       keystoreFilePath == null ||
       properties.getProperty("app.experimental", "false") == "true"
     val applicationExtension = getOrDefault(properties, "tgx.extension", defaults).also {
-      require(it == "none" || it == "hms")
+      require(it == "none") { "Only the none extension is supported" }
     }
 
     val sampleApiId = defaults.getIntOrThrow("telegram.api_id")
@@ -113,8 +113,6 @@ abstract class AppConfigurationSource : ValueSource<ApplicationConfig, AppConfig
         properties.getProperty("app.sources_url", ""),
       isExperimentalBuild =
         isExperimentalBuild,
-      isHuaweiBuild =
-        applicationExtension == "hms",
       forceOptimize =
         properties.getProperty("app.forceoptimize")?.toBoolean() ?: false,
       doNotObfuscate =

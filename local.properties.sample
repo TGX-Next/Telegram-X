@@ -33,5 +33,5 @@ app.download_url=https://telegram.org/dlx
 telegram.api_id=94575
 telegram.api_hash=a3406de8d171bb422bb6ddf3bbd800e2
 
-## Extension module to apply. One of: none, hms
+## Extension module to apply. Only none is supported.
 tgx.extension=none

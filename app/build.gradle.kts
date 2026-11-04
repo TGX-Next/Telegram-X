@@ -1044,8 +1044,5 @@ dependencies {
 
 if (!config.isExperimentalBuild) {
   apply(plugin = libs.plugins.google.services.get().pluginId)
-  if (config.isHuaweiBuild) {
-    apply(plugin = libs.huawei.agconnect.get().group)
-  }
 }
 // endregion
