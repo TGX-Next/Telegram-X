@@ -14,6 +14,7 @@ package org.thunderdog.challegram.util;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.BaseActivity;
@@ -68,6 +69,8 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
   private final ReferenceList<Listener> listeners;
 
   private boolean updateOffered;
+  @StringRes
+  private int updateCheckError;
 
   private long bytesDownloaded, totalBytesToDownload;
   @Nullable
@@ -87,6 +90,12 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
   @State
   public int state () {
     return state;
+  }
+
+  // @MadeByLLM("gpt-6")
+  @StringRes
+  public int updateCheckError () {
+    return updateCheckError;
   }
 
   public long totalBytesToDownload () {
@@ -150,14 +159,15 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
   }
 
   private void checkForTelegramChannelUpdates () {
+    updateCheckError = 0;
     setState(State.CHECKING);
     Tdlib tdlib = context.hasTdlib() ? context.currentTdlib() : null;
     if (tdlib == null || tdlib.context().inRecoveryMode() || !tdlib.isAuthorized()) {
-      onUpdateUnavailable();
+      onUpdateCheckFailed(R.string.AppUpdateCheckUnavailable);
       return;
     }
     if (BuildConfig.EXPERIMENTAL || (!AppInstallationUtil.allowInAppTelegramUpdates(AppContext.get()) && !tdlib.hasUrgentInAppUpdate())) {
-      onUpdateUnavailable();
+      onUpdateCheckFailed(R.string.AppUpdateCheckUnavailable);
       return;
     }
     tdlib.findUpdateFile(updateFile -> {
@@ -183,7 +193,7 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
       } else {
         act.runWithBool(false);
       }
-    });
+    }, () -> tdlib.ui().post(() -> onUpdateCheckFailed(R.string.AppUpdateCheckFailed)));
   }
 
   private boolean offerTelegramChannelUpdate () {
@@ -301,7 +311,7 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
     if (state != State.AVAILABLE) {
       return;
     }
-    // TODO add tdlib reference & show progress
+    onUpdateDownloading();
     telegramChannelTdlib.files().downloadFile(telegramChannelFile.document.document);
   }
 
@@ -343,5 +353,11 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
 
   private void onUpdateUnavailable () {
     setState(State.NONE);
+  }
+
+  // @MadeByLLM("gpt-6")
+  private void onUpdateCheckFailed (@StringRes int error) {
+    updateCheckError = error;
+    onUpdateUnavailable();
   }
 }

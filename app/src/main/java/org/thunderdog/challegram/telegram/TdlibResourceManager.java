@@ -77,10 +77,16 @@ public class TdlibResourceManager {
     });
   }
 
-  public void findResource (RunnableData<TdApi.Message> onDone, String query, long afterDateMs) {
+  // @MadeByLLM("gpt-6")
+  public void findResource (
+    RunnableData<TdApi.Message> onDone,
+    String query,
+    long afterDateMs,
+    Runnable onError
+  ) {
     withChat(chatId -> {
       if (chatId == 0) {
-        onDone.runWithData(null);
+        onError.run();
         return;
       }
       tdlib.incrementJobReferenceCount(JOB_ID_RESOURCE);
@@ -94,7 +100,7 @@ public class TdlibResourceManager {
             }
           } else {
             Log.e("Unable to fetch resource in @%s: %s", channelUsername, TD.toErrorString(error));
-            onDone.runWithData(null);
+            onError.run();
           }
           tdlib.closeChat(chatId, null, false);
           tdlib.decrementJobReferenceCount(JOB_ID_RESOURCE);

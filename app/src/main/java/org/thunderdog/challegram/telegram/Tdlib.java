@@ -10891,42 +10891,55 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
   }
 
   // @MadeByLLM("gpt-6")
-  public void findUpdateFile (@NonNull RunnableData<UpdateFileInfo> onDone) {
+  @Nullable
+  static UpdateFileInfo parseUpdateFile (@Nullable TdApi.Message message) {
+    if (message == null || !Td.isDocument(message.content)) {
+      return null;
+    }
+    TdApi.Document document = ((TdApi.MessageDocument) message.content).document;
+    TdApi.FormattedText caption = ((TdApi.MessageDocument) message.content).caption;
+    boolean ok = false;
+    int buildNo = 0;
+    String version = null;
+    String commit = null;
+    final String prefix = BuildConfig.APK_FILE_PREFIX;
+    if (!StringUtils.isEmpty(document.fileName) && document.fileName.startsWith(prefix)) {
+      int i = document.fileName.indexOf('-', prefix.length());
+      version = document.fileName.substring(prefix.length(), i == -1 ? document.fileName.length() : i);
+      if (version.matches("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$")) {
+        buildNo = StringUtils.parseInt(version.substring(version.lastIndexOf('.') + 1));
+        if (buildNo > BuildConfig.ORIGINAL_VERSION_CODE) {
+          ok = true;
+        }
+      }
+    }
+    //noinspection UnsafeOptInUsageError
+    if (!Td.isEmpty(caption)) {
+      Pattern pattern = Pattern.compile("(?<=Commit:)\\s*([a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE);
+      Matcher matcher = pattern.matcher(caption.text);
+      if (matcher.find()) {
+        commit = matcher.group(1);
+        if (StringUtils.isEmpty(commit)) {
+          commit = null;
+        }
+      }
+    }
+    return ok ? new UpdateFileInfo(document, buildNo, version, commit) : null;
+  }
+
+  // @MadeByLLM("gpt-6")
+  public void findUpdateFile (
+    @NonNull RunnableData<UpdateFileInfo> onDone,
+    @NonNull Runnable onError
+  ) {
     final String query = Settings.instance().getNewSetting(Settings.SETTING_FLAG_DOWNLOAD_BETAS) ?
       "#apk" : "#apk #stable";
-    clientHolder().updates.findResource(message -> {
-      if (message != null && Td.isDocument(message.content)) {
-        TdApi.Document document = ((TdApi.MessageDocument) message.content).document;
-        TdApi.FormattedText caption = ((TdApi.MessageDocument) message.content).caption;
-        boolean ok = false;
-        int buildNo = 0;
-        String version = null;
-        String commit = null;
-        final String prefix = BuildConfig.APK_FILE_PREFIX;
-        if (!StringUtils.isEmpty(document.fileName) && document.fileName.startsWith(prefix)) {
-          int i = document.fileName.indexOf('-', prefix.length());
-          version = document.fileName.substring(prefix.length(), i == -1 ? document.fileName.length() : i);
-          if (version.matches("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$")) {
-            buildNo = StringUtils.parseInt(version.substring(version.lastIndexOf('.') + 1));
-            if (buildNo > BuildConfig.ORIGINAL_VERSION_CODE) {
-              ok = true;
-            }
-          }
-        }
-        //noinspection UnsafeOptInUsageError
-        if (!Td.isEmpty(caption)) {
-          Pattern pattern = Pattern.compile("(?<=Commit:)\\s*([a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE);
-          Matcher matcher = pattern.matcher(caption.text);
-          if (matcher.find()) {
-            commit = matcher.group(1);
-            if (StringUtils.isEmpty(commit)) {
-              commit = null;
-            }
-          }
-        }
-        onDone.runWithData(ok ? new UpdateFileInfo(document, buildNo, version, commit) : null);
-      }
-    }, query, BuildConfig.COMMIT_DATE);
+    clientHolder().updates.findResource(
+      message -> onDone.runWithData(parseUpdateFile(message)),
+      query,
+      BuildConfig.COMMIT_DATE,
+      onError
+    );
   }
 
   public <T extends Settings.CloudSetting> void fetchCloudSettings (@NonNull RunnableData<List<T>> callback, String requiredHashtag, @NonNull Future<T> currentSettingProvider, @NonNull Future<T> builtinItemProvider, @NonNull WrapperProvider<T, TdApi.Message> instanceProvider) {

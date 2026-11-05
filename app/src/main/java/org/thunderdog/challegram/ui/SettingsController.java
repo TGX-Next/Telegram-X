@@ -22,11 +22,10 @@ import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.collection.SparseArrayCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -107,12 +106,13 @@ public class SettingsController extends ViewController<Void> implements
   Menu, MoreDelegate, OptionDelegate,
   TdlibCache.MyUserDataChangeListener, ConnectionListener, StickersListener, MediaLayout.MediaGalleryCallback,
   ActivityResultHandler, View.OnLongClickListener, SessionListener, GlobalTokenStateListener, TdlibCache.UserDataChangeListener,
-  TdlibOptionListener {
+  TdlibOptionListener, AppUpdater.Listener {
 
   private final AvatarPickerManager avatarPickerManager;
   private ComplexHeaderView headerCell;
   private ComplexRecyclerView contentView;
   private SettingsAdapter adapter;
+  private boolean checkingForUpdates;
 
   public SettingsController (Context context, Tdlib tdlib) {
     super(context, tdlib);
@@ -451,7 +451,9 @@ public class SettingsController extends ViewController<Void> implements
       public void setValuedSetting (ListItem item, SettingView view, boolean isUpdate) {
         boolean hasError = false;
         final int itemId = item.getId();
-        if (itemId == R.id.btn_notificationSettings) {
+        if (itemId == R.id.btn_checkUpdates) {
+          bindUpdateSetting(view, isUpdate);
+        } else if (itemId == R.id.btn_notificationSettings) {
           checkErrors(false);
           hasError = hasNotificationError;
         } else if (itemId == R.id.btn_devices) {
@@ -662,48 +664,13 @@ public class SettingsController extends ViewController<Void> implements
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
 
     items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
-    AppInstallationUtil.DownloadUrl downloadUrl = AppUpdater.getDownloadUrl(null);
-    @DrawableRes int downloadIconRes;
-    @StringRes int downloadStringRes = R.string.CheckForUpdates;
-    if (tdlib.hasUrgentInAppUpdate() && tdlib.isProduction()) {
-      downloadIconRes = R.drawable.baseline_warning_24;
-      downloadUrl = new AppInstallationUtil.DownloadUrl(downloadUrl.installerId, tdlib.tMeUrl(BuildConfig.TELEGRAM_UPDATES_CHANNEL));
-    } else {
-      switch (downloadUrl.installerId) {
-        case AppInstallationUtil.InstallerId.UNKNOWN:
-        case AppInstallationUtil.InstallerId.MEMU_EMULATOR: {
-          if (!StringUtils.isEmpty(BuildConfig.GOOGLE_PLAY_URL)) {
-            downloadUrl = new AppInstallationUtil.DownloadUrl(AppInstallationUtil.InstallerId.GOOGLE_PLAY, BuildConfig.GOOGLE_PLAY_URL);
-            downloadIconRes = R.drawable.baseline_google_play_24;
-            downloadStringRes = R.string.AppOnGooglePlay;
-          } else {
-            downloadIconRes = R.drawable.baseline_update_24;
-          }
-          break;
-        }
-        case AppInstallationUtil.InstallerId.GOOGLE_PLAY: {
-          downloadIconRes = R.drawable.baseline_google_play_24;
-          break;
-        }
-        case AppInstallationUtil.InstallerId.GALAXY_STORE: {
-          downloadIconRes = R.drawable.baseline_galaxy_store_24;
-          break;
-        }
-        case AppInstallationUtil.InstallerId.HUAWEI_APPGALLERY: {
-          downloadIconRes = R.drawable.baseline_huawei_24;
-          break;
-        }
-        case AppInstallationUtil.InstallerId.AMAZON_APPSTORE: {
-          downloadIconRes = R.drawable.baseline_amazon_24;
-          break;
-        }
-        default:
-          throw new UnsupportedOperationException();
-      }
-    }
-    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_checkUpdates, downloadIconRes, downloadStringRes)
-      .setData(downloadUrl));
-    if (downloadUrl.installerId == AppInstallationUtil.InstallerId.GOOGLE_PLAY) {
+    items.add(new ListItem(
+      ListItem.TYPE_SETTING,
+      R.id.btn_checkUpdates,
+      R.drawable.baseline_update_24,
+      R.string.CheckForUpdates
+    ));
+    if (AppInstallationUtil.getInstallerId(context) == AppInstallationUtil.InstallerId.GOOGLE_PLAY) {
       items.add(new ListItem(ListItem.TYPE_SEPARATOR));
       items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_subscribeToBeta, R.drawable.templarian_baseline_flask_24, R.string.SubscribeToBeta));
     }
@@ -737,6 +704,7 @@ public class SettingsController extends ViewController<Void> implements
 
     this.contentView.setAdapter(adapter);
 
+    context().appUpdater().addListener(this);
     tdlib.cache().addMyUserListener(this);
     setMyUserId(tdlib.myUserId());
     tdlib.listeners().subscribeToConnectivityUpdates(this);
@@ -929,6 +897,7 @@ public class SettingsController extends ViewController<Void> implements
   @Override
   public void destroy () {
     super.destroy();
+    context().appUpdater().removeListener(this);
     tdlib.cache().removeMyUserListener(this);
     setMyUserId(0);
     tdlib.listeners().unsubscribeFromConnectivityUpdates(this);
@@ -1074,9 +1043,78 @@ public class SettingsController extends ViewController<Void> implements
 
   }
 
-  private void openInstallerPage (@Nullable AppInstallationUtil.DownloadUrl downloadUrl) {
-    String url = downloadUrl != null ? downloadUrl.url : BuildConfig.DOWNLOAD_URL;
-    tdlib.ui().openUrl(this, url, new TdlibUi.UrlOpenParameters().disableInstantView());
+  // @MadeByLLM("gpt-6")
+  private void bindUpdateSetting (SettingView view, boolean isUpdate) {
+    AppUpdater updater = context().appUpdater();
+    int state = updater.state();
+    view.setEnabledAnimated(
+      state != AppUpdater.State.CHECKING && state != AppUpdater.State.DOWNLOADING,
+      isUpdate
+    );
+    switch (state) {
+      case AppUpdater.State.NONE:
+        view.setName(R.string.CheckForUpdates);
+        break;
+      case AppUpdater.State.CHECKING:
+        view.setName(R.string.CheckingForUpdates);
+        break;
+      case AppUpdater.State.AVAILABLE:
+        long remaining = updater.totalBytesToDownload() - updater.bytesDownloaded();
+        view.setName(remaining > 0 ?
+          Lang.getStringBold(R.string.DownloadUpdateSize, Strings.buildSize(remaining)) :
+          Lang.getString(R.string.DownloadUpdate));
+        break;
+      case AppUpdater.State.DOWNLOADING:
+        view.setName(Lang.getDownloadProgress(
+          updater.bytesDownloaded(), updater.totalBytesToDownload(), true
+        ));
+        break;
+      case AppUpdater.State.READY_TO_INSTALL:
+        view.setName(R.string.InstallUpdate);
+        break;
+    }
+  }
+
+  // @MadeByLLM("gpt-6")
+  @Override
+  public void onAppUpdateStateChanged (int state, int oldState) {
+    adapter.updateValuedSettingById(R.id.btn_checkUpdates);
+    if (oldState == AppUpdater.State.CHECKING && checkingForUpdates) {
+      checkingForUpdates = false;
+      if (state == AppUpdater.State.NONE && isFocused()) {
+        UI.showToast(
+          context().appUpdater().updateCheckError() != 0 ?
+            context().appUpdater().updateCheckError() : R.string.AppUpdateNotFound,
+          Toast.LENGTH_LONG
+        );
+      }
+    }
+  }
+
+  // @MadeByLLM("gpt-6")
+  @Override
+  public void onAppUpdateDownloadProgress (long bytesDownloaded, long totalBytesToDownload) {
+    adapter.updateValuedSettingById(R.id.btn_checkUpdates);
+  }
+
+  // @MadeByLLM("gpt-6")
+  private void checkForUpdates () {
+    AppUpdater updater = context().appUpdater();
+    switch (updater.state()) {
+      case AppUpdater.State.NONE:
+        checkingForUpdates = true;
+        updater.checkForUpdates();
+        break;
+      case AppUpdater.State.AVAILABLE:
+        updater.downloadUpdate();
+        break;
+      case AppUpdater.State.READY_TO_INSTALL:
+        updater.installUpdate();
+        break;
+      case AppUpdater.State.CHECKING:
+      case AppUpdater.State.DOWNLOADING:
+        break;
+    }
   }
 
   @Retention(RetentionPolicy.SOURCE)
@@ -1162,7 +1200,7 @@ public class SettingsController extends ViewController<Void> implements
     } else if (viewId == R.id.btn_devices) {
       navigateTo(new SettingsSessionsController(context, tdlib));
     } else if (viewId == R.id.btn_checkUpdates) {
-      openInstallerPage(((AppInstallationUtil.DownloadUrl) ((ListItem) v.getTag()).getData()));
+      checkForUpdates();
     } else if (viewId == R.id.btn_subscribeToBeta) {
       tdlib.ui().subscribeToBeta(this);
     } else if (viewId == R.id.btn_sourceCodeChanges) {// TODO provide an ability to view changes in PRs if they are present in both builds

@@ -4853,6 +4853,9 @@
   <string name="InstallBetas">Install beta versions</string>
   <string name="CheckForUpdates">Check for updates</string>
   <string name="InstallUpdate">Install an update</string>
+  <string name="AppUpdateNotFound">No compatible update was found in the updates channel.</string>
+  <string name="AppUpdateCheckUnavailable">In-app updates are unavailable for this build or installation. Use a non-experimental build installed directly from an APK and sign in to Telegram.</string>
+  <string name="AppUpdateCheckFailed">Could not check for updates. Check your connection and try again.</string>
   <string name="CheckingForUpdates">Checking for updates…</string>
   <string name="DownloadUpdateSize">Download update (%1$s)</string>
   <string name="DownloadUpdate">Download update</string>
