@@ -67,7 +67,7 @@
 	path = vkryl/core
 	url = https://github.com/TGX-Next/X-Core
 	shallow = true
-	branch = codex/android13-arm64
+	branch = main
 [submodule "vkryl/td"]
 	path = vkryl/td
 	url = https://github.com/TGX-Android/tdlib-utils
@@ -77,7 +77,7 @@
 	path = vkryl/android
 	url = https://github.com/TGX-Next/X-Android
 	shallow = true
-	branch = codex/android13-arm64
+	branch = main
 [submodule "usrsctp"]
 	path = app/jni/tgvoip/third_party/usrsctp
 	url = https://github.com/sctplab/usrsctp

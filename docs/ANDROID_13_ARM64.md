@@ -37,13 +37,13 @@ Only changed submodules were forked. Other submodules retain their upstream URLs
 | Repository | Published branch | Commit |
 |---|---|---|
 | [TDLib bundle](https://github.com/TGX-Next/tdlib) | `main` | `40d51146716d` |
-| [X-Core](https://github.com/TGX-Next/X-Core) | `codex/android13-arm64` | `6ab46f81e826` |
-| [X-Android](https://github.com/TGX-Next/X-Android) | `codex/android13-arm64` | `d44a2d89f66b` |
+| [X-Core](https://github.com/TGX-Next/X-Core) | `main` | `6ab46f81e826` |
+| [X-Android](https://github.com/TGX-Next/X-Android) | `main` | `d44a2d89f66b` |
 | [LevelDB](https://github.com/TGX-Next/leveldb) | `main` | `836e6fcffc96` |
 
-X-Core and X-Android use the migration branch as their default branch. This preserves the
-pinned dependency baselines without overwriting their newer upstream `main` branches.
-The parent repository records the exact commits and branch names in `.gitmodules`.
+All forks use `main` as their default branch, matching their upstream repositories. These
+branches retain the revisions required by Telegram X and can be updated from upstream as needed.
+The parent repository pins the exact commits; `.gitmodules` records the branch names.
 
 ## Validation
 
