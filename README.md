@@ -1,241 +1,58 @@
-# [Telegram X](https://play.google.com/store/apps/details?id=org.thunderdog.challegram) — a slick experimental Telegram client based on [TDLib](https://core.telegram.org/tdlib).
+# Telegram X
 
-This TGX-Next fork supports Android 13+ (API 33+) and arm64-v8a only.
-See the [migration notes](docs/ANDROID_13_ARM64.md) for changes, forks and validation.
+Telegram X is an experimental Android client for [Telegram](https://telegram.org/), based on
+[TDLib](https://core.telegram.org/tdlib). This TGX-Next fork supports Android 13+ (API 33+) and
+`arm64-v8a` only. See the [migration notes](docs/ANDROID_13_ARM64.md) for details.
 
-![Telegram X](/images/feature.png)
+## Build
 
-This is the complete source code and the build instructions for the official alternative Android client for the Telegram messenger, based on the [Telegram API](https://core.telegram.org/api) and the [MTProto](https://core.telegram.org/mtproto) secure protocol via [TDLib](https://github.com/TGX-Android/tdlib).
+Prerequisites: Git with Git LFS, JDK 25, [rustup](https://rustup.rs), Android SDK and NDK.
+Windows builds also require [MSYS2](https://www.msys2.org/) with the UCRT64 environment,
+Git LFS, Perl, Make and diffutils; set `msys2.dir` in `local.properties`.
 
-* [**Telegram X** on Google Play](http://play.google.com/store/apps/details?id=org.thunderdog.challegram) ([subscribe to beta](https://play.google.com/apps/testing/org.thunderdog.challegram))
-* [APKs and Build Info](https://t.me/tgx_log)
-* [Bot to verify APK hash](https://t.me/tgx_bot)
-
-<details>
-<summary>Other sources</summary>
-
-* [**Telegram X** on Huawei AppGallery](https://appgallery.huawei.com/app/C101754199)
-* [**GitHub Releases**](https://github.com/TGX-Android/Telegram-X/releases)
-
-</details>
-
-## Build instructions
-
-### Prerequisites
-
-* Repository must be fetched via `git`
-* **JDK** or **[Android Studio](https://developer.android.com/studio/)** (with compatible bundled JDK)
-* At least **8GB** of RAM
-* At least **7,32GB** of free disk space when cloning with `--shallow-submodules --depth=1`
-* At least **2-5x** times more disk space for files generated during build process.
-
-#### macOS
-
-* [Homebrew](https://brew.sh)
-* git with LFS: `$ brew install git git-lfs && git lfs install`
-* JDK: `$ brew install openjdk@25`
-* [rustup](https://rustup.rs), then Rust of `version.rust` of `version.properties` with targets of Android: `$ scripts/setup-rust.sh`, which prints `rust.dir` for `local.properties`
-
-#### Ubuntu
-
-* git with LFS: `# apt install git git-lfs`
-* Run `$ git lfs install` if you just installed `git-lfs`
-* JDK: `# apt install openjdk-25-jdk`
-* rustup: `# apt install rustup`, then Rust of `version.rust` of `version.properties` with targets of Android: `$ scripts/setup-rust.sh`, which prints `rust.dir` for `local.properties`. Run it again after a change of `version.rust`
-* If multiple JDK versions are installed:<br/>`# update-java-alternatives --list`<br/>`# update-java-alternatives --set java-1.25.0-openjdk-amd64` (or other compatible version)
-
-#### Windows
-
-* [MSYS2](https://www.msys2.org/#installation) (**UCRT64** environment)
-* Update packages: `pacman -Syu`
-* Run `pacman -S --needed git mingw-w64-ucrt-x86_64-git-lfs perl make diffutils`
-* Run `git lfs install`
-* Run `git config --global core.longpaths true`
-* [rustup](https://rustup.rs), then Rust of `version.rust` of `version.properties` with targets of Android: `scripts/setup-rust.sh`, which prints `rust.dir` for `local.properties`
-* Clone the repository
-* Set `msys2.dir` in `local.properties` after cloning
-* Note: you have to use `\\` or `/` as path separator in properties files
-
-### Building
-
-1. `$ git clone --recursive https://github.com/TGX-Next/Telegram-X tgx`
-2. In case you forgot the `--recursive` flag, `cd` into `tgx` directory and run: `$ git submodule update --init --recursive`
-3. Open project via **[Android Studio](https://developer.android.com/studio/)** or build manually from the command line: `./gradlew assembleLatestDebug`
-4. If build fails, follow the instructions provided in the error message.
-
-#### Publishing
-
-1. [Obtain Telegram API credentials](https://core.telegram.org/api/obtaining_api_id)
-2. Create `local.properties` file in the root project folder using any text editor:<br/><pre># Location where you have Android SDK installed
-   sdk.dir=YOUR_ANDROID_SDK_FOLDER
-   \# Home of rustup with Rust of version.rust, printed by scripts/setup-rust.sh
-   rust.dir=YOUR_RUSTUP_HOME_FOLDER
-   \# Telegram API credentials obtained at previous step
-   telegram.api_id=YOUR_TELEGRAM_API_ID
-   telegram.api_hash=YOUR_TELEGRAM_API_HASH</pre>
-3. [Setup Firebase](https://firebase.google.com/docs/android/setup) and replace `google-services.json` with the one that's suitable for your `app.id`
-
-### Commands
-
-<details>
-<summary>Reference of commands for building, testing and maintenance</summary>
-
-Android 13 (API 33) or newer and `arm64-v8a` are required. The only flavor is `latest`. Native builds default to arm64; optional `-Pabi=arm64` or `-Pabi=arm64-v8a` selects the same target. Other ABIs are rejected.
-
-#### Building
-
-Set up Android SDK, NDK and `local.properties`, on Windows in MSYS2:
 ```shell
+git lfs install
+git clone --recursive https://github.com/TGX-Next/Telegram-X tgx
+cd tgx
+scripts/setup-rust.sh
 scripts/setup.sh
+./gradlew :app:assembleLatestDebug
 ```
 
-Check that submodules and Git LFS files are fetched:
-```shell
-./gradlew :app:validateGitSetup
-```
+Set `rust.dir` in `local.properties` to the value printed by `scripts/setup-rust.sh`. Run that
+script again when `version.rust` in `version.properties` changes. If the repository was cloned
+without submodules, run `git submodule update --init --recursive` first. The setup script
+configures the Android SDK, NDK and local properties; follow any additional build error messages.
 
-Build and install debug build on connected device:
+To install on a connected ARM64 device, run:
+
 ```shell
 ./gradlew :app:installLatestDebug -Pabi=arm64
 ```
 
-Build libvpx, FFmpeg and tlottie for Android 13+ and arm64:
-```shell
-./gradlew :app:buildLibvpx
-./gradlew :app:buildFfmpeg
-./gradlew :app:buildTlottie
-```
+For a published build, obtain [Telegram API credentials](https://core.telegram.org/api/obtaining_api_id),
+set `telegram.api_id` and `telegram.api_hash` in `local.properties`, and configure
+[Firebase](https://firebase.google.com/docs/android/setup) for the application ID.
 
-Builds of tlottie for `arm64-v8a` are optimized by the profile of its drawing, `app/jni/tlottie/arm64-v8a.profdata`. After updates of tlottie or Rust, builds warn that it doesn't match, and it's made again from animated stickers and emoji on a connected device of the ABI, see [`GenerateTlottieProfileTask`](buildSrc/src/main/kotlin/tgx/gradle/task/GenerateTlottieProfileTask.kt):
-```shell
-ANDROID_SERIAL=<device> ./gradlew ":app:generateTlottieProfile[arm64-v8a]" -Ptlottie.samples=<samples>
-```
+## Tests and checks
 
-#### Checking
-
-Run unit tests:
 ```shell
 ./gradlew :app:testLatestDebugUnitTest
-```
-
-Run integration tests and UI tests on emulator:
-```shell
 ./gradlew :app:emulatorLatestDebugAndroidTest -Pabi=arm64
 ./gradlew :tests:ui:emulatorLatestNonMinifiedReleaseAndroidTest -Pabi=arm64
-```
-
-Run one test on device, e.g. on connected one:
-```shell
-./gradlew :tests:ui:connectedLatestNonMinifiedReleaseAndroidTest -Pabi=arm64 -Pandroid.testInstrumentationRunnerArguments.class=tgx.test.UnauthorizedLaunchTest
-```
-
-Check API compatibility against Android 13 and run lint:
-```shell
 ./gradlew checkMinSdk
 ./gradlew :app:lintLatestDebug
 ```
 
-Describe results of checks before and after a change for pull request, see [tests](/tests/README.md#tests-and-checks):
-```shell
-./gradlew clearCheckResults
-# Run checks without the change
-./gradlew saveCheckResults
-# Run checks with the change
-./gradlew describeCheckResults
-```
+Device tests require Android 13+ and ARM64. See the [testing guide](tests/README.md) for test
+workflows, benchmarks and baseline profiles.
 
-Check test tools on connected test device after changing them, see [tests](/tests/README.md#running-tests):
-```shell
-scripts/check-test-tools.sh
-```
+## Contributing
 
-#### Performance
-
-Run benchmarks on connected device and compare results before and after a change:
-```shell
-./gradlew :tests:benchmark:connectedLatestBenchmarkReleaseAndroidTest -Pabi=arm64
-./gradlew :tests:benchmark:saveBenchmarkResults
-# Apply the change and run benchmarks again
-./gradlew :tests:benchmark:compareBenchmarkResults -Pmetric=frameDurationCpuMsP90
-```
-
-Run microbenchmarks of app code and show implementations side by side:
-```shell
-./gradlew :tests:microbenchmark:connectedLatestNonMinifiedReleaseAndroidTest -Pabi=arm64 -Pandroid.testInstrumentationRunnerArguments.class=tgx.test.TextBenchmarks
-./gradlew :tests:microbenchmark:describeBenchmarkResults
-```
-
-Optimize `Text`: save results before a change, then run microbenchmarks after it and compare, see [tests](/tests/README.md#optimizing-code):
-```shell
-./gradlew -q :tests:microbenchmark:connectedLatestNonMinifiedReleaseAndroidTest :tests:microbenchmark:saveBenchmarkResults -Pabi=arm64 -Pandroid.testInstrumentationRunnerArguments.class=tgx.test.TextSuite
-# Change Text and run them again
-./gradlew -q :tests:microbenchmark:connectedLatestNonMinifiedReleaseAndroidTest :tests:microbenchmark:compareBenchmarkResults -Pabi=arm64 -Pandroid.testInstrumentationRunnerArguments.class=tgx.test.TextSuite -Pimplementation=Text -Pcontrol=BoringOrStaticLayout
-```
-
-List devices and variants for which baseline profiles will be generated, without generating them, as tasks named `<device><Variant>AndroidTest`:
-```shell
-./gradlew :app:generateBaselineProfile -Pabi=arm64 -m | grep AndroidTest
-```
-
-Generate baseline profiles on an arm64 emulator or connected Android 13+ arm64 device, keeping the computer awake and saving the log:
-```shell
-# macOS with Apple silicon
-caffeinate -i ./gradlew :app:generateBaselineProfile -Pabi=arm64 --continue 2>&1 | tee ~/baseline-profile.log
-# Ubuntu
-systemd-inhibit --what=idle:sleep ./gradlew :app:generateBaselineProfile -Pabi=arm64 --continue 2>&1 | tee ~/baseline-profile.log
-```
-
-</details>
-
-## Reproducing public builds
-
-In order to verify that there is no additional source code injected inside official APKs, you must use one of the following versions of **Ubuntu**:
-
-* **21.04**: for builds published before [26th May 2023](https://github.com/TGX-Android/Telegram-X/commit/e9a054a0f469a98a13f7e0d751539687fef8759b)
-* **22.04.2 LTS**: for builds published before 27th September 2025
-* **24.04 LTS**: for builds published before 1st October 2026
-* **26.04 LTS**: for any newer releases
-
-And update its configuration:
-
-1. Create user called `vk` with the home directory located at `/home/vk`
-2. Clone `tgx` repository to `/home/vk/tgx`
-3. Check out the specific commit you want to verify
-4. In rare cases of builds that include unmerged pull requests, you must follow actions performed by [Publisher's](https://github.com/TGX-Android/Publisher/blob/main/main.js) `fetchPr` and `squashPr` tasks
-5. `cd` into `tgx` folder and install dependencies: `# apt install $(cat reproducible-builds/dependencies.txt)`, then Rust with its targets of Android by `scripts/setup-rust.sh` as in the requirements above
-6. Follow up the build instruction from the previous section
-7. Run `$ apkanalyzer apk compare --different-only <remote-apk> <reproduced-apk>`
-8. If only signature files and metadata differ, build reproduction is successful.
-
-## Verifying side-loaded APKs
-
-If you downloaded **Telegram X** APK from somewhere and would like to simply verify whether it's an original APK without any injected malicious source code, you need to get checksum (`SHA-256`, `SHA-1` or `MD5`) of the downloaded APK file and find whether it corresponds to any known **Telegram X** version.
-
-In order to obtain **SHA-256** of the APK:
-
-* `$ sha256sum <path-to-apk>` on **Ubuntu**
-* `$ shasum -a 256 <path-to-apk>` on **macOS**
-* `$ certutil -hashfile <path-to-apk> SHA256` on **Windows**
-
-Once obtained, there are three ways to find out the commit for the specific checksum:
-
-* Sending checksum to [`@tgx_bot`](https://t.me/tgx_bot)
-* Searching for a checksum in [`@tgx_log`](https://t.me/tgx_log). You can do so without need in installing any Telegram client by using this URL format: [`https://t.me/s/tgx_log?q={checksum}`](https://t.me/s/tgx_log?q=c541ebb0a3ae7bb6e6bd155530f375d567b8aef1761fdd942fb5d69af62e24ae) (click to see in action). Note: unpublished builds cannot be verified this way.
+See the [contributor guide](docs/GUIDE.md), [code style](docs/CODE_STYLE.md) and
+[pull request template](docs/PULL_REQUEST_TEMPLATE.md).
 
 ## License
 
-`Telegram X` is licensed under the terms of the GNU General Public License v3.0.
-
-For more information, see [LICENSE](/LICENSE) file.
-
-License of components and third-party dependencies it relies on might differ, check `LICENSE` file in the corresponding folder.
-
-### Third-party dependencies
-
-List of third-party components used in **Telegram X** can be found [here](/docs/THIRDPARTY.md). Additionally you can check the specific commit of the third-party component used, for example, [here](/app/jni/thirdparty) and [here](/thirdparty).
-
-## Contributions
-
-**Telegram X** welcomes contributions. Check out [pull request template](/docs/PULL_REQUEST_TEMPLATE.md), [code style](/docs/CODE_STYLE.md) and [guide for contributors](/docs/GUIDE.md) to learn more about Telegram X internals before creating the first pull request.
-
-If you are a regular user and experience a problem with Telegram X, the best place to look for solution is [Telegram X chat](https://t.me/tgandroidtests) — a community with over 4 thousand members. Please do not use this repository to ask questions: if you have general issue with Telegram, refer to [FAQ](http://telegram.org/faq) or contact [Telegram Support](https://telegram.org/faq#telegram-support).
+Telegram X is licensed under [GNU GPL v3.0](LICENSE). Third-party components may have different
+licenses; see [third-party dependencies](docs/THIRDPARTY.md).
