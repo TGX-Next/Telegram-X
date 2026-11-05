@@ -416,6 +416,7 @@ android {
     resValue("string", "content_authority", "${config.applicationId}.sync.provider")
 
     buildConfigString("PROJECT_NAME", config.applicationName)
+    buildConfigString("APK_FILE_PREFIX", "${config.outputFileNamePrefix}-")
 
     buildConfigString("DOWNLOAD_URL", config.appDownloadUrl)
     buildConfigString("GOOGLE_PLAY_URL", config.googlePlayUrl)

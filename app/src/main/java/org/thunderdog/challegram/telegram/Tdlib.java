@@ -10890,17 +10890,10 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
     }
   }
 
+  // @MadeByLLM("gpt-6")
   public void findUpdateFile (@NonNull RunnableData<UpdateFileInfo> onDone) {
-    final String abiFlavor = U.getPreferredAbiFlavor();
-    if (abiFlavor == null) {
-      onDone.runWithData(null);
-      return;
-    }
-    final String hashtag;
-    hashtag = abiFlavor;
-    final String query = "#apk " +
-      (Settings.instance().getNewSetting(Settings.SETTING_FLAG_DOWNLOAD_BETAS) ? "" : "#stable ") +
-      "#" + hashtag;
+    final String query = Settings.instance().getNewSetting(Settings.SETTING_FLAG_DOWNLOAD_BETAS) ?
+      "#apk" : "#apk #stable";
     clientHolder().updates.findResource(message -> {
       if (message != null && Td.isDocument(message.content)) {
         TdApi.Document document = ((TdApi.MessageDocument) message.content).document;
@@ -10909,7 +10902,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         int buildNo = 0;
         String version = null;
         String commit = null;
-        final String prefix = "Telegram-X-";
+        final String prefix = BuildConfig.APK_FILE_PREFIX;
         if (!StringUtils.isEmpty(document.fileName) && document.fileName.startsWith(prefix)) {
           int i = document.fileName.indexOf('-', prefix.length());
           version = document.fileName.substring(prefix.length(), i == -1 ? document.fileName.length() : i);
