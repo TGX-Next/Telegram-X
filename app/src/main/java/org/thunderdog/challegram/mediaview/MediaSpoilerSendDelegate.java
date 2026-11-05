@@ -16,6 +16,8 @@ package org.thunderdog.challegram.mediaview;
 
 import androidx.annotation.CallSuper;
 
+import org.thunderdog.challegram.unsorted.Settings;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class MediaSpoilerSendDelegate implements MediaSendDelegate {
@@ -36,6 +38,22 @@ public abstract class MediaSpoilerSendDelegate implements MediaSendDelegate {
   @CallSuper
   public void onHideMediaStateChanged (boolean hideMedia) {
     this.hideMedia.set(hideMedia);
+  }
+
+  // @MadeByLLM("gpt-6", id = "pr-1094-android13")
+  @Override
+  public boolean allowSendHd () {
+    return true;
+  }
+
+  @Override
+  public boolean isSendHdEnabled () {
+    return allowSendHd() && Settings.instance().getNewSetting(Settings.SETTING_FLAG_SEND_HD_PHOTOS);
+  }
+
+  @Override
+  public void onSendHdStateChanged (boolean sendHd) {
+    Settings.instance().setNewSetting(Settings.SETTING_FLAG_SEND_HD_PHOTOS, sendHd);
   }
 
   @Override
