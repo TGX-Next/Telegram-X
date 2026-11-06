@@ -69,6 +69,7 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
   private final ReferenceList<Listener> listeners;
 
   private boolean updateOffered;
+  private boolean updateCheckPending;
   @StringRes
   private int updateCheckError;
 
@@ -127,6 +128,8 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
   public void checkForUpdates () {
     if (state == State.NONE) {
       checkForTelegramChannelUpdates();
+    } else if (state == State.CHECKING) {
+      updateCheckPending = true;
     } else if (state == State.AVAILABLE) {
       offerUpdate();
     }
@@ -148,7 +151,7 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
     return publicMarketUrls.toDownloadUrl(installerId, serverSuggestedDownloadUrl);
   }
 
-  private void setState (@State int state) {
+  void setState (@State int state) {
     if (this.state != state) {
       final int oldState = this.state;
       this.state = state;
@@ -158,7 +161,17 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
     }
   }
 
-  private void checkForTelegramChannelUpdates () {
+  // @MadeByLLM("gpt-6")
+  boolean restartPendingUpdateCheck () {
+    if (!updateCheckPending) {
+      return false;
+    }
+    updateCheckPending = false;
+    checkForTelegramChannelUpdates();
+    return true;
+  }
+
+  void checkForTelegramChannelUpdates () {
     updateCheckError = 0;
     setState(State.CHECKING);
     Tdlib tdlib = context.hasTdlib() ? context.currentTdlib() : null;
@@ -172,6 +185,9 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
     }
     tdlib.findUpdateFile(updateFile -> {
       RunnableBool act = updateFileLoadedAndExists -> tdlib.ui().post(() -> {
+        if (restartPendingUpdateCheck()) {
+          return;
+        }
         if (updateFile != null) {
           this.telegramChannelTdlib = tdlib;
           this.telegramChannelFile = updateFile;
@@ -193,7 +209,11 @@ public class AppUpdater implements FileUpdateListener, ConnectionListener {
       } else {
         act.runWithBool(false);
       }
-    }, () -> tdlib.ui().post(() -> onUpdateCheckFailed(R.string.AppUpdateCheckFailed)));
+    }, () -> tdlib.ui().post(() -> {
+      if (!restartPendingUpdateCheck()) {
+        onUpdateCheckFailed(R.string.AppUpdateCheckFailed);
+      }
+    }));
   }
 
   private boolean offerTelegramChannelUpdate () {
