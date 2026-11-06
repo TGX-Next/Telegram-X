@@ -437,8 +437,8 @@ public final class ForumTopicsController
     if (topicUi.isBusy()) {
       return;
     }
-    IntList ids = new IntList(4);
-    StringList titles = new StringList(4);
+    IntList ids = new IntList(3);
+    StringList titles = new StringList(3);
     if (topicUi.canCreate()) {
       ids.append(R.id.more_btn_createForumTopic);
       titles.append(R.string.ForumCreateTopic);
@@ -447,8 +447,6 @@ public final class ForumTopicsController
       ids.append(R.id.more_btn_addMember);
       titles.append(R.string.AddMember);
     }
-    ids.append(R.id.more_btn_refreshForumTopics);
-    titles.append(R.string.ForumRefresh);
     ids.append(R.id.more_btn_forumAllMessages);
     titles.append(R.string.ForumShowAllMessages);
     showMore(ids.get(), titles.get());
@@ -464,10 +462,6 @@ public final class ForumTopicsController
       }
     } else if (id == R.id.more_btn_addMember) {
       topicUi.addMembers();
-    } else if (id == R.id.more_btn_refreshForumTopics) {
-      if (session != null) {
-        session.refresh();
-      }
     } else if (id == R.id.more_btn_forumAllMessages) {
       topicUi.setViewMode(false);
     }

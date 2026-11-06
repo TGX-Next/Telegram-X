@@ -161,7 +161,6 @@
   <string name="ForumNotificationsMuted">Muted</string>
   <string name="ForumMuteHour">Mute for 1 hour</string>
   <string name="ForumMuteDay">Mute for 1 day</string>
-  <string name="ForumRefresh">Refresh topics</string>
   <string name="ForumTopicTitle">Topic</string>
   <string name="ForumChatTopics">Topics</string>
   <string name="ForumGeneral">General</string>
