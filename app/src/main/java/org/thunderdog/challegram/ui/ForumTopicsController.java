@@ -39,6 +39,7 @@ import org.thunderdog.challegram.data.ForumTopicSelection.Action;
 import org.thunderdog.challegram.data.ForumTopicPolicy;
 import org.thunderdog.challegram.navigation.HeaderButton;
 import org.thunderdog.challegram.navigation.HeaderView;
+import org.thunderdog.challegram.navigation.MoreDelegate;
 import org.thunderdog.challegram.telegram.ChatListener;
 import org.thunderdog.challegram.telegram.NotificationSettingsListener;
 import org.thunderdog.challegram.telegram.CleanupStartupDelegate;
@@ -51,6 +52,7 @@ import org.thunderdog.challegram.telegram.TdlibUi;
 import org.thunderdog.challegram.theme.ColorId;
 import org.thunderdog.challegram.theme.Theme;
 import org.thunderdog.challegram.tool.Screen;
+import org.thunderdog.challegram.util.StringList;
 import org.thunderdog.challegram.v.CustomRecyclerView;
 import org.thunderdog.challegram.widget.CircleButton;
 
@@ -61,12 +63,14 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.List;
 
+import me.vkryl.core.collection.IntList;
+
 /** Owns a cancellable list session; no forum identifiers are encoded as generic threads. */
 @me.vkryl.annotation.MadeByLLM(value = "gpt-6-astra", id = "forum-topics", ref = "PR #1095")
 public final class ForumTopicsController
   extends RecyclerViewController<ForumTopicsController.Arguments>
   implements ChatListener, CleanupStartupDelegate, NotificationSettingsListener,
-      TdlibCache.SupergroupDataChangeListener {
+      TdlibCache.SupergroupDataChangeListener, MoreDelegate {
   public static final class Arguments {
     public final long chatId;
     public final TdApi.ChatList chatList;
@@ -413,13 +417,7 @@ public final class ForumTopicsController
     } else if (id == R.id.menu_btn_clear) {
       clearSearchInput();
     } else if (id == R.id.menu_forumActions) {
-      topicUi.showListMenu(
-        () -> {
-          if (session != null) {
-            session.refresh();
-          }
-        }
-      );
+      showListMenu();
     } else if (id == R.id.menu_btn_more) {
       showSelectionMenu();
     } else if (id == R.id.menu_btn_pinUnpin) {
@@ -433,6 +431,48 @@ public final class ForumTopicsController
       );
     }
   }
+
+  // region @MadeByLLM("gpt-6.1-sol", others = {"GPT-6"}, id = "forum-header-popup")
+  private void showListMenu () {
+    if (topicUi.isBusy()) {
+      return;
+    }
+    IntList ids = new IntList(4);
+    StringList titles = new StringList(4);
+    if (topicUi.canCreate()) {
+      ids.append(R.id.more_btn_createForumTopic);
+      titles.append(R.string.ForumCreateTopic);
+    }
+    if (tdlib.canInviteUsers(tdlib.chat(getChatId()))) {
+      ids.append(R.id.more_btn_addMember);
+      titles.append(R.string.AddMember);
+    }
+    ids.append(R.id.more_btn_refreshForumTopics);
+    titles.append(R.string.ForumRefresh);
+    ids.append(R.id.more_btn_forumAllMessages);
+    titles.append(R.string.ForumShowAllMessages);
+    showMore(ids.get(), titles.get());
+  }
+
+  @Override public void onMoreItemPressed (int id) {
+    if (isDestroyed() || topicUi == null || topicUi.isBusy()) {
+      return;
+    }
+    if (id == R.id.more_btn_createForumTopic) {
+      if (topicUi.canCreate()) {
+        topicUi.openEditor(0);
+      }
+    } else if (id == R.id.more_btn_addMember) {
+      topicUi.addMembers();
+    } else if (id == R.id.more_btn_refreshForumTopics) {
+      if (session != null) {
+        session.refresh();
+      }
+    } else if (id == R.id.more_btn_forumAllMessages) {
+      topicUi.setViewMode(false);
+    }
+  }
+  // endregion
 
   public EnumSet<Action> selectionActions () {
     if (selection == null) {
@@ -537,14 +577,13 @@ public final class ForumTopicsController
     for (int i = 0; i < labels.length; i++) {
       labels[i] = Lang.getString(ForumTopicUi.actionLabel(actions.get(i)));
     }
-    android.app.AlertDialog.Builder dialog =
-      new android.app.AlertDialog.Builder(
-        context(),
-        Theme.dialogTheme()
-      )
-        .setTitle(Lang.getString(R.string.ForumSelectionActions));
-    dialog.setItems(labels, (d, which) -> runSelectionAction(actions.get(which)));
-    showAlert(dialog.setNegativeButton(Lang.getString(R.string.Cancel), null));
+    // region @MadeByLLM("gpt-6.1-sol", id = "forum-header-popup")
+    showMore(labels, index -> {
+      if (selection != null && !selection.isEmpty()) {
+        runSelectionAction(actions.get(index));
+      }
+    });
+    // endregion
   }
 
   private void runSelectionAction (Action action) {

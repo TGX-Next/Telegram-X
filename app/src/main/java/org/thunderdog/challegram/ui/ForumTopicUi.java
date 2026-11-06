@@ -168,23 +168,17 @@ public final class ForumTopicUi implements ChatListener {
     );
   }
 
-  private void menu (String title, List<String> labels, List<Runnable> actions) {
+  // region @MadeByLLM("gpt-6.1-sol", id = "forum-header-popup")
+  private void menu (List<String> labels, List<Runnable> actions) {
     if (isActive() && !busy && !navigatingTabs) {
-      owner.showAlert(
-        new AlertDialog.Builder(owner.context(), Theme.dialogTheme())
-          .setTitle(title)
-          .setItems(
-            labels.toArray(new String[0]),
-            (dialog, which) -> {
-              if (isActive() && !busy && !navigatingTabs) {
-                actions.get(which).run();
-              }
-            }
-          )
-          .setNegativeButton(Lang.getString(R.string.Cancel), null)
-      );
+      owner.showMore(labels.toArray(new String[0]), index -> {
+        if (isActive() && !busy && !navigatingTabs) {
+          actions.get(index).run();
+        }
+      });
     }
   }
+  // endregion
 
   private static void add (
     List<String> labels,
@@ -194,20 +188,6 @@ public final class ForumTopicUi implements ChatListener {
   ) {
     labels.add(Lang.getString(label));
     actions.add(action);
-  }
-
-  public void showListMenu (Runnable refresh) {
-    ArrayList<String> labels = new ArrayList<>();
-    ArrayList<Runnable> actions = new ArrayList<>();
-    if (canCreate()) {
-      add(labels, actions, R.string.ForumCreateTopic, () -> edit(0));
-    }
-    if (tdlib.canInviteUsers(tdlib.chat(chatId))) {
-      add(labels, actions, R.string.AddMember, this::addMembers);
-    }
-    add(labels, actions, R.string.ForumRefresh, refresh);
-    add(labels, actions, R.string.ForumShowAllMessages, () -> setViewMode(false));
-    menu(tdlib.chatTitle(chatId), labels, actions);
   }
 
   public void showTopicMenu (int id) {
@@ -303,7 +283,7 @@ public final class ForumTopicUi implements ChatListener {
         () -> confirmDelete(id)
       );
     }
-    menu(t.info.name, labels, actions);
+    menu(labels, actions);
   }
 
   public void setViewMode (boolean topics) {

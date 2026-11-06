@@ -1528,6 +1528,20 @@ public abstract class ViewController<T> implements Future<View>, ThemeChangeList
     }
   }
 
+  // region @MadeByLLM("gpt-6.1-sol", id = "forum-header-popup")
+  public final void showMore (String[] titles, MoreDelegate onItemPressed) {
+    if (isStackLocked() || context.isNavigationBusy() || headerView == null) {
+      return;
+    }
+    int[] ids = new int[titles.length];
+    for (int i = 0; i < ids.length; i++) {
+      ids[i] = i + 1;
+    }
+    headerView.showMore(ids, titles, null, 0, false, this,
+      id -> onItemPressed.onMoreItemPressed(id - 1));
+  }
+  // endregion
+
   // Permissions alerts
 
   @UiThread

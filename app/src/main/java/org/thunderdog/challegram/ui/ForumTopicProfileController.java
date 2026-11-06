@@ -1148,22 +1148,14 @@ public final class ForumTopicProfileController
     if (canDeleteGroup()) {
       add(labels, actions, R.string.ForumProfileDeleteGroup, this::deleteGroup);
     }
-    showAlert(
-      new AlertDialog.Builder(
-        context,
-        Theme.dialogTheme()
-      )
-        .setTitle(current.info.name)
-        .setItems(
-          labels.toArray(new String[0]),
-          (dialog, which) -> {
-            if (ready() && !busy) {
-              actions.get(which).run();
-            }
-          }
-        )
-        .setNegativeButton(Lang.getString(R.string.Cancel), null)
-    );
+    // region @MadeByLLM("gpt-6.1-sol", id = "forum-header-popup")
+    Object ticket = epoch;
+    showMore(labels.toArray(new String[0]), index -> {
+      if (epoch == ticket && ready() && !busy) {
+        actions.get(index).run();
+      }
+    });
+    // endregion
   }
 
   private void deleteTopic () {

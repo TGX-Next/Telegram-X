@@ -1048,11 +1048,26 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
   private View.OnClickListener onMoreItemClick;
 
   public void showMore (int[] ids, String[] titles, int[] icons, int buttonIndex, boolean isLayered, @Nullable ViewController<?> themeProvider) {
+    showMore(ids, titles, icons, buttonIndex, isLayered, themeProvider, null);
+  }
+
+  // region @MadeByLLM("gpt-6.1-sol", id = "forum-header-popup")
+  public void showMore (
+    int[] ids,
+    String[] titles,
+    int[] icons,
+    int buttonIndex,
+    boolean isLayered,
+    @Nullable ViewController<?> themeProvider,
+    @Nullable MoreDelegate delegate
+  ) {
+  // endregion
     if (ids.length == 0) {
       return;
     }
     ThemeListenerList themeListenerList = navigation != null ? navigation.getThemeListeners() : themeProvider != null ? themeProvider.getThemeListeners() : null;
-    if (moreWrap == null) {
+    // A submenu can open while the previous popup is still animating out.
+    if (moreWrap == null || delegate != null) {
       moreWrap = new MenuMoreWrap(getContext());
       moreWrap.init(themeListenerList, null);
     }
@@ -1068,7 +1083,16 @@ public class HeaderView extends FrameLayoutFix implements View.OnClickListener, 
     moreWrap.setAnchorMode(MenuMoreWrap.ANCHOR_MODE_RIGHT);
     moreWrap.setRightNumber(buttonIndex);
     moreWrap.setTranslationY(getTranslationY() + getCurrentHeaderOffset());
-    showMore(ids, titles, icons, onMoreItemClick, isLayered, themeListenerList);
+    // region @MadeByLLM("gpt-6.1-sol", id = "forum-header-popup")
+    View.OnClickListener listener = delegate == null ? onMoreItemClick : v -> {
+      ((PopupLayout) v.getParent().getParent()).hideWindow(true);
+      if (themeProvider != null && stack.getCurrent() == themeProvider &&
+        !themeProvider.isDestroyed()) {
+        delegate.onMoreItemPressed(v.getId());
+      }
+    };
+    showMore(ids, titles, icons, listener, isLayered, themeListenerList);
+    // endregion
   }
 
   private void showMore (int[] ids, String[] titles, int[] icons, View.OnClickListener onItemClick, boolean isLayered, @Nullable ThemeListenerList themeListeners) {

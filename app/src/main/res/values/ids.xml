@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <!-- region @MadeByLLM("GPT-6", id = "forum-header-popup") -->
+  <item type="id" name="more_btn_createForumTopic" />
+  <item type="id" name="more_btn_refreshForumTopics" />
+  <item type="id" name="more_btn_forumAllMessages" />
+  <!-- endregion -->
   <!-- region @MadeByLLM("gpt-6-astra", id = "forum-topics", ref = "PR #1095") -->
   <item type="id" name="controller_forumTopicEdit" />
   <item type="id" name="menu_forumTopicEdit" />
