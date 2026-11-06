@@ -30,6 +30,20 @@ To install on a connected ARM64 device, run:
 ./gradlew :app:installLatestDebug -Pabi=arm64
 ```
 
+### Faster local rebuilds
+
+Install [ccache](https://ccache.dev/) and make it available on `PATH` before configuring the
+native build. CMake automatically uses it for the app's C/C++ targets in debug and release,
+unless a compiler launcher was explicitly configured. Builds also work without ccache.
+The first compilation fills the cache; subsequent compilations with matching sources, headers
+and flags reuse the cached objects. Debug and release populate separate cache entries.
+This helps native rebuilds, including switching back to previously built code; it does not
+speed up Kotlin/Java compilation, R8 or native linking.
+
+Run `ccache --show-stats` to inspect hits and disk usage. To bypass the compiler cache for a
+build, use `CCACHE_DISABLE=1 ./gradlew :app:assembleLatestDebug` (or `assembleLatestRelease`).
+Avoid `clean` during normal development so Gradle and Ninja can also reuse existing outputs.
+
 For a published build, obtain [Telegram API credentials](https://core.telegram.org/api/obtaining_api_id),
 set `telegram.api_id` and `telegram.api_hash` in `local.properties`, and configure
 [Firebase](https://firebase.google.com/docs/android/setup) for the application ID.

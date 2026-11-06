@@ -39,6 +39,18 @@ set(VPX_LIB_PATH "${VPX_DIR}/lib/libvpx.a")
 set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
+# region @MadeByLLM("gpt-6", id = "native-compiler-cache")
+# Reuse native objects across rebuilds without changing compiler or optimization flags.
+find_program(TGX_CCACHE_EXECUTABLE NAMES ccache)
+if (TGX_CCACHE_EXECUTABLE)
+  foreach (LANG C CXX)
+    if (NOT DEFINED CMAKE_${LANG}_COMPILER_LAUNCHER)
+      set(CMAKE_${LANG}_COMPILER_LAUNCHER "${TGX_CCACHE_EXECUTABLE}")
+    endif()
+  endforeach()
+endif()
+# endregion
+
 enable_language(ASM)
 set(ORIGINAL_CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}")
 
