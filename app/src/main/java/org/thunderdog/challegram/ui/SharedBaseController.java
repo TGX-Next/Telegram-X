@@ -215,6 +215,18 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
   private final Map<Long, TdApi.Message> initialLiveMessages = new LinkedHashMap<>();
   private final Set<Long> deletedDuringLoad = new HashSet<>();
 
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-native-screens")
+  public interface MediaSelectionDelegate {
+    void onMediaSelectionChanged (SharedBaseController<?> controller);
+    void onMediaSelectionFactorChanged (SharedBaseController<?> controller, float factor);
+  }
+
+  private void notifyMediaSelectionChanged () {
+    if (standaloneParent instanceof MediaSelectionDelegate) {
+      ((MediaSelectionDelegate) standaloneParent).onMediaSelectionChanged(this);
+    }
+  }
+
   /** Embedded media without ProfileController's collapsing-header/selection machinery. */
   public void setStandaloneParent (@NonNull ViewController<?> host) {
     standaloneParent = host;
@@ -540,6 +552,7 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
 
   protected static final int FLAG_NEED_SPLITTING = 1;
   protected static final int FLAG_USE_FIRST_HEADER_SPACING = 1 << 1;
+  private static final int FLAG_HIDE_FIRST_DATE_HEADER = 1 << 2;
 
   protected static <T extends MessageSourceProvider> boolean addItems (List<ListItem> reuse, int viewType, ArrayList<T> dateItems, int offset, List<ListItem> out, @Nullable SettingsAdapter adapter, SharedBaseController<?> controller, int flags) {
     if (dateItems.isEmpty()) {
@@ -574,8 +587,16 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
           if (i != offset || offset != 0) {
             reuse.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
           }
-          reuse.add(new ListItem(offset == 0 && useFirstHeaderSpacing ? ListItem.TYPE_HEADER_PADDED : ListItem.TYPE_HEADER, 0, 0, Lang.getRelativeMonth(sourceDate, TimeUnit.SECONDS, true), false));
-          reuse.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
+          // region @MadeByLLM("gpt-6.1-sol", id = "forum-native-screens")
+          // ProfileController clips this first header beneath its tabs. Embedded topic pages
+          // omit it instead, retaining date boundaries for subsequent months and pagination.
+          if (i != 0 || (flags & FLAG_HIDE_FIRST_DATE_HEADER) == 0) {
+            reuse.add(new ListItem(offset == 0 && useFirstHeaderSpacing ?
+              ListItem.TYPE_HEADER_PADDED : ListItem.TYPE_HEADER, 0, 0,
+              Lang.getRelativeMonth(sourceDate, TimeUnit.SECONDS, true), false));
+            reuse.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
+          }
+          // endregion
 
           lastDate = sourceDate;
           lastAnchorMode = anchorMode;
@@ -1082,6 +1103,9 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
     if (alternateParent != null) {
       flags |= FLAG_USE_FIRST_HEADER_SPACING;
     }
+    if (standaloneParent instanceof ForumTopicProfileController) {
+      flags |= FLAG_HIDE_FIRST_DATE_HEADER;
+    }
     return flags;
   }
 
@@ -1204,7 +1228,8 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
       if (tag != null && tag instanceof ListItem) {
         ListItem item = (ListItem) tag;
         // region @MadeByLLM("gpt-6-astra", id = "forum-topics", ref = "PR #1095")
-        if (standaloneParent != null && item.getData() instanceof MessageSourceProvider) {
+        if (standaloneParent != null && !(standaloneParent instanceof MediaSelectionDelegate) &&
+          item.getData() instanceof MessageSourceProvider) {
           TdApi.Message message = ((MessageSourceProvider) item.getData()).getMessage();
           standaloneParent.showOptions(
             null,
@@ -1284,6 +1309,7 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
         selectedMessages.clear();
       }
       adapter.setInSelectMode(inSelectMode, needSelectableAnimation(), this);
+      notifyMediaSelectionChanged();
       return true;
     }
     return false;
@@ -1293,6 +1319,8 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
   public final void onFactorChanged (int id, float factor, float fraction, FactorAnimator callee) {
     if (parent != null) {
       parent.setSelectFactor(factor);
+    } else if (standaloneParent instanceof MediaSelectionDelegate) {
+      ((MediaSelectionDelegate) standaloneParent).onMediaSelectionFactorChanged(this, factor);
     }
   }
 
@@ -1348,6 +1376,7 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
           alternateParent.updateSelectButtons();
         }
       }
+      notifyMediaSelectionChanged();
       item.setSelected(!isSelected);
 
       int i = adapter.indexOfViewByLongId(messageId);
@@ -1647,6 +1676,11 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
       changed |= searchData != null && searchData.removeIf(
         item -> ids.contains(item.getSourceMessageId())
       );
+      if (selectedMessages != null && selectedMessages.values().removeIf(
+        message -> ids.contains(message.message.id))) {
+        setInMediaSelectMode(!selectedMessages.isEmpty());
+        notifyMediaSelectionChanged();
+      }
       if (changed && adapter != null) {
         buildCells();
       }

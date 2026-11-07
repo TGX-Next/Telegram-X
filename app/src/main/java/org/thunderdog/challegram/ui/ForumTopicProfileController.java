@@ -14,10 +14,6 @@ package org.thunderdog.challegram.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Canvas;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -25,22 +21,29 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.core.widget.NestedScrollView;
-import androidx.core.widget.TextViewCompat;
 
 import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.core.Lang;
+import org.thunderdog.challegram.component.base.SettingView;
+import org.thunderdog.challegram.component.chat.ChatHeaderView;
+import org.thunderdog.challegram.navigation.ViewPagerTopView;
+import org.thunderdog.challegram.navigation.NavigationController;
+import org.thunderdog.challegram.widget.ViewPager;
+import org.thunderdog.challegram.widget.rtl.RtlViewPager;
+import org.thunderdog.challegram.navigation.ViewPagerHeaderViewCompact;
+import org.thunderdog.challegram.unsorted.Settings;
+
+import me.vkryl.android.widget.FrameLayoutFix;
+import org.thunderdog.challegram.support.ViewSupport;
+import org.thunderdog.challegram.unsorted.Size;
 import org.thunderdog.challegram.data.ForumPresentation;
 // region @MadeByLLM("gpt-6-astra", id = "forum-topics")
 import org.thunderdog.challegram.data.ForumTopicContext;
@@ -52,6 +55,8 @@ import org.thunderdog.challegram.data.ForumTopicProfileLink;
 import org.thunderdog.challegram.data.TD;
 import org.thunderdog.challegram.navigation.BackHeaderButton;
 import org.thunderdog.challegram.navigation.HeaderView;
+import org.thunderdog.challegram.navigation.HeaderButton;
+import org.thunderdog.challegram.navigation.CounterHeaderView;
 import org.thunderdog.challegram.navigation.Menu;
 import org.thunderdog.challegram.navigation.ViewController;
 import org.thunderdog.challegram.telegram.ChatListener;
@@ -65,14 +70,10 @@ import org.thunderdog.challegram.telegram.TdlibCache;
 import org.thunderdog.challegram.telegram.TdlibForumTopicManager;
 import org.thunderdog.challegram.theme.ColorId;
 import org.thunderdog.challegram.theme.Theme;
-import org.thunderdog.challegram.tool.DrawAlgorithms;
 import org.thunderdog.challegram.tool.Fonts;
-import org.thunderdog.challegram.tool.Paints;
 import org.thunderdog.challegram.tool.Screen;
 import org.thunderdog.challegram.tool.UI;
 import org.thunderdog.challegram.tool.Views;
-import org.thunderdog.challegram.util.text.TextEntity;
-import org.thunderdog.challegram.widget.CustomTextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,12 +87,13 @@ import tgx.td.Td;
 
 /** Topic identity/settings plus existing shared-media pages, not a second group profile. */
 @me.vkryl.annotation.MadeByLLM(
-  value = "gpt-6-astra", others = {"GPT-6"}, id = "forum-topics", ref = "PR #1110"
+  value = "gpt-6.1-sol", others = {"gpt-6-astra", "GPT-6"}, id = "forum-native-screens", ref = "PR #1110"
 )
 public final class ForumTopicProfileController
   extends ViewController<ForumTopicProfileController.Arguments>
   implements Menu, ChatListener, MessageListener, NotificationSettingsListener,
-    TdlibCache.SupergroupDataChangeListener, CleanupStartupDelegate {
+    TdlibCache.SupergroupDataChangeListener, CleanupStartupDelegate,
+    SharedBaseController.MediaSelectionDelegate {
   public static final class Arguments {
     public final long chatId;
     public final int forumTopicId;
@@ -133,21 +135,27 @@ public final class ForumTopicProfileController
   // endregion
   private volatile Object epoch = new Object();
   private ForumTopicStore.TopicSubscription subscription;
-  private ForumTopicStore.ListSession pinsSession;
   private TdApi.ForumTopic topic;
   private TdApi.Error metadataError;
-  private ForumTopicUi topicUi;
   private NestedScrollView scroll;
-  private LinearLayout tabs, actions, linkRow;
-  private HorizontalScrollView tabScroll;
-  private FrameLayout materialFrame, iconFrame;
-  private TextView title, group, state, materialState, regularIcon;
-  private TextView linkText, linkLabel, linkHint;
-  private ImageView linkCopy;
-  private CustomTextView customIcon;
-  private ActionView messageButton, muteButton, pinButton;
+  private float headerFactor = (float) Size.getHeaderSizeDifference(false) /
+    Size.getHeaderSizeDifference(true);
+  private LinearLayout actions;
+  private ViewPagerTopView tabs;
+  private FrameLayoutFix tabWrap, selectionBar;
+  private CounterHeaderView selectionCounter;
+  private SharedBaseController<?> selectionPage;
+  private final List<HeaderButton> selectionButtons = new ArrayList<>(5);
+  private float selectionFactor;
+  private ViewPagerHeaderViewCompact tabScroll;
+  private RtlViewPager materialFrame;
+  private MediaPagerAdapter mediaAdapter;
+  private boolean updatingPages;
+  private int pagerScrollState;
+  private ChatHeaderView headerCell;
+  private SettingView group, notifications, linkRow;
+  private TextView state, materialState;
   private View editButton, moreButton;
-  private long renderedEmoji = Long.MIN_VALUE;
   private static final int MAX_RECENT_CONTENT = 128, MAX_PENDING_CONTENT =
     32, MAX_CONTENT_REQUESTS = 2;
   private final Map<Long, TdApi.Message> recentContentMessages = new LinkedHashMap<>();
@@ -195,6 +203,33 @@ public final class ForumTopicProfileController
     return BackHeaderButton.TYPE_BACK;
   }
 
+  @Override public View getCustomHeaderCell () {
+    return headerCell;
+  }
+
+  @Override protected int getHeaderHeight () {
+    return Size.getHeaderPortraitSize() +
+      (int) (Size.getHeaderSizeDifference(true) * headerFactor);
+  }
+
+  @Override protected int getMaximumHeaderHeight () {
+    return Size.getHeaderBigPortraitSize(false);
+  }
+
+  @Override protected int getFloatingButtonId () {
+    return R.drawable.baseline_chat_bubble_24;
+  }
+
+  @Override protected void onFloatingButtonPressed () {
+    if (ready()) {
+      navigateBack();
+    }
+  }
+
+  @Override protected boolean allowMenuReuse () {
+    return false;
+  }
+
   @Override protected int getMenuId () {
     return R.id.menu_forumTopicProfile;
   }
@@ -213,7 +248,11 @@ public final class ForumTopicProfileController
   }
 
   @Override protected View onCreateView (Context context) {
-    topicUi = new ForumTopicUi(this, getChatId());
+    headerCell = new ChatHeaderView(context, tdlib, this);
+    headerCell.initWithController(this, true);
+    headerCell.setInnerMargins(Screen.dp(56), Screen.dp(147));
+    headerCell.setInnerRightMarginStart(Screen.dp(49));
+    headerCell.setBackground(null);
     scroll = new NestedScrollView(context);
     scroll.setFillViewport(true);
     // Keep initial focus on the profile, not on a newly attached shared-media RecyclerView.
@@ -226,6 +265,7 @@ public final class ForumTopicProfileController
         oldY) -> {
         if (y != oldY) {
           restoreScrollPending = false;
+          updateHeader(y);
         }
       }
     );
@@ -234,6 +274,7 @@ public final class ForumTopicProfileController
     addThemeBackgroundColorListener(scroll, ColorId.background);
     LinearLayout content = new LinearLayout(context);
     content.setOrientation(LinearLayout.VERTICAL);
+    content.setPadding(0, Size.getHeaderSizeDifference(false), 0, 0);
     scroll.addView(
       content,
       new ViewGroup.LayoutParams(
@@ -243,62 +284,76 @@ public final class ForumTopicProfileController
     );
     LinearLayout profile = new LinearLayout(context);
     profile.setOrientation(LinearLayout.VERTICAL);
-    profile.setGravity(Gravity.CENTER_HORIZONTAL);
-    int pad = Screen.dp(12);
-    profile.setPadding(pad, pad, pad, pad);
+    profile.setLayoutDirection(Lang.rtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+    int pad = Screen.dp(16);
     content.addView(profile);
-    iconFrame = new FrameLayout(context);
-    profile.addView(iconFrame, new LinearLayout.LayoutParams(Screen.dp(88), Screen.dp(88)));
-    regularIcon = text(40, ColorId.text);
-    regularIcon.setGravity(Gravity.CENTER);
-    iconFrame.addView(regularIcon, new FrameLayout.LayoutParams(-1, -1));
-    customIcon = new CustomTextView(context, tdlib);
-    customIcon.setTextSize(64);
-    customIcon.setTextColorId(ColorId.text);
-    customIcon.setPadding(Screen.dp(7), Screen.dp(3), 0, 0);
-    customIcon.setSingleLine(true);
-    iconFrame.addView(customIcon, new FrameLayout.LayoutParams(-1, -1));
-    iconFrame.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-    title = text(24, ColorId.text);
-    title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-    title.setGravity(Gravity.CENTER);
-    title.setPadding(0, pad, 0, 0);
-    profile.addView(title, new LinearLayout.LayoutParams(-1, -2));
-    group = text(16, ColorId.textLight);
-    group.setGravity(Gravity.CENTER);
-    group.setMinHeight(Screen.dp(48));
-    group.setFocusable(true);
-    group.setOnClickListener(v -> tdlib.ui().openChatProfile(this, getChatId(), null, null));
-    profile.addView(group, new LinearLayout.LayoutParams(-1, -2));
-    state = text(14, ColorId.textLight);
-    state.setGravity(Gravity.CENTER);
-    state.setMinHeight(Screen.dp(48));
-    state.setOnClickListener(v -> retryMetadata());
-    profile.addView(state, new LinearLayout.LayoutParams(-1, -2));
     actions = new LinearLayout(context);
     actions.setOrientation(LinearLayout.VERTICAL);
     profile.addView(actions, new LinearLayout.LayoutParams(-1, -2));
-    LinearLayout row = actionRow();
-    messageButton =
-      button(row, R.string.TabMessages, R.drawable.baseline_chat_bubble_24, this::navigateBack);
-    muteButton =
-      button(row, R.string.Mute, R.drawable.baseline_notifications_off_24, this::toggleMute);
-    pinButton =
-      button(row, R.string.ForumPinTopic, R.drawable.deproko_baseline_pin_24, this::togglePin);
+    group = setting(SettingView.TYPE_INFO, R.drawable.baseline_group_24);
+    group.setOnClickListener(v -> tdlib.ui().openChatProfile(this, getChatId(), null, null));
+    actions.addView(group);
+    notifications = setting(SettingView.TYPE_INFO, R.drawable.baseline_notifications_24);
+    notifications.setName(R.string.Notifications);
+    notifications.setOnClickListener(v -> {
+      if (ready() && !busy) {
+        toggleMute();
+      }
+    });
+    LinearLayout.LayoutParams notificationParams = new LinearLayout.LayoutParams(-1, Screen.dp(76));
+    notificationParams.topMargin = Screen.dp(12);
+    notificationParams.bottomMargin = Screen.dp(12);
+    actions.addView(notifications, notificationParams);
+    state = text(14, ColorId.textLight);
+    state.setPadding(pad, Screen.dp(12), pad, Screen.dp(12));
+    state.setOnClickListener(v -> retryMetadata());
+    profile.addView(state, new LinearLayout.LayoutParams(-1, -2));
     createLinkRow(profile);
-    tabScroll = new HorizontalScrollView(context);
-    tabScroll.setHorizontalScrollBarEnabled(false);
-    tabs = new LinearLayout(context);
-    tabs.setGravity(Gravity.CENTER_VERTICAL);
-    tabScroll.addView(tabs);
-    content.addView(tabScroll, new LinearLayout.LayoutParams(-1, -2));
+    tabScroll = new ViewPagerHeaderViewCompact(context);
+    tabs = tabScroll.getTopView();
+    tabs.setUseDarkBackground();
+    tabs.setTextFromToColorId(ColorId.textLight, ColorId.profileSectionActiveContent);
+    tabs.setSelectionColorId(ColorId.profileSectionActive);
+    tabs.setShowLabelOnActiveOnly(!Settings.instance().needReduceMotion());
+    tabs.setOnItemClickListener(index -> selectTab(visibleTabs.get(index), true));
+    tabs.setLayoutParams(FrameLayoutFix.newParams(-2, -1));
+    tabScroll.getRecyclerView().setLayoutParams(FrameLayoutFix.newParams(-1, -1));
+    addThemeInvalidateListener(tabs);
+    ViewSupport.setThemedBackground(tabScroll, ColorId.filling, this);
+    tabWrap = new FrameLayoutFix(context);
+    tabWrap.addView(tabScroll, FrameLayoutFix.newParams(-1, -1));
+    LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(-1, Screen.dp(48));
+    tabParams.topMargin = Screen.dp(12);
+    content.addView(tabWrap, tabParams);
     materialState = text(16, ColorId.textLight);
     materialState.setGravity(Gravity.CENTER);
     materialState.setMinHeight(Screen.dp(64));
     materialState.setPadding(pad, pad, pad, pad);
     materialState.setOnClickListener(v -> refreshMaterials());
     content.addView(materialState, new LinearLayout.LayoutParams(-1, -2));
-    materialFrame = new FrameLayout(context);
+    materialFrame = new RtlViewPager(context);
+    materialFrame.setOverScrollMode(View.OVER_SCROLL_NEVER);
+    materialFrame.setAdapter(mediaAdapter = new MediaPagerAdapter());
+    materialFrame.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      @Override public void onPageScrolled (int position, float offset, int offsetPixels) {
+        if (!updatingPages && !visibleTabs.isEmpty()) {
+          tabs.setSelectionFactor(position + ViewPager.clampPositionOffset(offset));
+        }
+      }
+
+      @Override public void onPageSelected (int position) {
+        if (!updatingPages && position >= 0 && position < visibleTabs.size()) {
+          activateTab(visibleTabs.get(position));
+        }
+      }
+
+      @Override public void onPageScrollStateChanged (int state) {
+        pagerScrollState = state;
+        if (state != ViewPager.SCROLL_STATE_SETTLING) {
+          tabs.resetFromTo();
+        }
+      }
+    });
     content.addView(materialFrame, new LinearLayout.LayoutParams(-1, Screen.dp(360)));
     scroll.addOnLayoutChangeListener(
       (v, l, t, r, b, ol, ot, or, ob) -> {
@@ -336,6 +391,23 @@ public final class ForumTopicProfileController
     return scroll;
   }
 
+  private void updateHeader (int scrollY) {
+    if (inSearchMode()) {
+      return;
+    }
+    headerFactor = Math.max(0f, (float) (Size.getHeaderSizeDifference(false) - scrollY) /
+      Size.getHeaderSizeDifference(true));
+    headerCell.setInnerRightMargin(Screen.dp(headerFactor == 0f ? 147 : 16));
+    headerCell.setInnerRightMarginStart(Screen.dp(headerFactor == 0f ? 147 : 16));
+    headerCell.setScaleFactor(headerFactor, headerFactor, headerFactor, true);
+    if (floatingButton != null) {
+      floatingButton.setHeightFactor(headerFactor, 0f, true);
+    }
+    if (headerView != null && isFocused()) {
+      headerView.setBackgroundHeight(getHeaderHeight());
+    }
+  }
+
   private void restoreScrollAfterLayout () {
     scroll.getViewTreeObserver()
       .addOnPreDrawListener(
@@ -369,167 +441,26 @@ public final class ForumTopicProfileController
   private TextView text (float size, int color) {
     TextView view = new TextView(context);
     view.setTextSize(size);
+    view.setTypeface(Fonts.getRobotoRegular());
     view.setTextColor(Theme.getColor(color));
     addThemeTextColorListener(view, color);
     return view;
   }
 
+  private SettingView setting (int type, int icon) {
+    SettingView view = new SettingView(context, tdlib);
+    view.setType(type);
+    view.setSwapDataAndName();
+    view.setIcon(icon);
+    view.addThemeListeners(this);
+    return view;
+  }
+
   private void createLinkRow (LinearLayout profile) {
-    linkRow = new LinearLayout(context);
-    linkRow.setGravity(Gravity.CENTER_VERTICAL);
-    linkRow.setMinimumHeight(Screen.dp(72));
-    linkRow.setFocusable(true);
-    linkRow.setPadding(Screen.dp(16), Screen.dp(12), Screen.dp(16), Screen.dp(12));
-    linkRow.setBackground(Theme.fillingSelector(ColorId.filling, 12f));
-    addThemeInvalidateListener(linkRow);
-    linkRow.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-    LinearLayout texts = new LinearLayout(context);
-    texts.setOrientation(LinearLayout.VERTICAL);
-    linkText = text(16, ColorId.text);
-    linkText.setGravity(Gravity.START);
-    linkText.setSingleLine(false);
-    linkLabel = text(13, ColorId.textLight);
-    linkLabel.setGravity(Gravity.START);
-    linkLabel.setSingleLine(false);
-    linkLabel.setPadding(0, Screen.dp(4), 0, 0);
-    texts.addView(linkText, new LinearLayout.LayoutParams(-1, -2));
-    texts.addView(linkLabel, new LinearLayout.LayoutParams(-1, -2));
-    texts.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-    linkRow.addView(texts, new LinearLayout.LayoutParams(0, -2, 1));
-    linkCopy = new ImageView(context);
-    linkCopy.setImageResource(R.drawable.baseline_content_copy_24);
-    linkCopy.setColorFilter(Theme.getColor(ColorId.icon));
-    addThemeFilterListener(linkCopy, ColorId.icon);
-    linkCopy.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-    LinearLayout.LayoutParams iconParams =
-      new LinearLayout.LayoutParams(Screen.dp(24), Screen.dp(24));
-    iconParams.setMarginStart(Screen.dp(16));
-    linkRow.addView(linkCopy, iconParams);
+    linkRow = setting(SettingView.TYPE_INFO, R.drawable.baseline_link_24);
     linkRow.setOnClickListener(v -> copyLink());
-    linkRow.setAccessibilityDelegate(
-      new View.AccessibilityDelegate() {
-        @Override public void onInitializeAccessibilityNodeInfo (
-          View host,
-          AccessibilityNodeInfo info
-        ) {
-          super.onInitializeAccessibilityNodeInfo(host, info);
-          info.setClassName("android.widget.Button");
-          if (host.isEnabled()) {
-            AccessibilityNodeInfoCompat.wrap(info)
-              .addAction(
-                new AccessibilityNodeInfoCompat
-                .AccessibilityActionCompat(
-                  AccessibilityNodeInfo.ACTION_CLICK,
-                  Lang.getString(
-                    profileLink.state() == ForumTopicProfileLink.State.READY ?
-                      R.string.CopyLink : R.string.FirebaseErrorResolveTryAgain
-                  )
-                )
-              );
-          }
-        }
-      }
-    );
-    LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(-1, -2);
-    rowParams.setMargins(Screen.dp(4), Screen.dp(12), Screen.dp(4), Screen.dp(4));
-    profile.addView(linkRow, rowParams);
-    linkHint = text(12, ColorId.textLight);
-    linkHint.setGravity(Gravity.START);
-    linkHint.setPadding(Screen.dp(4), Screen.dp(4), Screen.dp(4), 0);
-    profile.addView(linkHint, new LinearLayout.LayoutParams(-1, -2));
+    profile.addView(linkRow);
     renderLink();
-  }
-
-  private LinearLayout actionRow () {
-    LinearLayout row = new LinearLayout(context);
-    row.setBaselineAligned(false);
-    actions.addView(row, new LinearLayout.LayoutParams(-1, -2));
-    return row;
-  }
-
-  private ActionView button (LinearLayout row, int label, int icon, Runnable action) {
-    ActionView button = new ActionView(context);
-    button.setText(Lang.getString(label));
-    button.setIcon(icon);
-    LinearLayout.LayoutParams params =
-      new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1);
-    params.setMargins(Screen.dp(4), Screen.dp(4), Screen.dp(4), Screen.dp(4));
-    row.addView(button, params);
-    button.setOnClickListener(v -> action.run());
-    return button;
-  }
-  // TextViewCompat requires the support tint interface for compound icons before API 23.
-  private final class ActionView extends AppCompatTextView {
-    private int iconId;
-
-    ActionView (Context context) {
-      super(context);
-      setGravity(Gravity.CENTER);
-      setTypeface(Fonts.getRobotoMedium());
-      setTextSize(15);
-      setSingleLine(false);
-      setMaxLines(Integer.MAX_VALUE);
-      setMinWidth(0);
-      setMinHeight(Screen.dp(76));
-      setPadding(Screen.dp(8), Screen.dp(12), Screen.dp(8), Screen.dp(12));
-      setCompoundDrawablePadding(Screen.dp(6));
-      setFocusable(true);
-      setBackground(Theme.fillingSelector(ColorId.filling, 12f));
-      setTextColor(Theme.getColor(ColorId.textLink));
-      addThemeTextColorListener(this, ColorId.textLink);
-      TextViewCompat.setCompoundDrawableTintList(
-        this,
-        ColorStateList.valueOf(Theme.getColor(ColorId.textLink))
-      );
-      addThemeCompoundDrawableColorListener(this, ColorId.textLink);
-      addThemeInvalidateListener(this);
-    }
-
-    void setIcon (int icon) {
-      if (iconId != icon) {
-        iconId = icon;
-        setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
-      }
-    }
-
-    @Override public void setEnabled (boolean enabled) {
-      super.setEnabled(enabled);
-      setAlpha(enabled ? 1f : .45f);
-    }
-
-    @Override public void onInitializeAccessibilityNodeInfo (AccessibilityNodeInfo info) {
-      super.onInitializeAccessibilityNodeInfo(info);
-      info.setClassName("android.widget.Button");
-    }
-  }
-  private static final class MaterialTab extends TextView {
-    MaterialTab (Context context) {
-      super(context);
-      setGravity(Gravity.CENTER);
-      setSingleLine(true);
-      setTextSize(15);
-      setTypeface(Fonts.getRobotoMedium());
-      setMinHeight(Screen.dp(48));
-      setMinWidth(Screen.dp(64));
-      setPadding(Screen.dp(16), Screen.dp(12), Screen.dp(16), Screen.dp(12));
-      setBackground(Theme.transparentSelector());
-      setFocusable(true);
-    }
-
-    @Override protected void onDraw (Canvas canvas) {
-      super.onDraw(canvas);
-      if (isSelected()) {
-        DrawAlgorithms.drawRoundRect(
-          canvas,
-          Screen.dp(1.5f),
-          Screen.dp(12),
-          getHeight() - Screen.dp(3),
-          getWidth() - Screen.dp(12),
-          getHeight(),
-          Paints.fillingPaint(Theme.getColor(ColorId.textLink))
-        );
-      }
-    }
   }
 
   private void observeTopic () {
@@ -593,9 +524,7 @@ public final class ForumTopicProfileController
       ForumTopicPolicy.canEdit(tdlib.chatStatus(getChatId()), current.info);
   }
 
-  private boolean canManage () {
-    return ready() && ForumTopicPolicy.canManage(tdlib.chatStatus(getChatId()));
-  }
+
 
   @me.vkryl.annotation.MadeByLLM(value = "gpt-6-astra", id = "forum-topics")
   private CharSequence profileTitle () {
@@ -630,6 +559,12 @@ public final class ForumTopicProfileController
   @Override
   @me.vkryl.annotation.MadeByLLM(value = "gpt-6-astra", id = "forum-topics")
   public boolean performOnBackPressed (boolean fromTop, boolean commit) {
+    if (selectionPage != null) {
+      if (commit) {
+        selectionPage.setInMediaSelectMode(false);
+      }
+      return true;
+    }
     if (returnToTopics &&
       ForumTabsNavigation.returnFromUnavailableTopic(this, getForumTopicId(), commit) ==
         ForumTabsNavigation.Result.RETURNED) {
@@ -639,13 +574,20 @@ public final class ForumTopicProfileController
   }
 
   private void render () {
-    if (title == null) {
+    if (headerCell == null || group == null) {
       return;
     }
     boolean available = ready();
-    group.setText(Lang.getString(R.string.ForumProfileGroupLink, tdlib.chatTitle(getChatId())));
+    group.setName(tdlib.chatTitle(getChatId()));
+    group.setData(R.string.Group);
+    TdApi.Chat chat = tdlib.chat(getChatId());
+    if (chat != null) {
+      headerCell.setChat(tdlib, chat, null);
+      headerCell.setForumTopic(chat, getTopicId(), topic, null);
+      headerCell.setTitle(profileTitle().toString());
+      headerCell.setNoStatus(true);
+    }
     // region @MadeByLLM("gpt-6-astra", id = "forum-topics")
-    title.setText(profileTitle());
     state.setEnabled(!terminal && metadataError != null && !busy);
     // endregion
     state.setText(
@@ -664,56 +606,13 @@ public final class ForumTopicProfileController
         !topic.info.isGeneral ? View.GONE : View.VISIBLE
     );
     actions.setVisibility(available ? View.VISIBLE : View.GONE);
-    messageButton.setEnabled(available);
-    muteButton.setEnabled(available && !busy && topic.notificationSettings != null);
-    pinButton.setEnabled(canManage() && !busy);
-    pinButton.setVisibility(canManage() ? View.VISIBLE : View.GONE);
+    notifications.setEnabled(available && !busy && topic != null && topic.notificationSettings != null);
     if (topic != null) {
       boolean muted =
         ForumPresentation.isMuted(topic.notificationSettings, tdlib.chatMuteFor(getChatId()) > 0);
-      muteButton.setText(Lang.getString(muted ? R.string.Unmute : R.string.Mute));
-      muteButton.setIcon(
-        muted ? R.drawable.baseline_notifications_24 :
-          R.drawable.baseline_notifications_off_24
-      );
-      pinButton.setText(
-        Lang.getString(topic.isPinned ? R.string.ForumUnpinTopic : R.string.ForumPinTopic)
-      );
-      pinButton.setIcon(
-        topic.isPinned ? R.drawable.deproko_baseline_pin_undo_24 :
-          R.drawable.deproko_baseline_pin_24
-      );
-      boolean emoji = topic.info.icon.customEmojiId != 0;
-      regularIcon.setVisibility(emoji ? View.GONE : View.VISIBLE);
-      customIcon.setVisibility(emoji ? View.VISIBLE : View.GONE);
-      if (emoji && renderedEmoji != topic.info.icon.customEmojiId) {
-        renderedEmoji = topic.info.icon.customEmojiId;
-        TdApi.FormattedText glyph =
-          new TdApi.FormattedText(
-            "*",
-            new TdApi.TextEntity[] {
-              new TdApi.TextEntity(
-                0,
-                1,
-                new TdApi.TextEntityTypeCustomEmoji(renderedEmoji)
-              )
-            }
-          );
-        customIcon.setText(glyph.text, TextEntity.valueOf(tdlib, glyph, null), false);
-      }
-      if (!emoji) {
-        regularIcon.setText(
-          topic.info.isGeneral ? "#" : topic.info.name.isEmpty() ? "" :
-            topic.info.name.substring(0, topic.info.name.offsetByCodePoints(0, 1))
-        );
-        GradientDrawable background = new GradientDrawable();
-        background.setShape(GradientDrawable.OVAL);
-        background.setColor(0xff000000 | topic.info.icon.color);
-        regularIcon.setBackground(background);
-      }
-    } else {
-      regularIcon.setText("");
-      customIcon.setVisibility(View.GONE);
+      notifications.setData(muted ? R.string.NotificationsDisabled : R.string.NotificationsEnabled);
+      notifications.setIcon(muted ? R.drawable.baseline_notifications_off_24 :
+        R.drawable.baseline_notifications_24);
     }
     if (editButton != null) {
       editButton.setVisibility(canEdit() ? View.VISIBLE : View.GONE);
@@ -723,8 +622,9 @@ public final class ForumTopicProfileController
       moreButton.setEnabled(available && !busy);
     }
     if (!available) {
+      resetMediaSelection();
       materialFrame.setVisibility(View.GONE);
-      tabScroll.setVisibility(View.GONE);
+      tabWrap.setVisibility(View.GONE);
       materialState.setVisibility(View.GONE);
     } else {
       renderTabs();
@@ -784,11 +684,7 @@ public final class ForumTopicProfileController
     if (id == R.id.forum_profile_edit) {
       openEditor();
     } else if (id == R.id.forum_profile_more) {
-      if (topic.isPinned && canManage()) {
-        withPins(this::showOverflow);
-      } else {
-        showOverflow(Collections.emptyList());
-      }
+      showOverflow();
     }
   }
 
@@ -802,6 +698,7 @@ public final class ForumTopicProfileController
 
   @Override protected void onLeaveSearchMode () {
     onSearchInputChanged("");
+    updateHeader(scroll.getScrollY());
   }
 
   private void openEditor () {
@@ -949,122 +846,15 @@ public final class ForumTopicProfileController
       Lang.rtl() ? View.LAYOUT_DIRECTION_RTL :
         View.LAYOUT_DIRECTION_LTR
     );
-    linkText.setTextDirection(hasLink ? View.TEXT_DIRECTION_LTR : View.TEXT_DIRECTION_INHERIT);
-    linkText.setText(
-      hasLink ? profileLink.displayUrl() :
-        Lang.getString(failed ? R.string.NoLinkInfo : R.string.LoadingInformation)
-    );
-    linkLabel.setText(
-      Lang.getString(
-        failed && ready() ? R.string.FirebaseErrorResolveTryAgain :
-          hasLink && !profileLink.isPublic() ? R.string.ForumProfileTopicLink : R.string.InviteLink
-      )
-    );
-    linkCopy.setVisibility(hasLink ? View.VISIBLE : View.GONE);
+    CharSequence value = hasLink ? profileLink.displayUrl() :
+      Lang.getString(failed ? R.string.NoLinkInfo : R.string.LoadingInformation);
+    CharSequence label = Lang.getString(
+      failed && ready() ? R.string.FirebaseErrorResolveTryAgain :
+        hasLink && !profileLink.isPublic() ? R.string.ForumProfileTopicLink : R.string.InviteLink);
+    linkRow.setName(value);
+    linkRow.setData(label);
     linkRow.setEnabled(ready() && (hasLink || failed));
-    linkRow.setContentDescription(
-      Lang.getString(
-        R.string.ForumProfileSettingValue,
-        linkLabel.getText(),
-        linkText.getText()
-      )
-    );
-    linkHint.setText(Lang.getString(R.string.ForumProfileLinkHint));
-    linkHint.setLayoutDirection(linkRow.getLayoutDirection());
-    linkHint.setVisibility(hasLink && !profileLink.isPublic() ? View.VISIBLE : View.GONE);
-  }
-
-  private void togglePin () {
-    if (!canManage()) {
-      return;
-    }
-    withPins(
-      topics -> {
-        TdApi.ForumTopic current = currentTopic();
-        if (current == null || !canManage()) {
-          return;
-        }
-        int count = 0;
-        for (TdApi.ForumTopic value : topics) {
-          if (value.isPinned) {
-            count++;
-          }
-        }
-        if (!current.isPinned && count >= tdlib.options().pinnedForumTopicCountMax) {
-          error(Lang.getString(R.string.ForumPinLimit, tdlib.options().pinnedForumTopicCountMax));
-          return;
-        }
-        run(done -> tdlib.topics().actions.setPinned(key(), !current.isPinned, done));
-      }
-    );
-  }
-
-  private void closePins () {
-    if (pinsSession != null) {
-      pinsSession.close();
-      pinsSession = null;
-    }
-  }
-
-  private void withPins (Consumer<List<TdApi.ForumTopic>> action) {
-    if (busy || !canManage()) {
-      return;
-    }
-    busy = true;
-    render();
-    Object ticket = epoch;
-    pinsSession = tdlib.topics()
-      .openList(
-        getChatId(),
-        "",
-        snapshot -> {
-        if (isDestroyed() || ticket != epoch || pinsSession == null) {
-          return;
-        }
-        if (snapshot.error != null) {
-          closePins();
-          busy = false;
-          render();
-          error(snapshot.error.message);
-        } else if (snapshot.initialized && !snapshot.refreshing && !snapshot.stale) {
-          if (!ForumTopicPolicy.completePinnedPrefix(snapshot.topics, snapshot.endReached)) {
-            pinsSession.loadMore();
-            return;
-          }
-          closePins();
-          busy = false;
-          render();
-          if (canManage()) {
-            action.accept(snapshot.topics);
-          }
-        }
-      }
-      );
-    pinsSession.refresh();
-    ForumTopicStore.ListSession requested = pinsSession;
-    tdlib.ui()
-      .postDelayed(
-        () -> {
-        if (!isDestroyed() && epoch == ticket && requested == pinsSession) {
-          closePins();
-          busy = false;
-          render();
-          error(Lang.getString(R.string.ForumTopicLoadFailed));
-        }
-      },
-        15000
-      );
-  }
-
-  private void movePin (int direction) {
-    withPins(
-      topics -> {
-        int[] ids = ForumTopicPolicy.movePin(topics, getForumTopicId(), direction);
-        if (ids != null && canManage()) {
-          run(done -> tdlib.topics().actions.setPinnedOrder(getChatId(), ids, done));
-        }
-      }
-    );
+    linkRow.setContentDescription(Lang.getString(R.string.ForumProfileSettingValue, label, value));
   }
 
   private static void add (
@@ -1077,7 +867,7 @@ public final class ForumTopicProfileController
     actions.add(action);
   }
 
-  private void showOverflow (List<TdApi.ForumTopic> pins) {
+  private void showOverflow () {
     if (!ready() || busy) {
       return;
     }
@@ -1087,45 +877,6 @@ public final class ForumTopicProfileController
     }
     List<String> labels = new ArrayList<>();
     List<Runnable> actions = new ArrayList<>();
-    if (canEdit()) {
-      add(
-        labels,
-        actions,
-        current.info.isClosed ? R.string.ForumReopenTopic :
-          R.string.ForumCloseTopic,
-        () -> {
-        TdApi.ForumTopic fresh = currentTopic();
-        if (fresh != null && canEdit()) {
-          run(done -> tdlib.topics().actions.setClosed(key(), !fresh.info.isClosed, done));
-        }
-      }
-      );
-    }
-    if (current.isPinned && canManage()) {
-      if (ForumTopicPolicy.movePin(pins, getForumTopicId(), -1) != null) {
-        add(labels, actions, R.string.ForumMovePinUp, () -> movePin(-1));
-      }
-      if (ForumTopicPolicy.movePin(pins, getForumTopicId(), 1) != null) {
-        add(labels, actions, R.string.ForumMovePinDown, () -> movePin(1));
-      }
-    }
-    add(
-      labels,
-      actions,
-      R.string.ForumNotifications,
-      () -> {
-        ForumTopicNotificationController controller =
-          new ForumTopicNotificationController(context, tdlib);
-        controller.setArguments(getArgumentsStrict());
-        navigateTo(controller);
-      }
-    );
-    add(labels, actions, R.string.ForumShowAllMessages, () -> topicUi.setViewMode(false));
-    add(labels, actions, R.string.ForumShowTopics, () -> topicUi.setViewMode(true));
-    if (!current.info.isGeneral &&
-      ForumTopicPolicy.canOfferDelete(tdlib.chatStatus(getChatId()), current.info)) {
-      add(labels, actions, R.string.ForumDeleteTopic, this::deleteTopic);
-    }
     if (ForumTopicPolicy.isMember(tdlib.chatStatus(getChatId()))) {
       add(
         labels,
@@ -1149,6 +900,9 @@ public final class ForumTopicProfileController
       add(labels, actions, R.string.ForumProfileDeleteGroup, this::deleteGroup);
     }
     // region @MadeByLLM("gpt-6.1-sol", id = "forum-header-popup")
+    if (labels.isEmpty()) {
+      return;
+    }
     Object ticket = epoch;
     showMore(labels.toArray(new String[0]), index -> {
       if (epoch == ticket && ready() && !busy) {
@@ -1156,59 +910,6 @@ public final class ForumTopicProfileController
       }
     });
     // endregion
-  }
-
-  private void deleteTopic () {
-    TdApi.ForumTopic current = currentTopic();
-    if (current == null ||
-      current.info.isGeneral ||
-      !ForumTopicPolicy.canOfferDelete(tdlib.chatStatus(getChatId()), current.info)) {
-      return;
-    }
-    showAlert(
-      new AlertDialog.Builder(
-        context,
-        Theme.dialogTheme()
-      )
-        .setTitle(Lang.getString(R.string.ForumDeleteTopic))
-        .setMessage(
-          Lang.getString(
-            R.string.ForumProfileDeleteTopicConfirm,
-            current.info.name,
-            tdlib.chatTitle(getChatId())
-          )
-        )
-        .setNegativeButton(
-          Lang.getString(R.string.Cancel),
-          null
-        )
-        .setPositiveButton(
-          Lang.getString(R.string.Delete),
-          (dialog, which) -> {
-            TdApi.ForumTopic fresh = currentTopic();
-            // region @MadeByLLM("gpt-6-astra", id = "forum-topics")
-            if (fresh != null &&
-              !fresh.info.isGeneral &&
-              ForumTopicPolicy.canOfferDelete(tdlib.chatStatus(getChatId()), fresh.info)) {
-              Object ticket = epoch;
-              run(
-                done -> tdlib.topics().actions.delete(
-                  key(),
-                  (ok, error) -> {
-                    done.onResult(ok, error);
-                    if (error == null && !isDestroyed() && epoch == ticket) {
-                      terminal = returnToTopics = true;
-                      render();
-                      returnToTopics(8);
-                    }
-                  }
-                )
-              );
-            }
-            // endregion
-          }
-        )
-    );
   }
 
   private boolean canDeleteGroup () {
@@ -1399,19 +1100,28 @@ public final class ForumTopicProfileController
       selected = restoreTab;
       restoreTab = -1;
     }
+    if (selectionPage != null && !visible.contains(activeTab)) {
+      resetMediaSelection();
+    }
     if (!visible.equals(visibleTabs)) {
       visibleTabs = visible;
-      tabs.removeAllViews();
+      tabs.resetFromTo();
+      List<ViewPagerTopView.Item> items = new ArrayList<>(visible.size());
       for (int index : visible) {
-        MaterialTab tab = new MaterialTab(context);
-        tab.setText(Lang.getString(TAB_NAMES[index]));
-        tab.setTag(index);
-        addThemeInvalidateListener(tab);
-        tabs.addView(tab, new LinearLayout.LayoutParams(-2, -2));
-        tab.setOnClickListener(v -> selectTab(index));
+        SharedBaseController<?> page = mediaPage(index);
+        items.add(new ViewPagerTopView.Item(
+          Lang.uppercase(Lang.getString(TAB_NAMES[index])), page.getIcon(), null));
       }
+      tabs.setItems(items);
+      updatingPages = true;
+      mediaAdapter.notifyDataSetChanged();
+      int position = visibleTabs.indexOf(selected);
+      if (position >= 0) {
+        materialFrame.setCurrentItem(position, false);
+      }
+      updatingPages = false;
     }
-    tabScroll.setVisibility(visible.isEmpty() ? View.GONE : View.VISIBLE);
+    tabWrap.setVisibility(visible.isEmpty() ? View.GONE : View.VISIBLE);
     boolean loading = false, failed = false, unknown = false;
     for (ForumTopicMedia.Category category : categories) {
       loading |= category.availability == ForumTopicMedia.Availability.LOADING;
@@ -1430,61 +1140,264 @@ public final class ForumTopicProfileController
       )
     );
     materialFrame.setVisibility(visible.isEmpty() ? View.GONE : View.VISIBLE);
-    if (selected != activeTab || selected >= 0 && materialFrame.getChildCount() == 0) {
+    if (selected != activeTab || selected >= 0 && materialFrame.getCurrentItem() != visibleTabs.indexOf(selected)) {
       selectTab(selected);
     } else {
       updateSelectedTab();
     }
   }
 
-  private void selectTab (int index) {
-    if (index == activeTab && materialFrame.getChildCount() > 0) {
-      updateSelectedTab();
+  private SharedBaseController<?> mediaPage (int index) {
+    SharedBaseController<?> page = pages[index];
+    if (page == null) {
+      page = SharedBaseController.valueOf(context, tdlib, ForumTopicMedia.filter(index));
+      page.setArguments(new SharedBaseController.Args(getChatId(), getTopicId()));
+      page.setStandaloneParent(this);
+      pages[index] = page;
+    }
+    return page;
+  }
+
+  @Override public void onMediaSelectionChanged (SharedBaseController<?> page) {
+    if (isDestroyed() || activeTab < 0 || pages[activeTab] != page) {
       return;
     }
-    if (activeTab >= 0 && pages[activeTab] != null) {
-      pages[activeTab].onBlur();
+    boolean selecting = page.isInMediaSelectMode();
+    selectionPage = selecting ? page : null;
+    materialFrame.setPagingEnabled(!selecting);
+    tabs.setTouchDisabled(selecting);
+    if (selecting && selectionBar == null) {
+      createSelectionBar();
     }
-    materialFrame.removeAllViews();
-    activeTab = index;
-    if (index >= 0) {
-      SharedBaseController<?> page = pages[index];
-      if (page == null) {
-        page = SharedBaseController.valueOf(context, tdlib, ForumTopicMedia.filter(index));
-        page.setArguments(new SharedBaseController.Args(getChatId(), getTopicId()));
-        page.setStandaloneParent(this);
-        pages[index] = page;
+    if (selectionBar == null) {
+      return;
+    }
+    selectionBar.setVisibility(selecting || selectionFactor > 0f ? View.VISIBLE : View.GONE);
+    if (!selecting) {
+      return;
+    }
+    int count = page.getSelectedMediaCount();
+    selectionCounter.setSuffix(Lang.plural(page.getSelectedMediaSuffixRes(), count), false);
+    selectionCounter.setCounter(count);
+    boolean[] enabled = {
+      page.canShareMessages(), page.canCopyMessages(), page.canDeleteMessages(),
+      page.canClearMessages(), count == 1
+    };
+    int offset = Screen.dp(12);
+    for (int i = 0; i < selectionButtons.size(); i++) {
+      HeaderButton button = selectionButtons.get(i);
+      button.setVisibility(enabled[i] ? View.VISIBLE : View.GONE);
+      button.setEnabled(enabled[i]);
+      FrameLayoutFix.LayoutParams params = (FrameLayoutFix.LayoutParams) button.getLayoutParams();
+      params.gravity = Lang.rtl() ? Gravity.LEFT : Gravity.RIGHT;
+      params.leftMargin = Lang.rtl() ? offset : 0;
+      params.rightMargin = Lang.rtl() ? 0 : offset;
+      button.setLayoutParams(params);
+      if (enabled[i]) {
+        offset += Screen.dp(48);
       }
-      View pageView = page.getValue();
-      // A list container must not move the outer profile to its first item when data arrives.
-      // Item views retain their own keyboard/accessibility focus behavior.
+    }
+    FrameLayoutFix.LayoutParams counterParams =
+      (FrameLayoutFix.LayoutParams) selectionCounter.getLayoutParams();
+    counterParams.leftMargin = Lang.rtl() ? offset : Screen.dp(56);
+    counterParams.rightMargin = Lang.rtl() ? Screen.dp(56) : offset;
+    selectionCounter.setLayoutParams(counterParams);
+    onMediaSelectionFactorChanged(page, selectionFactor);
+  }
+
+  private void createSelectionBar () {
+    selectionBar = new FrameLayoutFix(context);
+    tabWrap.addView(selectionBar, FrameLayoutFix.newParams(-1, -1));
+    selectionCounter = new CounterHeaderView(context);
+    selectionCounter.initDefault(16f, ColorId.text);
+    selectionCounter.setTextTop(Screen.dp(30));
+    addThemeInvalidateListener(selectionCounter);
+    selectionBar.addView(selectionCounter, FrameLayoutFix.newParams(-1, -1));
+    HeaderButton dismiss = selectionButton(R.drawable.baseline_close_24, R.string.Cancel, () -> {
+      if (selectionPage != null) {
+        selectionPage.setInMediaSelectMode(false);
+      }
+    });
+    selectionBar.addView(dismiss, FrameLayoutFix.newParams(Screen.dp(56), -1,
+      Lang.rtl() ? Gravity.RIGHT : Gravity.LEFT));
+    int[] icons = {R.drawable.baseline_forward_24, R.drawable.baseline_content_copy_24,
+      R.drawable.baseline_delete_24, R.drawable.templarian_baseline_broom_24,
+      R.drawable.baseline_visibility_24};
+    int[] labels = {R.string.Share, R.string.Copy, R.string.Delete, R.string.DeleteFromCache,
+      R.string.ShowInChat};
+    for (int i = 0; i < icons.length; i++) {
+      final int action = i;
+      HeaderButton button = selectionButton(icons[i], labels[i], () -> {
+        SharedBaseController<?> page = selectionPage;
+        if (page == null) {
+          return;
+        }
+        switch (action) {
+          case 0: page.shareMessages(); break;
+          case 1: page.copyMessages(); break;
+          case 2: page.deleteMessages(); break;
+          case 3: page.clearMessages(); break;
+          case 4: page.viewMessages(); break;
+        }
+      });
+      selectionButtons.add(button);
+      selectionBar.addView(button, FrameLayoutFix.newParams(Screen.dp(48), -1));
+    }
+  }
+
+  private HeaderButton selectionButton (int icon, int label, Runnable action) {
+    HeaderButton button = new HeaderButton(context);
+    button.setThemeColorId(ColorId.icon);
+    button.setImageResource(icon);
+    button.setContentDescription(Lang.getString(label));
+    button.setBackground(Theme.fillingSelector());
+    addThemeInvalidateListener(button);
+    button.setOnClickListener(v -> action.run());
+    return button;
+  }
+
+  @Override public void onMediaSelectionFactorChanged (SharedBaseController<?> page, float factor) {
+    if (activeTab < 0 || pages[activeTab] != page) {
+      return;
+    }
+    selectionFactor = factor;
+    tabs.setOverlayFactor(factor);
+    if (selectionBar != null) {
+      selectionBar.setTranslationY(Screen.dp(48) * (1f - factor));
+      selectionBar.setVisibility(factor > 0f || page.isInMediaSelectMode() ? View.VISIBLE : View.GONE);
+    }
+  }
+
+  private final class MediaPagerAdapter extends PagerAdapter {
+    @Override public int getCount () {
+      return visibleTabs.size();
+    }
+
+    @Override public boolean isViewFromObject (@NonNull View view, @NonNull Object object) {
+      return view == ((SharedBaseController<?>) object).getValue();
+    }
+
+    @Override public int getItemPosition (@NonNull Object object) {
+      for (int i = 0; i < visibleTabs.size(); i++) {
+        if (pages[visibleTabs.get(i)] == object) {
+          return i;
+        }
+      }
+      return POSITION_NONE;
+    }
+
+    @NonNull @Override public Object instantiateItem (@NonNull ViewGroup container, int position) {
+      int index = visibleTabs.get(position);
+      SharedBaseController<?> page = mediaPage(index);
+      View view = page.getValue();
       page.getRecyclerView().setFocusable(false);
       page.getRecyclerView().setFocusableInTouchMode(false);
       page.getRecyclerView().setPreserveFocusAfterLayout(false);
-      materialFrame.addView(pageView, new FrameLayout.LayoutParams(-1, -1));
-      page.search(query);
       page.getRecyclerView().setNestedScrollingEnabled(true);
+      page.search(query);
+      container.addView(view);
       if (restoredPageStates[index] != null) {
         page.getRecyclerView().getLayoutManager().onRestoreInstanceState(restoredPageStates[index]);
         restoredPageStates[index] = null;
       }
-      if (isFocused()) {
+      if (index == activeTab && isFocused() && !page.isFocused()) {
         page.onFocus();
       }
+      return page;
     }
-    updateSelectedTab();
+
+    @Override public void destroyItem (@NonNull ViewGroup container, int position,
+                                      @NonNull Object object) {
+      SharedBaseController<?> page = (SharedBaseController<?>) object;
+      container.removeView(page.getValue());
+      if (page.isFocused()) {
+        page.onBlur();
+      }
+    }
+  }
+
+  private void selectTab (int index) {
+    selectTab(index, false);
+  }
+
+  private void selectTab (int index, boolean animated) {
+    if (selectionPage != null) {
+      return;
+    }
+    int position = visibleTabs.indexOf(index);
+    if (position < 0) {
+      activateTab(-1);
+      return;
+    }
+    int scrollY = scroll.getScrollY();
+    boolean smoothScroll = animated && !Settings.instance().needReduceMotion();
+    if (smoothScroll && materialFrame.getCurrentItem() != position) {
+      tabs.setFromTo(materialFrame.getCurrentItem(), position);
+    }
+    materialFrame.setCurrentItem(position, smoothScroll);
+    activateTab(index);
+    if (!smoothScroll) {
+      updateSelectedTab();
+    }
+    Object ticket = epoch;
+    scroll.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+      @Override public boolean onPreDraw () {
+        scroll.getViewTreeObserver().removeOnPreDrawListener(this);
+        if (!isDestroyed() && epoch == ticket && activeTab == index) {
+          scroll.scrollTo(0, scrollY);
+        }
+        return true;
+      }
+    });
+  }
+
+  private void resetMediaSelection () {
+    if (selectionPage != null) {
+      selectionPage.setInMediaSelectMode(false);
+    }
+    selectionPage = null;
+    selectionFactor = 0f;
+    tabs.setOverlayFactor(0f);
+    tabs.setTouchDisabled(false);
+    materialFrame.setPagingEnabled(true);
+    if (selectionBar != null) {
+      selectionBar.setVisibility(View.GONE);
+    }
+  }
+
+  private void activateTab (int index) {
+    if (activeTab != index) {
+      resetMediaSelection();
+      if (activeTab >= 0 && pages[activeTab] != null) {
+        pages[activeTab].setInMediaSelectMode(false);
+        pages[activeTab].onBlur();
+      }
+      activeTab = index;
+    }
+    if (index >= 0) {
+      SharedBaseController<?> page = mediaPage(index);
+      if (page.getRecyclerView() != null) {
+        page.search(query);
+        if (isFocused() && !page.isFocused()) {
+          page.onFocus();
+        }
+      }
+    }
   }
 
   private void updateSelectedTab () {
-    for (int i = 0; i < tabs.getChildCount(); i++) {
-      TextView tab = (TextView) tabs.getChildAt(i);
-      boolean selected = (Integer) tab.getTag() == activeTab;
-      tab.setSelected(selected);
-      int color = selected ? ColorId.textLink : ColorId.textLight;
-      tab.setTextColor(Theme.getColor(color));
-      addOrUpdateThemeTextColorListener(tab, color);
-      tab.invalidate();
+    int index = visibleTabs.indexOf(activeTab);
+    if (index >= 0 && pagerScrollState == ViewPager.SCROLL_STATE_IDLE) {
+      tabs.setSelectionFactor(index);
     }
+  }
+
+  @Override public boolean canSlideBackFrom (NavigationController navigation, float x, float y) {
+    if (selectionPage != null) {
+      return false;
+    }
+    return x <= Screen.dp(12) ||
+      materialFrame.getCurrentItem() == 0 && pagerScrollState == ViewPager.SCROLL_STATE_IDLE;
   }
 
   private void scheduleMaterialsRefresh () {
@@ -1720,6 +1633,7 @@ public final class ForumTopicProfileController
   @Override public void onFocus () {
     super.onFocus();
     render();
+    updateHeader(scroll.getScrollY());
     if (activeTab >= 0 && pages[activeTab] != null && !pages[activeTab].isFocused()) {
       pages[activeTab].onFocus();
     }
@@ -1828,17 +1742,16 @@ public final class ForumTopicProfileController
         }
         profileLink.invalidate();
         clearContentUpdates();
-        closePins();
         for (ForumTopicMedia.Category category : categories) {
           category.invalidate();
         }
+        materialFrame.setAdapter(null);
         for (int i = 0; i < pages.length; i++) {
           if (pages[i] != null) {
             pages[i].destroy();
             pages[i] = null;
           }
         }
-        materialFrame.removeAllViews();
         topic = null;
         terminal = true;
         busy = false;
@@ -1865,19 +1778,30 @@ public final class ForumTopicProfileController
 
   @Override public void destroy () {
     epoch = new Object();
-    closePins();
     if (subscription != null) {
       subscription.close();
     }
     profileLink.invalidate();
     clearContentUpdates();
+    if (materialFrame != null) {
+      materialFrame.setAdapter(null);
+    }
     for (SharedBaseController<?> page : pages) {
       if (page != null) {
         page.destroy();
       }
     }
-    if (customIcon != null) {
-      customIcon.performDestroy();
+    if (headerCell != null) {
+      headerCell.performDestroy();
+    }
+    if (tabs != null) {
+      tabs.resetFromTo();
+      tabs.performDestroy();
+    }
+    for (SettingView view : new SettingView[] {group, notifications, linkRow}) {
+      if (view != null) {
+        view.performDestroy();
+      }
     }
     if (subscribed) {
       tdlib.listeners().unsubscribeFromChatUpdates(getChatId(), this);

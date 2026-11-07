@@ -57,7 +57,6 @@
   <string name="ForumProfileSettingValue">%1$s\n%2$s</string>
   <string name="ForumProfileUnavailable">This topic is no longer available.</string>
   <string name="ForumProfileTopicLink">Topic link</string>
-  <string name="ForumProfileLinkHint">A topic link does not grant access to a private group.</string>
   <string name="ForumProfileMediaLoading">Loading shared content…</string>
   <string name="ForumProfileMediaEmpty">No shared content in this topic yet.</string>
   <string name="ForumProfileMediaRetry">Could not load some shared content. Tap to retry.</string>

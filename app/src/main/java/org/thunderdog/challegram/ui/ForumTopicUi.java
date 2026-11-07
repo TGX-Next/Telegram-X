@@ -234,7 +234,8 @@ public final class ForumTopicUi implements ChatListener {
         add(labels, actions, R.string.ForumMovePinDown, () -> movePin(id, 1));
       }
     }
-    add(labels, actions, R.string.ForumNotifications, () -> notifications(id));
+    boolean muted = ForumPresentation.isMuted(t.notificationSettings, tdlib.chatMuteFor(chatId) > 0);
+    add(labels, actions, muted ? R.string.Unmute : R.string.Mute, () -> setMuted(id, !muted));
     add(labels, actions, R.string.ForumCopyTopicLink, () -> copyLink(id));
     add(labels, actions, R.string.ForumShowAllMessages, () -> setViewMode(false));
     add(labels, actions, R.string.ForumShowTopics, () -> setViewMode(true));
@@ -519,52 +520,6 @@ public final class ForumTopicUi implements ChatListener {
         }
         run(cb -> tdlib.topics().actions.setPinnedOrder(chatId, order, cb));
       }
-    );
-  }
-
-  public void notifications (int id) {
-    String[] labels =
-      {
-        Lang.getString(R.string.ForumNotificationsDefault),
-        Lang.getString(R.string.ForumNotificationsOn),
-        Lang.getString(R.string.ForumMuteHour),
-        Lang.getString(R.string.ForumMuteDay),
-        Lang.getString(R.string.MuteForever)
-      };
-    int[] durations = {0, 0, 3600, 86400, Integer.MAX_VALUE};
-    TdApi.ForumTopic t = topic(id);
-    if (!check(t != null && t.notificationSettings != null)) {
-      return;
-    }
-    String state =
-      Lang.getString(
-        t.notificationSettings.useDefaultMuteFor ? R.string.ForumNotificationsDefault :
-        t.notificationSettings.muteFor > 0 ? R.string.ForumNotificationsMuted :
-          R.string.ForumNotificationsOn
-      );
-    owner.showAlert(
-      new AlertDialog.Builder(owner.context(), Theme.dialogTheme())
-        .setTitle(Lang.getString(R.string.ForumNotificationsState, state))
-        .setItems(
-          labels,
-          (dialog, which) -> {
-            TdApi.ForumTopic current = topic(id);
-            if (check(current != null && current.notificationSettings != null)) {
-              run(
-                cb -> tdlib.topics().actions.setNotifications(
-                  key(id),
-                  ForumTopicPolicy.notifications(
-                    current.notificationSettings,
-                    which == 0,
-                    durations[which]
-                  ),
-                  cb
-                )
-              );
-            }
-          }
-        )
-        .setNegativeButton(Lang.getString(R.string.Cancel), null)
     );
   }
 

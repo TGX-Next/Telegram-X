@@ -1279,8 +1279,7 @@ public class MainActivity extends BaseActivity implements GlobalAccountListener,
       restore = new org.thunderdog.challegram.ui.ForumTopicProfileController(context, tdlib);
     } else if (id == R.id.controller_forumTopicEdit) {
       restore = new org.thunderdog.challegram.ui.ForumTopicEditController(context, tdlib);
-    } else if (id == R.id.controller_forumTopicNotifications) {
-      restore = new org.thunderdog.challegram.ui.ForumTopicNotificationController(context, tdlib);
+
     // endregion
     } else if (id == R.id.controller_profile) {
       restore = new ProfileController(context, tdlib);

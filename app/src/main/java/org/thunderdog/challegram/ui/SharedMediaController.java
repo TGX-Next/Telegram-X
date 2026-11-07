@@ -454,8 +454,8 @@ public class SharedMediaController extends SharedBaseController<MediaItem> imple
       }
 
       // region @MadeByLLM("gpt-6-astra", id = "forum-topics", ref = "PR #1095")
-      if (standaloneParent == null && (alternateParent == null ||
-        !alternateParent.inSearchMode())) {
+      if ((standaloneParent == null || standaloneParent instanceof MediaSelectionDelegate) &&
+        (alternateParent == null || !alternateParent.inSearchMode())) {
       // endregion
         ids.append(R.id.btn_messageSelect);
         icons.append(R.drawable.baseline_playlist_add_check_24);
@@ -484,6 +484,8 @@ public class SharedMediaController extends SharedBaseController<MediaItem> imple
         context.setAllowFullscreen(!parent.inSearchMode());
       } else if (alternateParent != null) {
         context.setAllowFullscreen(!alternateParent.inSearchMode());
+      } else if (standaloneParent != null) {
+        context.setAllowFullscreen(!standaloneParent.inSearchMode());
       }
 
       if (this.context.openForceTouch(context)) {
