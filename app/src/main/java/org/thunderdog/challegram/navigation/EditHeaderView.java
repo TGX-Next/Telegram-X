@@ -23,6 +23,7 @@ import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
@@ -223,10 +224,14 @@ public class EditHeaderView extends FrameLayoutFix implements RtlCheckListener, 
   }*/
 
   @Override
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-native-screens")
   public void setScaleFactor (float scaleFactor, float fromFactor, float toScaleFactor, boolean byScroll) {
     scaleFactor = Size.convertExpandedFactor(scaleFactor);
     this.scaleFactor = scaleFactor;
     layoutReceiver();
+    if (avatarView != null) {
+      requestLayout();
+    }
     scaleFactor = (1f - scaleFactor);
     if (scaleFactor == 0f) {
       setTranslationY(0f);
@@ -245,6 +250,28 @@ public class EditHeaderView extends FrameLayoutFix implements RtlCheckListener, 
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     layoutReceiver();
   }
+
+  // region @MadeByLLM("gpt-6.1-sol", id = "forum-native-screens")
+  private View avatarView;
+
+  public void setAvatarView (View view) {
+    if (avatarView != null) {
+      removeView(avatarView);
+    }
+    avatarView = view;
+    addView(view, FrameLayoutFix.newParams(Screen.dp(61), Screen.dp(61)));
+    requestLayout();
+  }
+
+  @Override
+  protected void onLayout (boolean changed, int left, int top, int right, int bottom) {
+    super.onLayout(changed, left, top, right, bottom);
+    layoutReceiver();
+    if (avatarView != null) {
+      avatarView.layout(receiver.getLeft(), receiver.getTop(), receiver.getRight(), receiver.getBottom());
+    }
+  }
+  // endregion
 
   private int avatarRadius;
 
@@ -268,8 +295,12 @@ public class EditHeaderView extends FrameLayoutFix implements RtlCheckListener, 
   }
 
   @Override
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-native-screens")
   protected void onDraw (Canvas c) {
     layoutReceiver();
+    if (avatarView != null) {
+      return;
+    }
     int s = Views.save(c);
     c.clipPath(clipPath);
     receiver.draw(c);

@@ -7,7 +7,7 @@
   <string name="ForumEditorCreate">Create</string>
   <string name="ForumEditorRetry">Retry</string>
   <string name="ForumEditorCard">Choose a topic name and icon</string>
-  <string name="ForumEditorNameHint">What do you want to discuss?</string>
+  <string name="ForumEditorNameHint">Topic name</string>
   <string name="ForumEditorIconHeading">Choose a topic icon</string>
   <string name="ForumEditorDefaults">Topic icons</string>
   <string name="ForumEditorSearch">Search emoji</string>
