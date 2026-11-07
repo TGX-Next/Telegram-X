@@ -12,6 +12,7 @@
  */
 package org.thunderdog.challegram.widget;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -42,11 +43,13 @@ import org.thunderdog.challegram.theme.Theme;
 import org.thunderdog.challegram.theme.PropertyId;
 import org.thunderdog.challegram.tool.Screen;
 import org.thunderdog.challegram.tool.Views;
+import org.thunderdog.challegram.unsorted.Settings;
 import org.thunderdog.challegram.util.text.Counter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.vkryl.android.AnimatorUtils;
 import me.vkryl.core.lambda.RunnableLong;
 
 /** A paged projection of the existing account/folder list, not a second chat cache. */
@@ -65,6 +68,9 @@ public final class ChatRailView
   private final RunnableLong openChat;
   private boolean destroyed, loading, initialized;
   private long selectedChat;
+  private final Paint selectionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private ValueAnimator selectionAnimator;
+  private float selectionProgress = 1f, selectionFromY, renderedSelectionY = Float.NaN;
   private int restorePosition = -1, restoreOffset;
   private long restoreChatId;
   private boolean transitionPaused;
@@ -75,7 +81,7 @@ public final class ChatRailView
     this.tdlib = tdlib;
     this.openChat = openChat;
     slice = tdlib.chatList(source).slice(null);
-    setBackgroundColor(Theme.fillingColor());
+    setBackgroundColor(Theme.backgroundColor());
     list = new RecyclerView(context);
     layout = new LinearLayoutManager(context);
     list.setLayoutManager(layout);
@@ -92,6 +98,8 @@ public final class ChatRailView
     list.addOnScrollListener(
       new RecyclerView.OnScrollListener() {
         @Override public void onScrolled (@NonNull RecyclerView view, int dx, int dy) {
+          selectionFromY -= dy;
+          invalidate();
           loadMore();
         }
       }
@@ -148,7 +156,7 @@ public final class ChatRailView
   }
 
   public void updateTheme () {
-    setBackgroundColor(Theme.fillingColor());
+    setBackgroundColor(Theme.backgroundColor());
     adapter.notifyItemRangeChanged(0, chats.size());
   }
 
@@ -157,16 +165,22 @@ public final class ChatRailView
     if (destroyed) {
       return;
     }
-    setBackgroundColor(Theme.fillingColor());
+    setBackgroundColor(Theme.backgroundColor());
     // Rows, avatars and counters resolve their colors at draw time, without rebinding data.
     Views.invalidateChildren(list);
   }
   // endregion
 
   public void setSelectedChat (long chatId) {
-    if (selectedChat == chatId) {
+    if (!tdlib.isForum(chatId) || selectedChat == chatId) {
       return;
     }
+    float fromY = renderedSelectionY;
+    if (selectionAnimator != null) {
+      selectionAnimator.cancel();
+      selectionAnimator = null;
+    }
+    selectionProgress = 1f;
     long old = selectedChat;
     selectedChat = chatId;
     int oldIndex = chats.indexOf(old), newIndex = chats.indexOf(chatId);
@@ -176,8 +190,47 @@ public final class ChatRailView
     if (newIndex >= 0) {
       adapter.notifyItemChanged(newIndex);
     }
+    if (!Float.isNaN(fromY) && layout.findViewByPosition(newIndex) != null &&
+      !Settings.instance().needReduceMotion()) {
+      selectionFromY = fromY;
+      selectionProgress = 0f;
+      selectionAnimator = ValueAnimator.ofFloat(0f, 1f);
+      selectionAnimator.setDuration(180L);
+      selectionAnimator.setInterpolator(AnimatorUtils.DECELERATE_INTERPOLATOR);
+      selectionAnimator.addUpdateListener(animation -> {
+        selectionProgress = (float) animation.getAnimatedValue();
+        invalidate();
+      });
+      selectionAnimator.start();
+    }
+    invalidate();
     // Deliberately do not insert or bringToTop a deep-linked chat outside this folder.
   }
+
+  // region @MadeByLLM("gpt-6.1-sol", id = "forum-rail-motion")
+  @Override protected void dispatchDraw (Canvas canvas) {
+    super.dispatchDraw(canvas);
+    int index = chats.indexOf(selectedChat);
+    View row = index >= 0 ? layout.findViewByPosition(index) : null;
+    if (row == null) {
+      renderedSelectionY = Float.NaN;
+      return;
+    }
+    int radius = ((RailRow) row).avatarRadius();
+    float targetY = list.getTop() + row.getTop() + row.getHeight() / 2f - radius;
+    renderedSelectionY = selectionProgress < 1f ?
+      selectionFromY + (targetY - selectionFromY) * selectionProgress : targetY;
+    float width = Screen.dp(3);
+    float left = Lang.rtl() ? getWidth() - width : 0;
+    selectionPaint.setColor(Theme.getColor(ColorId.profileSectionActive));
+    int save = canvas.save();
+    canvas.clipRect(0, list.getTop() + list.getPaddingTop(), getWidth(),
+      list.getBottom() - list.getPaddingBottom());
+    canvas.drawRect(left, renderedSelectionY, left + width,
+      renderedSelectionY + radius * 2f, selectionPaint);
+    canvas.restoreToCount(save);
+  }
+  // endregion
 
   private void dispatch (Runnable action) {
     tdlib.ui()
@@ -425,6 +478,10 @@ public final class ChatRailView
       return;
     }
     destroyed = true;
+    if (selectionAnimator != null) {
+      selectionAnimator.cancel();
+      selectionAnimator = null;
+    }
     pendingUpdates.clear();
     slice.performDestroy();
     tdlib.listeners().unsubscribeFromSettingsUpdates(this);
@@ -477,9 +534,8 @@ public final class ChatRailView
     final AvatarReceiver avatar = new AvatarReceiver(this);
     final Counter counter = new Counter.Builder().textSize(ForumRailBadgeLayout.TEXT_SIZE_DP)
       .callback(this)
-      .outlineColor(ColorId.filling)
+      .outlineColor(ColorId.background)
       .build();
-    final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     long chatId;
     boolean attached;
     ForumUnreadCounter.Subscription unreadSubscription;
@@ -514,7 +570,7 @@ public final class ChatRailView
       }
       chatId = id;
       avatar.requestChat(tdlib, id, AvatarReceiver.Options.SHOW_ONLINE);
-      setSelected(id == selectedChat);
+      setSelected(id == selectedChat && tdlib.isForum(id));
       startUnreadUpdates();
       updateCounter();
     }
@@ -613,14 +669,6 @@ public final class ChatRailView
     void drawContents (Canvas canvas, float decorations) {
       float cx = getWidth() / 2f, cy = getHeight() / 2f;
       int radius = avatarRadius();
-      if (isSelected()) {
-        paint.setColor(Theme.getColor(ColorId.iconActive));
-        paint.setAlpha(Math.round(255f * decorations));
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(Screen.dp(2));
-        canvas.drawCircle(cx, cy, radius + Screen.dp(3), paint);
-        paint.setStyle(Paint.Style.FILL);
-      }
       avatar.setBounds((int) cx - radius, (int) cy - radius, (int) cx + radius, (int) cy + radius);
       if (avatar.needPlaceholder()) {
         avatar.drawPlaceholder(canvas);

@@ -2702,6 +2702,20 @@ public class TdlibUi extends Handler {
         MainController main = new MainController(context.context(), tdlib);
         main.getValue();
         navigation.getStack().insert(main, 0);
+      } else if (current != null && current.tdlib() == tdlib &&
+        current.getChatId() != chat.id && tdlib.isForum(current.getChatId()) &&
+        navigation.forumContainer().isSwitchingChat(tdlib) &&
+        (current instanceof ForumTopicsController || current instanceof MessagesController)) {
+        // Switching forums in the existing rail is not another entrance from the chat list.
+        if (navigation.replaceCurrent(current, controller)) {
+          if (!Settings.instance().needReduceMotion()) {
+            View topicView = controller.getValue();
+            topicView.setAlpha(0f);
+            topicView.animate().alpha(1f).setDuration(180L).start();
+          }
+        } else {
+          controller.destroy();
+        }
       } else if (navigation.getStackSize() > 1 && (params == null ||
         (params.options & CHAT_OPTION_KEEP_STACK) == 0)) {
         navigation.setControllerAnimated(controller, true, true);

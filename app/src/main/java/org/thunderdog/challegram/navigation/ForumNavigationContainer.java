@@ -182,6 +182,11 @@ public final class ForumNavigationContainer
     return session && tdlib == account;
   }
 
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-rail-motion")
+  public boolean isSwitchingChat (Tdlib account) {
+    return isActiveFor(account) && switching;
+  }
+
   public void restoreTopics (ForumTopicsController controller) {
     if (!isActiveFor(controller.tdlib())) {
       return;
@@ -481,7 +486,7 @@ public final class ForumNavigationContainer
         headerBottom(),
         child.getRight(),
         getHeight() - bottomInset,
-        Paints.fillingPaint(Theme.fillingColor())
+        Paints.fillingPaint(Theme.backgroundColor())
       );
       return true;
     }
