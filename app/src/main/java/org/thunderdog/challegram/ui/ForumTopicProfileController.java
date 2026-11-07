@@ -596,14 +596,12 @@ public final class ForumTopicProfileController
           topic != null &&
             !tdlib.chatAvailable(tdlib.chat(getChatId())) ? R.string.ForumProfileUnavailable :
           metadataError != null ? R.string.ForumTopicLoadFailed : topic == null ?
-            R.string.ForumTopicLoading : topic.info.isClosed ? R.string.ForumTopicClosed :
-            topic.info.isGeneral ? R.string.ForumProfileGeneralHint : R.string.ForumTopicTitle
+            R.string.ForumTopicLoading : topic.info.isGeneral ?
+              R.string.ForumProfileGeneralHint : R.string.ForumTopicTitle
       )
     );
     state.setVisibility(
-      available &&
-        !topic.info.isClosed &&
-        !topic.info.isGeneral ? View.GONE : View.VISIBLE
+      available && !topic.info.isGeneral ? View.GONE : View.VISIBLE
     );
     actions.setVisibility(available ? View.VISIBLE : View.GONE);
     notifications.setEnabled(available && !busy && topic != null && topic.notificationSettings != null);
