@@ -2225,6 +2225,7 @@ public class TdlibUi extends Handler {
     if (params != null && params.highlightSet && params.highlightMessageId != null &&
       params.threadInfo == null &&
       params.messageTopicId == null &&
+      ForumNavigation.resolveAnchorTopic((params.options & CHAT_OPTION_RESTORED_ANCHOR) == 0) &&
       (params.options & (CHAT_OPTION_TOPIC_RESOLVED | CHAT_OPTION_SCHEDULED_MESSAGES)) == 0 &&
       tdlib.isForum(chatFinal.id)) {
       params.options |= CHAT_OPTION_TOPIC_RESOLVED;

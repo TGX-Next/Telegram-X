@@ -251,9 +251,12 @@ final class ForumTabsNavigation {
       if (host == null) {
         // Explicit All bypasses any remembered topic; a typed target bypasses
         // the classic topic-list route. Keep unrelated navigation history intact.
+        owner.tdlib().settings().putForumTabsState(chatId,
+          owner.tdlib().settings().getForumTabsState(chatId).withSelectedTopic(target));
         owner.tdlib().ui().openChat(owner, chatId, parameters(owner, target).onDone(finished));
         return;
       }
+      host.rememberForumViewMode(target);
       result = requestAndReturn(owner, host, target);
     }
     if (result == Result.RETRY && retries > 0) {

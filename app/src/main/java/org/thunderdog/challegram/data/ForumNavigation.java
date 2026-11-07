@@ -40,9 +40,10 @@ public final class ForumNavigation {
       !hasThread && !scheduled && !hasFilter && !hasPayload;
   }
 
-  /** A saved common-stream anchor is not a user's request to change the selected tab. */
-  public static boolean resolveAnchorTopic (boolean explicitAnchor, boolean hasForumTabs) {
-    return explicitAnchor || !hasForumTabs;
+  /** Restoring the common stream's scroll position must keep its whole-chat identity. */
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-view-mode")
+  public static boolean resolveAnchorTopic (boolean explicitAnchor) {
+    return explicitAnchor;
   }
 
   /** Latest user navigation wins; delayed metadata must not reopen an older target. */

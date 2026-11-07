@@ -62,6 +62,13 @@ public final class ForumTabsState {
     return new ForumTabsState(placement, nextHorizontal, topicId);
   }
 
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-view-mode")
+  public ForumTabsState withVisitedTopic (int topicId) {
+    // Visiting a topic from All must not change the group's chosen presentation.
+    return selectedTopicId != null && selectedTopicId == 0 && topicId > 0 ?
+      this : withSelectedTopic(topicId);
+  }
+
   public ForumTabsState withoutSelection () {
     return new ForumTabsState(placement, nextHorizontal, null);
   }

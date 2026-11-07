@@ -3052,7 +3052,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
     if (enabled) {
       forumTabsHost = new ForumTabsHost(tdlib, getChatId());
       forumTabsHost.attach(forumTabsObserver);
-      forumTabsHost.remember(forumTabsHost.state.withSelectedTopic(getSelectedForumTabId()));
+      forumTabsHost.remember(forumTabsHost.state.withVisitedTopic(getSelectedForumTabId()));
       observeAllGeneral();
       createForumTabsView();
     } else {
@@ -3194,6 +3194,13 @@ public class MessagesController extends ViewController<MessagesController.Argume
     int topicId = pendingForumTab;
     pendingForumTab = null;
     openForumTab(topicId, null, MessagesManager.HIGHLIGHT_MODE_NONE);
+  }
+
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-view-mode")
+  public void rememberForumViewMode (int topicId) {
+    if (forumTabsHost != null && !isDestroyed()) {
+      forumTabsHost.remember(forumTabsHost.state.withSelectedTopic(topicId));
+    }
   }
 
   public boolean openForumTab (int topicId, @Nullable MessageId anchor, int highlightMode) {
@@ -5078,7 +5085,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
     super.onFocus();
     // region @MadeByLLM("gpt-6-astra", id = "forum-topics", ref = "PR #1095")
     if (forumTabsHost != null) {
-      forumTabsHost.remember(forumTabsHost.state.withSelectedTopic(getSelectedForumTabId()));
+      forumTabsHost.remember(forumTabsHost.state.withVisitedTopic(getSelectedForumTabId()));
     }
     pendingForumTabAttempts = 0;
     UI.cancel(pendingForumTabRetry);

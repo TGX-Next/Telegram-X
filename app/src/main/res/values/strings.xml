@@ -118,7 +118,7 @@
   <string name="ForumTabsMoveBottom">Move topic tabs to the bottom</string>
   <string name="ForumCreateTopic">Create topic</string>
   <string name="ForumShowTopics">View as topics</string>
-  <string name="ForumShowAllMessages">View all messages</string>
+  <string name="ForumShowAllMessages">View as messages</string>
   <string name="ForumCopyTopicLink">Copy topic link</string>
   <string name="ForumOpenTopicAction">Open topic: %1$s</string>
   <string name="ForumTopicActions">Topic actions</string>
