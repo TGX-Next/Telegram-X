@@ -59,7 +59,6 @@ public class MediaGalleryCameraView extends FrameLayoutFix implements Destroyabl
 
   // Texture stuff
 
-
   private void openCamera () {
 
   }

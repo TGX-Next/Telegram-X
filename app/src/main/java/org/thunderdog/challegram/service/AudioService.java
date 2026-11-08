@@ -543,7 +543,6 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
     emptyCover = tryCreatePlaceholder();
   }
 
-
   private void setSessionMetadata () {
     if ((mediaSession != null)) {
       TdApi.Audio audio = ((TdApi.MessageAudio) currentTrack.content).audio;
@@ -577,7 +576,6 @@ public class AudioService extends Service implements TGPlayerController.TrackLis
       session.setMetadata(b.build());
     }
   }
-
 
   private void setSessionPlayState () {
     if ((mediaSession != null)) {

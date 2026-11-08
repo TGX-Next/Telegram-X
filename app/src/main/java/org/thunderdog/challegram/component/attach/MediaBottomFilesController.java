@@ -113,7 +113,6 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
     }
   }
 
-
   private void showSystemPicker (boolean forceDownloads) {
     RunnableData<Set<Uri>> callback = uris -> {
       if (uris != null && !uris.isEmpty()) {
@@ -134,6 +133,7 @@ public class MediaBottomFilesController extends MediaBottomBaseController<Void> 
         });
       }
     };
+    @SuppressWarnings("InlinedApi")
     final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
       .addCategory(Intent.CATEGORY_OPENABLE)
       .setType("*/*")

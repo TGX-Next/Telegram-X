@@ -36,7 +36,6 @@ import me.vkryl.core.BitwiseUtils;
 import me.vkryl.core.StringUtils;
 import me.vkryl.core.lambda.CancellableRunnable;
 
-
 public class BiometricAuthentication {
   public static final boolean ONLY_FINGERPRINT = false;
 

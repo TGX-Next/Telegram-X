@@ -113,6 +113,8 @@ abstract class AppConfigurationSource : ValueSource<ApplicationConfig, AppConfig
         properties.getProperty("app.sources_url", ""),
       isExperimentalBuild =
         isExperimentalBuild,
+      googleServicesFile =
+        properties.getProperty("google_services.file", "").takeIf { it.isNotEmpty() },
       forceOptimize =
         properties.getProperty("app.forceoptimize")?.toBoolean() ?: false,
       doNotObfuscate =
