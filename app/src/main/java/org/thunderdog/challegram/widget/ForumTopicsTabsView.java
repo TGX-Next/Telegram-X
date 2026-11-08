@@ -13,6 +13,7 @@
 package org.thunderdog.challegram.widget;
 
 import android.content.Context;
+import android.os.Build;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Paint;
