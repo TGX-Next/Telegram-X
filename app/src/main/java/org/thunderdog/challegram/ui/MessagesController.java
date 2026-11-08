@@ -2146,9 +2146,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
         highlightMessage(reply.toMessageId());
       }
     } else if (viewId == R.id.btn_mute) {
-      if (chat != null) {
-        tdlib.ui().toggleMute(this, chat.id, false, null);
-      }
+      toggleConversationMute();
     } else if (viewId == R.id.btn_openLinkedChat) {
       openLinkedChat(false);
     } else if (viewId == R.id.btn_openDirectMessages) {
@@ -2357,9 +2355,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
   public void onMoreItemPressed (int id) {
     // region @MadeByLLM("gpt-6-astra", id = "forum-topics", ref = "PR #1095")
     if (id == R.id.menu_forumActions) {
-      if (forumTopicContext != null) {
-        forumTopicUi().showTopicMenu(forumTopicContext.topicId);
-      } else {
+      if (forumTopicContext == null) {
         forumTopicUi().setViewMode(true);
       }
       return;
@@ -2449,11 +2445,51 @@ public class MessagesController extends ViewController<MessagesController.Argume
         openSearchMode();
       }
     } else if (id == R.id.btn_mute) {
-      if (chat != null) {
-        tdlib.ui().toggleMute(this, chat.id, false, null);
-      }
+      toggleConversationMute();
     }
   }
+
+  // region @MadeByLLM("gpt-6.1-sol", id = "forum-conversation-mute")
+  private boolean conversationNotificationsEnabled () {
+    if (forumTopicContext != null) {
+      TdApi.ForumTopic topic = forumTopicContext.topic();
+      return topic != null && topic.notificationSettings != null &&
+        !org.thunderdog.challegram.data.ForumPresentation.isMuted(
+          topic.notificationSettings, tdlib.chatMuteFor(getChatId()) > 0);
+    }
+    return tdlib.chatNotificationsEnabled(getChatId());
+  }
+
+  private ForumTopicContext pendingMuteTopic;
+
+  private void toggleConversationMute () {
+    if (chat == null) {
+      return;
+    }
+    if (forumTopicContext != null) {
+      final ForumTopicContext forum = forumTopicContext;
+      TdApi.ForumTopic topic = forum.topic();
+      if (topic != null && topic.notificationSettings != null && pendingMuteTopic != forum) {
+        pendingMuteTopic = forum;
+        tdlib.topics().actions.setNotifications(
+          new TdlibForumTopicManager.Key(forum.chatId, forum.topicId),
+          org.thunderdog.challegram.data.ForumTopicNotifications.toggleMute(
+            topic.notificationSettings, tdlib.chatMuteFor(forum.chatId) > 0),
+          (ok, error) -> tdlib.ui().post(() -> {
+            if (pendingMuteTopic == forum) {
+              pendingMuteTopic = null;
+            }
+            if (!isDestroyed() && forumTopicContext == forum && error != null) {
+              UI.showError(error);
+            }
+          })
+        );
+      }
+    } else if (!tdlib.isForum(chat.id)) {
+      tdlib.ui().toggleMute(this, chat.id, false, null);
+    }
+  }
+  // endregion
 
   private void reportChat (@Nullable MessageWithProperties[] messages, final @Nullable Runnable after) {
     TdApi.Message[] array;
@@ -5583,10 +5619,10 @@ public class MessagesController extends ViewController<MessagesController.Argume
 // region @MadeByLLM("gpt-6-astra", id = "forum-topics", ref = "PR #1095")
 
     if (tdlib.isForum(chat.id) && messageThread == null && !areScheduledOnly()) {
-      ids.append(R.id.menu_forumActions);
-      strings.append(
-        forumTopicContext != null ? R.string.ForumTopicActions : R.string.ForumShowTopics
-      );
+      if (forumTopicContext == null) {
+        ids.append(R.id.menu_forumActions);
+        strings.append(R.string.ForumShowTopics);
+      }
       if (replyForumContext != null) {
         ids.append(R.id.btn_cancelForumReply);
         strings.append(R.string.ForumCancelTopicReply);
@@ -5628,9 +5664,12 @@ public class MessagesController extends ViewController<MessagesController.Argume
       strings.append(R.string.Search);
     }
 
-    if ((!tdlib.isChannel(chat.id) || (status != null && !TD.isLeft(status))) && !tdlib.isSelfChat(chat.id)) {
+    if ((!tdlib.isChannel(chat.id) || (status != null && !TD.isLeft(status))) &&
+      !tdlib.isSelfChat(chat.id) && (!tdlib.isForum(chat.id) ||
+        forumTopicContext != null && forumTopicContext.topic() != null &&
+          forumTopicContext.topic().notificationSettings != null)) {
       ids.append(R.id.btn_mute);
-      strings.append(tdlib.chatNotificationsEnabled(chat.id) ? R.string.Mute : R.string.Unmute);
+      strings.append(conversationNotificationsEnabled() ? R.string.Mute : R.string.Unmute);
     }
 
     if (tdlib.canReportChatSpam(chat.id)) {
@@ -7129,7 +7168,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
         bottomBar.setPreviewChatId(null, bottomButtonData, null);
         break;
       case BOTTOM_ACTION_TOGGLE_MUTE: {
-        boolean notificationsEnabled = tdlib.chatNotificationsEnabled(getChatId());
+        boolean notificationsEnabled = conversationNotificationsEnabled();
         bottomBar.setAction(R.id.btn_mute, Lang.getString(notificationsEnabled ? R.string.Mute : R.string.Unmute), notificationsEnabled ? R.drawable.baseline_notifications_off_24 : R.drawable.baseline_notifications_active_24, animateButtonContent);
         bottomBar.clearPreviewChat();
         break;

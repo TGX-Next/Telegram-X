@@ -121,7 +121,6 @@
   <string name="ForumShowAllMessages">View as messages</string>
   <string name="ForumCopyTopicLink">Copy topic link</string>
   <string name="ForumOpenTopicAction">Open topic: %1$s</string>
-  <string name="ForumTopicActions">Topic actions</string>
   <string name="ForumCancelTopicReply">Cancel topic reply</string>
   <string name="ForumMessageInTopic">Message in %1$s</string>
   <string name="ForumReadMentions">Mark topic mentions as read</string>
