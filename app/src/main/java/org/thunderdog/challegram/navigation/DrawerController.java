@@ -60,7 +60,6 @@ import org.thunderdog.challegram.theme.ColorId;
 import org.thunderdog.challegram.theme.Theme;
 import org.thunderdog.challegram.theme.ThemeDelegate;
 import org.thunderdog.challegram.theme.ThemeManager;
-import org.thunderdog.challegram.tool.Intents;
 import org.thunderdog.challegram.tool.Paints;
 import org.thunderdog.challegram.tool.Screen;
 import org.thunderdog.challegram.tool.UI;
@@ -89,9 +88,7 @@ import me.vkryl.android.animator.FactorAnimator;
 import me.vkryl.android.widget.FrameLayoutFix;
 import me.vkryl.core.ColorUtils;
 import me.vkryl.core.MathUtils;
-import me.vkryl.core.StringUtils;
 import me.vkryl.core.collection.IntList;
-import me.vkryl.core.lambda.CancellableRunnable;
 import tgx.td.ChatId;
 
 public class DrawerController extends ViewController<Void> implements View.OnClickListener, Settings.ProxyChangeListener, GlobalAccountListener, GlobalCountersListener, BaseView.CustomControllerProvider, BaseView.ActionListProvider, View.OnLongClickListener, TdlibSettingsManager.NotificationProblemListener, TdlibOptionListener, SessionListener, GlobalTokenStateListener, SystemBackEventListener {
@@ -288,14 +285,12 @@ public class DrawerController extends ViewController<Void> implements View.OnCli
     items.add(new ListItem(ListItem.TYPE_DRAWER_ITEM, R.id.btn_savedMessages, R.drawable.baseline_bookmark_24, R.string.SavedMessages));
     this.settingsClickBait = getSettingsClickBait();
     items.add(new ListItem(ListItem.TYPE_DRAWER_ITEM, R.id.btn_settings, R.drawable.baseline_settings_24, R.string.Settings));
-    items.add(new ListItem(ListItem.TYPE_DRAWER_ITEM, R.id.btn_invite, R.drawable.baseline_person_add_24, R.string.InviteFriends));
 
     this.proxyAvailable = Settings.instance().getAvailableProxyCount() > 0;
     if (proxyAvailable) {
       proxyItem.setSelected(Settings.instance().getEffectiveProxyId() != Settings.PROXY_ID_NONE);
       items.add(proxyItem);
     }
-    items.add(new ListItem(ListItem.TYPE_DRAWER_ITEM, R.id.btn_help, R.drawable.baseline_help_24, R.string.Help));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
     items.add(new ListItem(ListItem.TYPE_DRAWER_ITEM_WITH_RADIO, R.id.btn_night, R.drawable.baseline_brightness_2_24, R.string.NightMode, R.id.btn_night, Theme.isDark()));
     if (Test.NEED_CLICK) {
@@ -791,8 +786,6 @@ public class DrawerController extends ViewController<Void> implements View.OnCli
 
   // Other
 
-  private CancellableRunnable supportOpen;
-
   private boolean needAnimationDelay;
 
   private long lastPreferTime;
@@ -874,42 +867,12 @@ public class DrawerController extends ViewController<Void> implements View.OnCli
       } else {
         context.currentTdlib().ui().openProxySettings(context.navigation().getCurrentStackItem(), false);
       }
-    } else if (viewId == R.id.btn_help) {
-      cancelSupportOpen();
-      supportOpen = context.currentTdlib().ui().openSupport(context.navigation().getCurrentStackItem());
-    } else if (viewId == R.id.btn_invite) {
-      context.currentTdlib().cache().getInviteText(text -> {
-        if (isVisible() && !isDestroyed()) {
-          shareText(text.text);
-        }
-      });
     } else if (viewId == R.id.btn_night) {
       ThemeManager.instance().toggleNightMode();
     } else if (viewId == R.id.btn_bubble) {
       context().currentTdlib().settings().toggleChatStyle();
     } else if (viewId == R.id.btn_featureToggles) {
       UI.navigateTo(new FeatureToggles.Controller(context, context.currentTdlib()));
-    }
-  }
-
-  private String shareTextOnClose;
-
-  private void shareText (String text) {
-    if (factor != 0f) {
-      shareTextOnClose = text;
-      close(0f, null);
-      return;
-    }
-
-    shareTextOnClose = null;
-
-    Intents.shareText(text);
-  }
-
-  private void cancelSupportOpen () {
-    if (supportOpen != null) {
-      supportOpen.cancel();
-      supportOpen = null;
     }
   }
 
@@ -934,12 +897,13 @@ public class DrawerController extends ViewController<Void> implements View.OnCli
     }
   }
 
+  // @MadeByLLM("gpt-6", id = "remove-help-invite-entries")
   @Override
   public void onProxyAvailabilityChanged (boolean isAvailable) {
     if (this.proxyAvailable != isAvailable) {
       this.proxyAvailable = isAvailable;
       if (isAvailable) {
-        int i = adapter.indexOfViewByIdReverse(R.id.btn_help);
+        int i = adapter.indexOfViewByIdReverse(R.id.btn_settings) + 1;
         adapter.addItem(i, proxyItem);
       } else {
         int i = adapter.indexOfViewById(R.id.btn_proxy);
@@ -1283,7 +1247,6 @@ public class DrawerController extends ViewController<Void> implements View.OnCli
         recyclerView.setItemAnimator(recyclerAnimator);
         checkSettingsClickBait();
       }
-      cancelSupportOpen();
 
       float translation, oldTranslation;
 
@@ -1312,10 +1275,6 @@ public class DrawerController extends ViewController<Void> implements View.OnCli
       overlay.setTranslationX(cx <= 1f ? 0 : cx - 1f);*/
       if (currentView != null) {
         currentView.setClipLeft((int) (currentWidth() * factor));
-      }
-
-      if (factor == 0f && !StringUtils.isEmpty(shareTextOnClose)) {
-        shareText(shareTextOnClose);
       }
     }
   }

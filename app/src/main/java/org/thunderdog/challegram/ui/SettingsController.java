@@ -96,7 +96,6 @@ import me.vkryl.core.ArrayUtils;
 import me.vkryl.core.ColorUtils;
 import me.vkryl.core.StringUtils;
 import me.vkryl.core.collection.IntList;
-import me.vkryl.core.lambda.CancellableRunnable;
 import me.vkryl.core.reference.ReferenceList;
 import tgx.td.ChatId;
 import tgx.td.Td;
@@ -143,20 +142,10 @@ public class SettingsController extends ViewController<Void> implements
     }
   }
 
-  private CancellableRunnable supportOpen;
-
-  private void cancelSupportOpen () {
-    if (supportOpen != null) {
-      supportOpen.cancel();
-      supportOpen = null;
-    }
-  }
-
   @Override
   public void onBlur () {
     super.onBlur();
     contentView.setFactorLocked(true);
-    cancelSupportOpen();
   }
 
   @Override
@@ -656,10 +645,6 @@ public class SettingsController extends ViewController<Void> implements
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
 
     items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
-    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_help, R.drawable.baseline_live_help_24, R.string.AskAQuestion));
-    items.add(new ListItem(ListItem.TYPE_SEPARATOR));
-    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_faq, R.drawable.baseline_help_24, R.string.TelegramFAQ));
-    items.add(new ListItem(ListItem.TYPE_SEPARATOR));
     items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_privacyPolicy, R.drawable.baseline_policy_24, R.string.PrivacyPolicy));
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
 
@@ -1172,7 +1157,6 @@ public class SettingsController extends ViewController<Void> implements
 
   @Override
   public void onClick (View v) {
-    cancelSupportOpen();
     if (tdlib.ui().handleProfileClick(this, v, v.getId(), tdlib.myUser(), true)) {
       return;
     }
@@ -1270,16 +1254,12 @@ public class SettingsController extends ViewController<Void> implements
       navigateTo(new SettingsDataController(context, tdlib));
     } else if (viewId == R.id.btn_privacySettings) {
       navigateTo(new SettingsPrivacyController(context, tdlib));
-    } else if (viewId == R.id.btn_help) {
-      supportOpen = tdlib.ui().openSupport(this);
     } else if (viewId == R.id.btn_stickerSettingsAndEmoji) {
       SettingsStickersAndEmojiController c = new SettingsStickersAndEmojiController(context, tdlib);
       c.setArguments(this);
       navigateTo(c);
     } else if (viewId == R.id.btn_chatFolders) {
       navigateTo(new SettingsFoldersController(context, tdlib));
-    } else if (viewId == R.id.btn_faq) {
-      tdlib.ui().openFaq(this);
     } else if (viewId == R.id.btn_privacyPolicy) {
       tdlib.ui().openPrivacyPolicy(this);
     } else if (viewId == R.id.btn_suggestion) {

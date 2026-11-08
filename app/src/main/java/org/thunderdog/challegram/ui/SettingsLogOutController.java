@@ -134,11 +134,6 @@ public class SettingsLogOutController extends RecyclerViewController<Integer> im
     items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.SignOutAltChangeNumberHint));
 
     items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
-    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_help, R.drawable.baseline_help_24, R.string.SignOutAltHelp));
-    items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
-    items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, type == Type.DELETE_ACCOUNT ? R.string.DeleteAccountHelpHint : R.string.SignOutAltHelpHint));
-
-    items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
     items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_logout, R.drawable.baseline_logout_24, R.string.LogOut).setTextColorId(ColorId.textNegative));
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, type == Type.DELETE_ACCOUNT ? R.string.DeleteAccountSignOutAltHint2 : R.string.SignOutAltHint2));
@@ -168,8 +163,6 @@ public class SettingsLogOutController extends RecyclerViewController<Integer> im
       navigateTo(new SettingsCacheController(context, tdlib));
     } else if (viewId == R.id.btn_changePhoneNumber) {
       navigateTo(new SettingsPhoneController(context, tdlib));
-    } else if (viewId == R.id.btn_help) {
-      tdlib.ui().openSupport(this);
     } else if (viewId == R.id.btn_logout) {
       tdlib.ui().logOut(this, false);
     } else if (viewId == R.id.btn_deleteAccount) {
