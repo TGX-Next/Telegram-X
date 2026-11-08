@@ -187,8 +187,10 @@ public final class ForumNavigationContainer
     return isActiveFor(account) && switching;
   }
 
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-rail-list-start")
   public void restoreTopics (ForumTopicsController controller) {
-    if (!isActiveFor(controller.tdlib())) {
+    // A rail click opens the destination's full topic list from the start.
+    if (switching || !isActiveFor(controller.tdlib())) {
       return;
     }
     Bundle state = savedTopics.get(controller.getChatId());
