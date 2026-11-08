@@ -168,7 +168,6 @@
   <string name="ForumTopicsLoading">Loading topics…</string>
   <string name="ForumTopicsEmpty">No topics found</string>
   <string name="ForumTopicsLoadFailed">Could not load topics. Tap to retry.</string>
-  <string name="ForumTopicsStale">Showing saved topics. Tap to refresh.</string>
   <string name="ForumUnreadCounts">Unread messages: %1$d; mentions: %2$d; reactions: %3$d; poll votes: %4$d</string>
   <string name="ForumTopicLoading">Loading topic…</string>
   <string name="ForumTopicClosed">Topic closed</string>

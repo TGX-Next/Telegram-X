@@ -58,6 +58,7 @@ import org.thunderdog.challegram.util.StringList;
 import org.thunderdog.challegram.tool.Views;
 import org.thunderdog.challegram.v.CustomRecyclerView;
 import org.thunderdog.challegram.widget.CircleButton;
+import org.thunderdog.challegram.widget.ProgressComponentView;
 
 import java.util.Collections;
 import java.util.ArrayList;
@@ -1040,6 +1041,34 @@ public final class ForumTopicsController
     return true;
   }
 
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-native-loading")
+  private final class TopicFooter extends FrameLayout {
+    final ProgressComponentView progress;
+    final TextView message;
+
+    TopicFooter (Context context) {
+      super(context);
+      setLayoutParams(new RecyclerView.LayoutParams(-1, Screen.dp(144)));
+      // Keep space for the floating Create button without changing height during refreshes.
+      setPadding(Screen.dp(20), Screen.dp(24), Screen.dp(20), Screen.dp(88));
+      progress = new ProgressComponentView(context);
+      progress.initBig(1f);
+      progress.setContentDescription(Lang.getString(R.string.ForumTopicsLoading));
+      addView(progress, new FrameLayout.LayoutParams(Screen.dp(32), Screen.dp(32), Gravity.CENTER));
+      addThemeInvalidateListener(progress);
+      message = new TextView(context);
+      message.setGravity(Gravity.CENTER);
+      message.setTextSize(14);
+      addThemeTextColorListener(message, ColorId.textLight);
+      addView(message, new FrameLayout.LayoutParams(-1, -2, Gravity.CENTER));
+      setOnClickListener(v -> {
+        if (session != null && snapshot != null && snapshot.error != null) {
+          session.retry();
+        }
+      });
+    }
+  }
+
   private final class TopicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<TdApi.ForumTopic> topics = Collections.emptyList();
 
@@ -1125,26 +1154,7 @@ public final class ForumTopicsController
         );
         view = row;
       } else {
-        TextView footer = new TextView(parent.getContext());
-        footer.setGravity(Gravity.CENTER);
-        footer.setTextSize(14);
-        // The Create button must never cover the last selectable row, including an empty footer.
-        footer.setPadding(Screen.dp(20), Screen.dp(24), Screen.dp(20), Screen.dp(88));
-        footer.setLayoutParams(
-          new RecyclerView.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-          )
-        );
-        addThemeTextColorListener(footer, ColorId.textLight);
-        footer.setOnClickListener(
-          v -> {
-            if (session != null) {
-              session.retry();
-            }
-          }
-        );
-        view = footer;
+        view = new TopicFooter(parent.getContext());
       }
       addThemeInvalidateListener(view);
       return new RecyclerView.ViewHolder(view) {
@@ -1166,16 +1176,24 @@ public final class ForumTopicsController
           false
         );
       } else {
-        TextView footer = (TextView) view;
-        int text = snapshot == null ||
-          snapshot.loadingInitial ||
-          snapshot.loadingMore ||
-          snapshot.refreshing ? R.string.ForumTopicsLoading :
-          snapshot.error != null ? R.string.ForumTopicsLoadFailed : topics.isEmpty() ?
-            R.string.ForumTopicsEmpty : snapshot.stale ? R.string.ForumTopicsStale : 0;
-        footer.setText(text != 0 ? Lang.getString(text) : "");
-        footer.setTextColor(Theme.textDecentColor());
-        footer.setEnabled(snapshot != null && (snapshot.error != null || snapshot.stale));
+        TopicFooter footer = (TopicFooter) view;
+        boolean empty = topics.isEmpty();
+        boolean failed = snapshot != null && snapshot.error != null;
+        boolean loading = snapshot == null || (empty ?
+          !snapshot.initialized || snapshot.loadingInitial || snapshot.loadingMore ||
+            snapshot.refreshing : snapshot.loadingMore);
+        int text = failed ? R.string.ForumTopicsLoadFailed :
+          empty && !loading ? R.string.ForumTopicsEmpty : 0;
+        footer.progress.setVisibility(loading && !failed ? View.VISIBLE : View.GONE);
+        footer.message.setText(text != 0 ? Lang.getString(text) : "");
+        footer.message.setVisibility(text != 0 ? View.VISIBLE : View.GONE);
+        footer.setEnabled(failed);
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) footer.getLayoutParams();
+        int height = empty ? ViewGroup.LayoutParams.MATCH_PARENT : Screen.dp(144);
+        if (params.height != height) {
+          params.height = height;
+          footer.setLayoutParams(params);
+        }
       }
     }
 
