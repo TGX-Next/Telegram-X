@@ -31,8 +31,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -42,7 +40,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.R;
-import org.thunderdog.challegram.U;
 import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.data.ForumTopicEditorState;
 import org.thunderdog.challegram.data.ForumTopicPolicy;
@@ -50,11 +47,10 @@ import org.thunderdog.challegram.loader.ComplexReceiver;
 import org.thunderdog.challegram.navigation.BackHeaderButton;
 import org.thunderdog.challegram.navigation.HeaderView;
 import org.thunderdog.challegram.navigation.HeaderButton;
-import org.thunderdog.challegram.navigation.EditHeaderView;
+import org.thunderdog.challegram.widget.MaterialEditTextGroup;
 import org.thunderdog.challegram.navigation.Menu;
 import org.thunderdog.challegram.navigation.NavigationController;
 import org.thunderdog.challegram.navigation.ViewController;
-import org.thunderdog.challegram.navigation.ViewPagerTopView;
 import org.thunderdog.challegram.support.ViewSupport;
 import org.thunderdog.challegram.telegram.ChatListener;
 import org.thunderdog.challegram.telegram.DateChangeListener;
@@ -70,18 +66,16 @@ import org.thunderdog.challegram.tool.DrawAlgorithms;
 import org.thunderdog.challegram.tool.Fonts;
 import org.thunderdog.challegram.tool.Paints;
 import org.thunderdog.challegram.tool.Screen;
-import org.thunderdog.challegram.unsorted.Size;
+import me.vkryl.core.ColorUtils;
 import org.thunderdog.challegram.tool.Views;
 import org.thunderdog.challegram.util.text.Text;
 import org.thunderdog.challegram.util.text.TextColorSetThemed;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import tgx.td.Td;
 
 /** One fullscreen form for every Create/Edit entry point. Mutations belong to ForumTopicActions. */
 @me.vkryl.annotation.MadeByLLM(
@@ -134,19 +128,15 @@ public final class ForumTopicEditController
   private long supergroupId;
   private boolean subscribed, metadataFailed, metadataMissing, binding, defaultsLoaded,
     pickerLoading;
-  private boolean nameTouched, checking, finishing, catalogFailed;
+  private boolean nameTouched, checking, finishing;
   private boolean returnToTabs, finishScheduled;
   private MessagesController originTabsHost;
   private int pickerGeneration, catalogGeneration, pendingCatalog, mutationGeneration;
-  private String query = "", category = "", pickerError = "", selectionError = "", reconcileText =
-    "";
-  private long selectedSet;
+  private String pickerError = "", selectionError = "", reconcileText = "";
   private TdApi.Sticker[] defaultIcons = new TdApi.Sticker[0];
   private final List<TdApi.Sticker> visibleIcons = new ArrayList<>();
   private final List<IconCell> cells = new ArrayList<>();
   private final List<TextView> colorButtons = new ArrayList<>();
-  private final List<String[]> sectionTargets = new ArrayList<>();
-  private final List<String> sectionTitles = new ArrayList<>();
   private final List<TdApi.ForumTopicInfo> candidates = new ArrayList<>();
   private RecyclerView recycler;
   private GridLayoutManager layoutManager;
@@ -168,11 +158,10 @@ public final class ForumTopicEditController
       }
     };
   private LinearLayout content, pickerHeader, colors, results;
-  private ViewPagerTopView sections;
   private HorizontalScrollView colorStrip;
-  private EditText nameInput, searchInput;
-  private ImageButton clearSearchButton;
-  private EditHeaderView headerCell;
+  private EditText nameInput;
+  private MaterialEditTextGroup nameField;
+  private TextView iconHeading;
   private HeaderButton action;
   private TextView nameError, error, hint, pickerStatus, retryPicker, checkResult,
     retryTopic;
@@ -180,14 +169,6 @@ public final class ForumTopicEditController
   private Parcelable restoredScroll;
   private int restoredFocus, restoredSelection = -1;
   private boolean initialFocusApplied;
-
-  @Override public View getCustomHeaderCell () {
-    return headerCell;
-  }
-
-  @Override protected int getHeaderHeight () {
-    return Size.getHeaderBigPortraitSize(false);
-  }
 
   @Override public int getId () {
     return R.id.controller_forumTopicEdit;
@@ -250,9 +231,9 @@ public final class ForumTopicEditController
       Lang.rtl() ? View.LAYOUT_DIRECTION_RTL :
         View.LAYOUT_DIRECTION_LTR
     );
-    ViewSupport.setThemedBackground(recycler, ColorId.background, this);
+    ViewSupport.setThemedBackground(recycler, ColorId.filling, this);
     recycler.setClipToPadding(false);
-    recycler.setPadding(0, Size.getHeaderSizeDifference(false), 0, extraBottomInset);
+    recycler.setPadding(Screen.dp(16), 0, Screen.dp(16), extraBottomInset);
     recycler.setItemAnimator(null);
     recycler.setFocusableInTouchMode(true);
     recycler.requestFocus();
@@ -260,7 +241,8 @@ public final class ForumTopicEditController
     layoutManager.setSpanSizeLookup(
       new GridLayoutManager.SpanSizeLookup() {
         @Override public int getSpanSize (int position) {
-          return position == 0 ? layoutManager.getSpanCount() : 1;
+          return position == 0 || adapter != null && adapter.isHint(position) ?
+            layoutManager.getSpanCount() : 1;
         }
       }
     );
@@ -354,25 +336,7 @@ public final class ForumTopicEditController
     return view;
   }
 
-  private EditText input (int hintId) {
-    EditText view = new EditText(context());
-    view.setTextSize(17);
-    view.setTypeface(Fonts.getRobotoRegular());
-    view.setSingleLine(true);
-    view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-    view.setTextColor(Theme.textAccentColor());
-    view.setHintTextColor(Theme.textDecentColor());
-    view.setHint(Lang.getString(hintId));
-    view.setContentDescription(Lang.getString(hintId));
-    view.setMinimumHeight(Screen.dp(52));
-    view.setPadding(Screen.dp(8), Screen.dp(8), Screen.dp(8), Screen.dp(8));
-    view.setBackground(null);
-    view.setSaveEnabled(false); // Saved explicitly in the isolated form, never the message draft.
-    addThemeTextColorListener(view, ColorId.text);
-    addThemeHintTextColorListener(view, ColorId.textLight);
-    return view;
-  }
-
+  @me.vkryl.annotation.MadeByLLM(value = "gpt-6.1-sol", id = "forum-editor-mockup")
   private void createForm () {
     content = column();
     content.setLayoutParams(
@@ -381,13 +345,18 @@ public final class ForumTopicEditController
         ViewGroup.LayoutParams.WRAP_CONTENT
       )
     );
-    headerCell = new EditHeaderView(context(), this);
-    headerCell.setInputOptions(R.string.ForumEditorNameHint,
-      InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-    nameInput = headerCell.getInputView();
+    RecyclerView.LayoutParams contentParams = (RecyclerView.LayoutParams) content.getLayoutParams();
+    contentParams.leftMargin = contentParams.rightMargin = -Screen.dp(16);
+    nameField = new MaterialEditTextGroup(context(), tdlib);
+    nameField.setHint(R.string.ForumEditorNameHint);
+    nameField.applyRtl(Lang.rtl());
+    nameField.addThemeListeners(this);
+    nameInput = nameField.getEditText();
+    nameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+    nameInput.setTextSize(20);
     nameInput.setSaveEnabled(false);
     setLockFocusView(nameInput, false);
-    preview = new IconCell(context());
+    preview = new IconCell(context(), 40);
     preview.setBackground(Theme.transparentSelector());
     preview.setContentDescription(Lang.getString(R.string.ForumEditorPreview));
     preview.setOnClickListener(v -> {
@@ -396,10 +365,17 @@ public final class ForumTopicEditController
         recycler.smoothScrollToPosition(1);
       }
     });
-    headerCell.setAvatarView(preview);
     LinearLayout card = column();
-    card.setPadding(Screen.dp(16), 0, Screen.dp(16), 0);
     ViewSupport.setThemedBackground(card, ColorId.filling, this);
+    LinearLayout nameRow = new LinearLayout(context());
+    nameRow.setGravity(Gravity.CENTER_VERTICAL);
+    nameRow.setLayoutDirection(Lang.rtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+    nameRow.setPadding(Screen.dp(20), Screen.dp(12), Screen.dp(20), Screen.dp(12));
+    nameRow.addView(preview, new LinearLayout.LayoutParams(Screen.dp(56), Screen.dp(56)));
+    LinearLayout.LayoutParams fieldParams = new LinearLayout.LayoutParams(0, Screen.dp(76), 1f);
+    fieldParams.setMarginStart(Screen.dp(20));
+    nameRow.addView(nameField, fieldParams);
+    card.addView(nameRow, new LinearLayout.LayoutParams(-1, Screen.dp(104)));
     nameInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
     nameInput.setOnEditorActionListener(
       (v, id, event) -> {
@@ -411,6 +387,7 @@ public final class ForumTopicEditController
       }
     );
     nameError = label(13, ColorId.textNegative);
+    nameError.setPadding(Screen.dp(20), 0, Screen.dp(20), Screen.dp(8));
     nameError.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     card.addView(nameError);
     colors = new LinearLayout(context());
@@ -469,49 +446,26 @@ public final class ForumTopicEditController
     results = column();
     content.addView(results);
     pickerHeader = column();
-    pickerHeader.setPadding(Screen.dp(8), Screen.dp(8), Screen.dp(8), Screen.dp(8));
     ViewSupport.setThemedBackground(pickerHeader, ColorId.filling, this);
-    HorizontalScrollView tabs = new HorizontalScrollView(context());
-    tabs.setHorizontalScrollBarEnabled(false);
-    sections = new ViewPagerTopView(context());
-    sections.setTextFromToColorId(ColorId.textLight, ColorId.textLink);
-    sections.setSelectionColorId(ColorId.textLink);
-    sections.setOnItemClickListener(index -> {
-      if (form == null || !form.editable()) {
-        return;
-      }
-      String[] target = sectionTargets.get(index);
-      binding = true;
-      searchInput.setText("");
-      binding = false;
-      query = "";
-      category = target[0];
-      selectedSet = Long.parseLong(target[1]);
-      hideSoftwareKeyboard();
-      loadPicker();
-    });
-    addThemeInvalidateListener(sections);
-    tabs.addView(sections, new ViewGroup.LayoutParams(-2, Screen.dp(48)));
-    pickerHeader.addView(tabs);
-    searchInput = input(R.string.ForumEditorSearch);
-    searchInput.setInputType(InputType.TYPE_CLASS_TEXT);
-    searchInput.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-    searchInput.setOnEditorActionListener(
-      (v, id, event) -> {
-        if (id != EditorInfo.IME_ACTION_SEARCH) {
-          return false;
-        }
-        loadPicker();
-        hideSoftwareKeyboard();
-        return true;
-      }
-    );
-    pickerHeader.addView(createSearchRow(Lang.getString(R.string.Clear)));
-    TextView heading = label(14, ColorId.textLight);
-    heading.setText(Lang.getString(R.string.ForumEditorIconHeading));
-    heading.setGravity(Gravity.CENTER);
-    heading.setPadding(0, Screen.dp(12), 0, Screen.dp(6));
-    pickerHeader.addView(heading);
+    View separator = new View(context());
+    ViewSupport.setThemedBackground(separator, ColorId.background, this);
+    pickerHeader.addView(separator, new LinearLayout.LayoutParams(-1, Screen.dp(12)));
+    LinearLayout iconTitle = new LinearLayout(context());
+    iconTitle.setGravity(Gravity.CENTER_VERTICAL);
+    iconTitle.setPaddingRelative(Screen.dp(20), 0, Screen.dp(8), 0);
+    iconHeading = label(15, ColorId.textLink);
+    iconHeading.setTypeface(Fonts.getRobotoMedium());
+    iconHeading.setText(R.string.ForumEditorIconHeading);
+    iconTitle.addView(iconHeading, new LinearLayout.LayoutParams(0, -2, 1f));
+    HeaderButton info = new HeaderButton(context());
+    info.setImageResource(R.drawable.baseline_info_24);
+    info.setThemeColorId(ColorId.iconLight);
+    info.setContentDescription(Lang.getString(R.string.ForumEditorIconHelp));
+    info.setOnClickListener(v -> showIconHelp());
+    info.setBackground(Theme.transparentSelector());
+    addThemeInvalidateListener(info);
+    iconTitle.addView(info, new LinearLayout.LayoutParams(Screen.dp(48), Screen.dp(48)));
+    pickerHeader.addView(iconTitle, new LinearLayout.LayoutParams(-1, Screen.dp(48)));
     pickerStatus = label(14, ColorId.textLight);
     pickerStatus.setGravity(Gravity.CENTER);
     pickerStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
@@ -529,82 +483,6 @@ public final class ForumTopicEditController
         }
       )
     );
-    searchInput.setText(query);
-    searchInput.addTextChangedListener(
-      watcher(
-        () -> {
-          if (binding) {
-            return;
-          }
-          query = searchInput.getText().toString();
-          category = "";
-          selectedSet = 0;
-          // Clearing restores defaults immediately and invalidates any outstanding search.
-          if (query.isEmpty()) {
-            loadPicker();
-            return;
-          }
-          final int ticket = ++pickerGeneration;
-          tdlib.ui()
-            .postDelayed(
-              () -> {
-              if (!isDestroyed() && ticket == pickerGeneration) {
-                loadPicker();
-              }
-            },
-              250
-            );
-        }
-      )
-    );
-  }
-
-  private LinearLayout createSearchRow (CharSequence clearDescription) {
-    Context context = searchInput.getContext();
-    LinearLayout row = new LinearLayout(context);
-    row.setGravity(Gravity.CENTER_VERTICAL);
-    row.setLayoutDirection(Lang.rtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
-    ViewSupport.setThemedBackground(row, ColorId.filling, this);
-    searchInput.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-    searchInput.setPaddingRelative(Screen.dp(16), Screen.dp(8), Screen.dp(8), Screen.dp(8));
-    row.addView(
-      searchInput,
-      new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1)
-    );
-
-    clearSearchButton = new ImageButton(context);
-    clearSearchButton.setImageResource(R.drawable.baseline_close_24);
-    clearSearchButton.setScaleType(ImageView.ScaleType.CENTER);
-    clearSearchButton.setPadding(0, 0, 0, 0);
-    clearSearchButton.setColorFilter(Theme.iconColor());
-    clearSearchButton.setBackground(Theme.circleSelector(48f, ColorId.background));
-    clearSearchButton.setContentDescription(clearDescription);
-    clearSearchButton.setFocusable(true);
-    clearSearchButton.setOnClickListener(
-      v -> {
-        if (!searchInput.isEnabled()) {
-          return;
-        }
-        searchInput.requestFocus();
-        searchInput.setText("");
-      }
-    );
-    addThemeFilterListener(clearSearchButton, ColorId.icon);
-    addThemeInvalidateListener(clearSearchButton);
-    row.addView(clearSearchButton, new LinearLayout.LayoutParams(Screen.dp(48), Screen.dp(48)));
-    // Also observe programmatic/restored text while the picker callback is suppressed.
-    searchInput.addTextChangedListener(watcher(this::updateSearchClear));
-    updateSearchClear();
-    return row;
-  }
-
-  private void updateSearchClear () {
-    if (clearSearchButton == null) {
-      return;
-    }
-    clearSearchButton.setVisibility(searchInput.length() > 0 ? View.VISIBLE : View.GONE);
-    clearSearchButton.setEnabled(searchInput.isEnabled());
-    clearSearchButton.setAlpha(searchInput.isEnabled() ? 1f : .45f);
   }
 
   private static TextWatcher watcher (Runnable changed) {
@@ -639,7 +517,7 @@ public final class ForumTopicEditController
 
   private boolean iconAllowed () {
     return form != null &&
-      ForumTopicPolicy.allowedIcon(form.emoji(), tdlib.hasPremium(), defaultIcons);
+      ForumTopicPolicy.allowedIcon(form.emoji(), false, defaultIcons);
   }
 
   private void updateAction () {
@@ -664,9 +542,8 @@ public final class ForumTopicEditController
       return;
     }
     boolean editable = form != null && form.editable();
-    nameInput.setEnabled(editable);
-    searchInput.setEnabled(editable);
-    updateSearchClear();
+    nameField.setInputEnabled(editable);
+    hint.setVisibility(form != null && form.general ? View.VISIBLE : View.GONE);
     colorStrip.setVisibility(form != null && form.creating ? View.VISIBLE : View.GONE);
     boolean showPicker = form != null && !form.general;
     if (adapter != null) {
@@ -716,24 +593,13 @@ public final class ForumTopicEditController
       } else if (!selectionError.isEmpty()) {
         message = selectionError;
       } else if (validation == ForumTopicEditorState.Error.PREMIUM) {
-        message = Lang.getString(R.string.ForumEditorPremiumRequired);
+        message = Lang.getString(R.string.ForumEditorSelectIcon);
       } else if (validation == ForumTopicEditorState.Error.ICON_LOADING) {
         message = Lang.getString(R.string.ForumEditorIconLoading);
       } else if (validation == ForumTopicEditorState.Error.INVALID_COLOR) {
         message = Lang.getString(R.string.ForumEditorColorInvalid);
       }
-      String iconHint =
-        Lang.getString(
-          form.general ? R.string.ForumEditorGeneralHint :
-            R.string.ForumEditorPremiumHint
-        );
-      hint.setText(
-        form.creating ? iconHint : Lang.getString(
-          R.string.ForumEditorEditHint,
-          iconHint,
-          Lang.getString(R.string.ForumEditorColorLocked)
-        )
-      );
+      hint.setText(Lang.getString(R.string.ForumEditorGeneralHint));
       preview.bind(
         form.emoji(),
         form.general ? "#" :
@@ -752,7 +618,6 @@ public final class ForumTopicEditController
     }
     error.setText(message);
     error.setVisibility(message.isEmpty() ? View.GONE : View.VISIBLE);
-    sections.setTouchDisabled(!editable);
     refreshIconRows();
     renderPickerStatus();
     restoreFocusIfReady();
@@ -802,6 +667,8 @@ public final class ForumTopicEditController
     if (view instanceof IconCell && position >= 1 && position < adapter.getItemCount() &&
       recycler.getChildViewHolder(view).getItemId() == adapter.getItemId(position)) {
       adapter.bindIcon((IconCell) view, position);
+    } else if (view instanceof TextView && adapter.isHint(position)) {
+      adapter.bindHint((TextView) view);
     }
   }
 
@@ -1135,18 +1002,18 @@ public final class ForumTopicEditController
   @Override public void handleLanguagePackEvent (int event, int arg1) {
     super.handleLanguagePackEvent(event, arg1);
     refreshCandidateTexts();
+    if (nameField != null) {
+      iconHeading.setText(R.string.ForumEditorIconHeading);
+      nameField.setHint(R.string.ForumEditorNameHint);
+    }
     refreshIconRows();
   }
 
   private void loadCatalog () {
     final int generation = ++catalogGeneration;
-    pendingCatalog = 3;
-    catalogFailed = false;
+    pendingCatalog = 1;
     pickerError = "";
     pickerLoading = true;
-    sectionTargets.clear();
-    sectionTitles.clear();
-    addSection(Lang.getString(R.string.ForumEditorDefaults), "", 0);
     tdlib.send(
       new TdApi.GetForumTopicDefaultIcons(),
       (icons, failure) -> tdlib.ui()
@@ -1161,50 +1028,10 @@ public final class ForumTopicEditController
           } else {
             pickerError = Lang.getString(R.string.ForumEditorEmojiError);
           }
-          catalogReturned(icons == null);
+          pendingCatalog = 0;
           loadPicker();
           updateForm();
         }
-        )
-    );
-    tdlib.send(
-      new TdApi.GetEmojiCategories(new TdApi.EmojiCategoryTypeDefault()),
-      (value, failure) -> tdlib.ui()
-        .post(
-          () -> {
-        if (isDestroyed() || generation != catalogGeneration) {
-          return;
-        }
-        if (value != null) {
-          for (TdApi.EmojiCategory item : value.categories) {
-            if (item.source instanceof TdApi.EmojiCategorySourceSearch) {
-              addSection(
-                item.name,
-                TextUtils.join(" ", ((TdApi.EmojiCategorySourceSearch) item.source).emojis),
-                0
-              );
-            }
-          }
-        }
-        catalogReturned(value == null);
-      }
-        )
-    );
-    tdlib.send(
-      new TdApi.GetInstalledStickerSets(new TdApi.StickerTypeCustomEmoji()),
-      (value, failure) -> tdlib.ui()
-        .post(
-          () -> {
-        if (isDestroyed() || generation != catalogGeneration) {
-          return;
-        }
-        if (value != null) {
-          for (TdApi.StickerSetInfo set : value.sets) {
-            addSection(set.title, "", set.id);
-          }
-        }
-        catalogReturned(value == null);
-      }
         )
     );
     tdlib.ui()
@@ -1215,7 +1042,6 @@ public final class ForumTopicEditController
         }
         ++catalogGeneration; // Discard late results from this timed-out catalog load.
         pendingCatalog = 0;
-        catalogFailed = true;
         if (pickerLoading) {
           showIcons(++pickerGeneration, null);
         }
@@ -1226,93 +1052,21 @@ public final class ForumTopicEditController
     renderPickerStatus();
   }
 
-  private void catalogReturned (boolean failed) {
-    pendingCatalog--;
-    catalogFailed |= failed;
-    renderPickerStatus();
-  }
-
-  private void addSection (String title, String emojiQuery, long setId) {
-    sectionTitles.add(title.toUpperCase(Lang.locale()));
-    sectionTargets.add(new String[] {emojiQuery, Long.toString(setId)});
-    sections.setItems(sectionTitles.toArray(new String[0]));
-    updateSections();
-  }
-
-  private void updateSections () {
-    for (int i = 0; i < sectionTargets.size(); i++) {
-      String[] target = sectionTargets.get(i);
-      if (query.isEmpty() && category.equals(target[0]) &&
-        Long.toString(selectedSet).equals(target[1])) {
-        sections.setSelectionFactor(i);
-        break;
-      }
+  private void showIconHelp () {
+    int text = form != null && form.general ? R.string.ForumEditorGeneralHint :
+      R.string.ForumEditorIconsFree;
+    String message = Lang.getString(text);
+    if (form != null && !form.creating) {
+      message = Lang.getString(R.string.ForumEditorEditHint, message,
+        Lang.getString(R.string.ForumEditorColorLocked));
     }
-    sections.setTouchDisabled(form == null || !form.editable());
+    showAlert(new AlertDialog.Builder(context(), Theme.dialogTheme())
+      .setTitle(Lang.getString(R.string.ForumEditorIconHeading))
+      .setMessage(message).setPositiveButton(Lang.getString(R.string.OK), null));
   }
 
   private void loadPicker () {
-    final int ticket = ++pickerGeneration;
-    pickerLoading = true;
-    adapter.replaceIcons(Collections.emptyList());
-    updateSections();
-    renderPickerStatus();
-    tdlib.ui()
-      .postDelayed(
-        () -> {
-        if (!isDestroyed() && ticket == pickerGeneration && pickerLoading) {
-          showIcons(++pickerGeneration, null);
-        }
-      },
-        PICKER_TIMEOUT_MS
-      );
-    if (selectedSet != 0 && query.isEmpty()) {
-      tdlib.send(
-        new TdApi.GetStickerSet(selectedSet),
-        (set, failure) ->
-          tdlib.ui().post(() -> showIcons(ticket, set != null ? set.stickers : null))
-      );
-    } else if (!category.isEmpty()) {
-      searchEmoji(ticket, category);
-    } else if (!query.trim().isEmpty()) {
-      final String text = query.trim();
-      tdlib.send(
-        new TdApi.SearchEmojis(text, U.getInputLanguages()),
-        (keywords, failure) ->
-          tdlib.ui()
-            .post(
-              () -> {
-            if (isDestroyed() || ticket != pickerGeneration) {
-              return;
-            }
-            if (failure != null) {
-              showIcons(ticket, null);
-              return;
-            }
-            String[] emoji = Td.findUniqueEmojis(keywords.emojiKeywords);
-            // Literal emoji input also works when it has no keyword entry in the current language.
-            searchEmoji(ticket, emoji.length > 0 ? TextUtils.join(" ", emoji) : text);
-          }
-            )
-      );
-    } else {
-      showIcons(ticket, defaultsLoaded ? defaultIcons : null);
-    }
-  }
-
-  private void searchEmoji (int ticket, String emojiQuery) {
-    tdlib.send(
-      new TdApi.SearchStickers(
-        new TdApi.StickerTypeCustomEmoji(),
-        emojiQuery,
-        null,
-        U.getInputLanguages(),
-        0,
-        200
-      ),
-      (stickers, failure) ->
-        tdlib.ui().post(() -> showIcons(ticket, stickers != null ? stickers.stickers : null))
-    );
+    showIcons(++pickerGeneration, defaultsLoaded ? defaultIcons : null);
   }
 
   private void showIcons (int ticket, TdApi.Sticker[] stickers) {
@@ -1339,13 +1093,13 @@ public final class ForumTopicEditController
     }
     String text = pickerLoading ? Lang.getString(R.string.ForumEditorEmojiLoading) :
       !pickerError.isEmpty() ? pickerError :
-      catalogFailed ? Lang.getString(R.string.ForumEditorEmojiPartial) :
       visibleIcons.isEmpty() ? Lang.getString(R.string.ForumEditorEmojiEmpty) : "";
+    refreshIconRows();
     pickerStatus.setText(text);
     pickerStatus.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
     retryPicker.setVisibility(
       !pickerLoading &&
-        (!pickerError.isEmpty() || catalogFailed) ? View.VISIBLE : View.GONE
+        !pickerError.isEmpty() ? View.VISIBLE : View.GONE
     );
   }
 
@@ -1353,10 +1107,10 @@ public final class ForumTopicEditController
     if (form == null || !form.editable() || form.general) {
       return;
     }
-    if (!ForumTopicPolicy.allowedIcon(emojiId, tdlib.hasPremium(), defaultIcons)) {
+    if (!ForumTopicPolicy.allowedIcon(emojiId, false, defaultIcons)) {
       selectionError =
         Lang.getString(
-          defaultsLoaded ? R.string.ForumEditorPremiumRequired :
+          defaultsLoaded ? R.string.ForumEditorEmojiError :
             R.string.ForumEditorIconLoading
         );
       updateForm();
@@ -1387,7 +1141,7 @@ public final class ForumTopicEditController
       }
     }
     if (isFocused() && restoredFocus != 0 && nameInput != null) {
-      EditText target = restoredFocus == 2 ? searchInput : nameInput;
+      EditText target = nameInput;
       if (!target.isEnabled()) {
         return;
       }
@@ -1424,7 +1178,7 @@ public final class ForumTopicEditController
   @Override protected void onBottomInsetChanged (int inset, int withoutIme, boolean isIme) {
     super.onBottomInsetChanged(inset, withoutIme, isIme);
     if (recycler != null) {
-      recycler.setPadding(0, Size.getHeaderSizeDifference(false), 0, inset);
+      recycler.setPadding(Screen.dp(16), 0, Screen.dp(16), inset);
       if (nameInput != null && nameInput.hasFocus()) {
         nameInput.requestRectangleOnScreen(
           new android.graphics.Rect(
@@ -1432,16 +1186,6 @@ public final class ForumTopicEditController
             0,
             nameInput.getWidth(),
             nameInput.getHeight()
-          )
-        );
-      }
-      if (searchInput != null && searchInput.hasFocus()) {
-        searchInput.requestRectangleOnScreen(
-          new android.graphics.Rect(
-            0,
-            0,
-            searchInput.getWidth(),
-            searchInput.getHeight()
           )
         );
       }
@@ -1498,21 +1242,16 @@ public final class ForumTopicEditController
     if (form != null) {
       out.putSerializable(prefix + "editor_form", form.snapshot());
     }
-    out.putString(prefix + "editor_query", query);
-    out.putString(prefix + "editor_category", category);
-    out.putLong(prefix + "editor_set", selectedSet);
     out.putBoolean(prefix + "editor_touched", nameTouched);
     if (layoutManager != null) {
       out.putParcelable(prefix + "editor_scroll", layoutManager.onSaveInstanceState());
     }
-    int focus = searchInput != null &&
-      searchInput.hasFocus() ? 2 : nameInput != null &&
-        nameInput.hasFocus() ? 1 : 0;
+    int focus = nameInput != null && nameInput.hasFocus() ? 1 : 0;
     out.putInt(prefix + "editor_focus", focus);
     if (focus != 0) {
       out.putInt(
         prefix + "editor_selection",
-        (focus == 2 ? searchInput : nameInput).getSelectionStart()
+        nameInput.getSelectionStart()
       );
     }
     return true;
@@ -1540,12 +1279,9 @@ public final class ForumTopicEditController
         selectionError = Lang.getString(R.string.ForumEditorRestoredEdit);
       }
     }
-    query = in.getString(prefix + "editor_query", "");
-    category = in.getString(prefix + "editor_category", "");
-    selectedSet = in.getLong(prefix + "editor_set");
     nameTouched = in.getBoolean(prefix + "editor_touched");
     restoredScroll = in.getParcelable(prefix + "editor_scroll");
-    restoredFocus = in.getInt(prefix + "editor_focus");
+    restoredFocus = in.getInt(prefix + "editor_focus") == 1 ? 1 : 0;
     restoredSelection = in.getInt(prefix + "editor_selection", -1);
     return true;
   }
@@ -1561,12 +1297,6 @@ public final class ForumTopicEditController
   }
 
   @Override public void destroy () {
-    if (headerCell != null) {
-      headerCell.performDestroy();
-    }
-    if (sections != null) {
-      sections.performDestroy();
-    }
     rowsRefreshPending = false;
     clearRowsRefreshListener();
     if (recycler != null) {
@@ -1605,7 +1335,7 @@ public final class ForumTopicEditController
     }
 
     @Override public int getItemCount () {
-      return pickerVisible ? visibleIcons.size() + 2 : 1;
+      return pickerVisible ? visibleIcons.size() + 3 : 1;
     }
 
     void setPickerVisible (boolean visible) {
@@ -1613,8 +1343,8 @@ public final class ForumTopicEditController
         return;
       }
       pickerVisible = visible;
-      // The form header is always row 0; the ordinary icon and custom icons follow it.
-      int count = visibleIcons.size() + 1;
+      // The form header is always row 0; topic icons and their footer follow it.
+      int count = visibleIcons.size() + 2;
       if (visible) {
         notifyItemRangeInserted(1, count);
       } else {
@@ -1635,10 +1365,17 @@ public final class ForumTopicEditController
     }
 
     @Override public int getItemViewType (int position) {
-      return position == 0 ? 0 : 1;
+      return position == 0 ? 0 : isHint(position) ? 2 : 1;
+    }
+
+    boolean isHint (int position) {
+      return pickerVisible && position == getItemCount() - 1;
     }
 
     @Override public long getItemId (int position) {
+      if (isHint(position)) {
+        return Long.MIN_VALUE;
+      }
       if (position < 2) {
         return position;
       }
@@ -1662,6 +1399,13 @@ public final class ForumTopicEditController
         holder.setIsRecyclable(false);
         return holder;
       }
+      if (type == 2) {
+        TextView footer = label(12, ColorId.textLight);
+        footer.setGravity(Gravity.CENTER);
+        footer.setPadding(Screen.dp(12), Screen.dp(12), Screen.dp(12), Screen.dp(20));
+        footer.setLayoutParams(new RecyclerView.LayoutParams(-1, -2));
+        return new RecyclerView.ViewHolder(footer) {};
+      }
       IconCell cell = new IconCell(parent.getContext());
       cell.setLayoutParams(
         new RecyclerView.LayoutParams(
@@ -1677,7 +1421,15 @@ public final class ForumTopicEditController
       if (position == 0) {
         return;
       }
-      bindIcon((IconCell) holder.itemView, position);
+      if (isHint(position)) {
+        bindHint((TextView) holder.itemView);
+      } else {
+        bindIcon((IconCell) holder.itemView, position);
+      }
+    }
+
+    private void bindHint (TextView view) {
+      view.setText(R.string.ForumEditorIconsFree);
     }
 
     private void bindIcon (IconCell cell, int position) {
@@ -1689,7 +1441,7 @@ public final class ForumTopicEditController
         description = TextUtils.isEmpty(sticker.emoji) ?
           Lang.getString(R.string.ForumEditorCustomEmoji) : sticker.emoji;
       }
-      boolean locked = !ForumTopicPolicy.allowedIcon(emojiId, tdlib.hasPremium(), defaultIcons);
+      boolean locked = !ForumTopicPolicy.allowedIcon(emojiId, false, defaultIcons);
       cell.bind(emojiId, form.submittedName(), emojiId == form.emoji(), locked, description);
       cell.setEnabled(form.editable());
       final long selected = emojiId;
@@ -1712,9 +1464,15 @@ public final class ForumTopicEditController
     private long emojiId;
     private String letter = "";
     private boolean locked;
+    private final int iconSize;
 
     IconCell (Context context) {
+      this(context, 28);
+    }
+
+    IconCell (Context context, int iconSize) {
       super(context);
+      this.iconSize = iconSize;
       cells.add(this);
       setFocusable(true);
       setMinimumHeight(Screen.dp(48));
@@ -1741,8 +1499,8 @@ public final class ForumTopicEditController
             tdlib,
             text,
             null,
-            Screen.dp(48),
-            Paints.robotoStyleProvider(32),
+            Screen.dp(Math.max(48, iconSize * 2)),
+            Paints.robotoStyleProvider(iconSize),
             (TextColorSetThemed) () -> ColorId.icon,
             (value, media) -> {
               if (value == emoji) {
@@ -1768,18 +1526,14 @@ public final class ForumTopicEditController
       super.onDraw(canvas);
       float cx = getWidth() / 2f, cy = getHeight() / 2f;
       if (isSelected()) {
+        paint.setColor(ColorUtils.alphaColor(.1f, Theme.getColor(ColorId.textLink)));
+        DrawAlgorithms.drawRoundRect(canvas, Screen.dp(4), Screen.dp(3), Screen.dp(3),
+          getWidth() - Screen.dp(3), getHeight() - Screen.dp(3), paint);
         paint.setColor(Theme.getColor(ColorId.textLink));
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(Screen.dp(2));
-        DrawAlgorithms.drawRoundRect(
-          canvas,
-          Screen.dp(10),
-          Screen.dp(3),
-          Screen.dp(3),
-          getWidth()-Screen.dp(3),
-          getHeight()-Screen.dp(3),
-          paint
-        );
+        paint.setStrokeWidth(Screen.dp(1.5f));
+        DrawAlgorithms.drawRoundRect(canvas, Screen.dp(4), Screen.dp(3), Screen.dp(3),
+          getWidth() - Screen.dp(3), getHeight() - Screen.dp(3), paint);
         paint.setStyle(Paint.Style.FILL);
       }
       if (emoji != null) {
@@ -1792,7 +1546,7 @@ public final class ForumTopicEditController
           receiver
         );
       } else {
-        float r = Screen.dp(18);
+        float r = Screen.dp(this == preview ? 24 : 16);
         paint.setColor(
           0xff000000 |
             (form != null ? form.color() : ForumTopicPolicy.ICON_COLORS[0])

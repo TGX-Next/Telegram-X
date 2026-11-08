@@ -8,9 +8,8 @@
   <string name="ForumEditorRetry">Retry</string>
   <string name="ForumEditorCard">Choose a topic name and icon</string>
   <string name="ForumEditorNameHint">Topic name</string>
-  <string name="ForumEditorIconHeading">Choose a topic icon</string>
+  <string name="ForumEditorIconHeading">Topic icon</string>
   <string name="ForumEditorDefaults">Topic icons</string>
-  <string name="ForumEditorSearch">Search emoji</string>
   <string name="ForumEditorRegular">Use ordinary icon</string>
   <string name="ForumEditorPreview">Topic icon preview</string>
   <string name="ForumEditorSelected">%1$s, selected</string>
@@ -23,13 +22,11 @@
   <string name="ForumEditorColorLocked">The original icon color cannot be changed after creation.</string>
   <string name="ForumEditorEditHint">%1$s\n%2$s</string>
   <string name="ForumEditorColorInvalid">Choose one of the available icon colors.</string>
-  <string name="ForumEditorPremiumHint">Topic icons are available to everyone. Other custom emoji require Premium.</string>
-  <string name="ForumEditorPremiumRequired">This emoji requires Premium. Choose a topic icon or the ordinary icon.</string>
+  <string name="ForumEditorSelectIcon">Choose one of the available topic icons.</string>
   <string name="ForumEditorIconLoading">Checking available topic icons…</string>
-  <string name="ForumEditorEmojiLoading">Loading emoji…</string>
-  <string name="ForumEditorEmojiEmpty">No emoji found. Try another search or set.</string>
-  <string name="ForumEditorEmojiError">Could not load emoji. Try again.</string>
-  <string name="ForumEditorEmojiPartial">Some emoji sections could not be loaded. Retry to load them.</string>
+  <string name="ForumEditorEmojiLoading">Loading topic icons…</string>
+  <string name="ForumEditorEmojiEmpty">No topic icons available.</string>
+  <string name="ForumEditorEmojiError">Could not load topic icons. Try again.</string>
   <string name="ForumEditorUnavailable">This topic is unavailable or you no longer have permission to edit it.</string>
   <string name="ForumEditorCreateUnavailable">You no longer have permission to create topics here.</string>
   <string name="ForumEditorLoadError">The topic could not be loaded. Your changes are preserved.</string>
@@ -6092,4 +6089,6 @@
   <string name="RestrictedContent">Restricted Content</string>
   <string name="SensitiveContent">Sensitive Content</string>
 
+  <string name="ForumEditorIconHelp">About topic icons</string>
+  <string name="ForumEditorIconsFree">These topic icons are free to use.</string>
 </resources>

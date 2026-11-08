@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="ForumShowAllMessages">Ver como mensagens</string>
+  <string name="ForumEditorIconHelp">Sobre os ícones de tópicos</string>
+  <string name="ForumEditorIconsFree">Ícones de tópicos podem ser usados por todos.</string>
+  <string name="ForumEditorIconHeading">Ícone do tópico</string>
+  <string name="ForumEditorNameHint">Nome do tópico</string>
+  <string name="ForumEditorEdit">Editar tópico</string>
+  <string name="ForumEditorNew">Novo tópico</string>
+  <string name="ForumEditorColorLocked">A cor original do ícone não pode ser alterada depois da criação.</string>
+  <string name="ForumEditorSelectIcon">Escolha um dos ícones de tópico disponíveis.</string>
+  <string name="ForumEditorEmojiLoading">Carregando ícones de tópicos…</string>
+  <string name="ForumEditorEmojiEmpty">Nenhum ícone de tópico disponível.</string>
+  <string name="ForumEditorEmojiError">Não foi possível carregar os ícones de tópicos. Tente novamente.</string>
 </resources>
