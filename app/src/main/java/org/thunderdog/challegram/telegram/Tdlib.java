@@ -4891,7 +4891,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       case TdApi.MessageAnimation.CONSTRUCTOR:
         return !photoVideoOnly;
       default:
-        Td.assertMessageContent_cc875c63();
+        Td.assertMessageContent_37851fea();
         break;
     }
 
@@ -4975,7 +4975,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         case TdApi.MessageAnimatedEmoji.CONSTRUCTOR:
           return Td.textOrCaption(messageText);
       }
-      Td.assertMessageContent_cc875c63();
+      Td.assertMessageContent_37851fea();
       throw Td.unsupported(messageText);
     }
     MessageEditMediaPending pendingEditMedia = getPendingMessageMedia(chatId, messageId);
@@ -7696,7 +7696,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         break;
       }
       default: {
-        Td.assertMessageContent_cc875c63();
+        Td.assertMessageContent_37851fea();
         break;
       }
     }
@@ -10627,6 +10627,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       case TdApi.UpdateWebProxyCarrierOpened.CONSTRUCTOR:
       case TdApi.UpdateWebProxyCarrierData.CONSTRUCTOR:
       case TdApi.UpdateWebProxyCarrierClosed.CONSTRUCTOR:
+      case TdApi.UpdateSpeechRecognitionInFile.CONSTRUCTOR:
         break;
 
       // for bots only.
@@ -10653,12 +10654,15 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       case TdApi.UpdateNewBusinessCallbackQuery.CONSTRUCTOR:
       case TdApi.UpdateNewGuestQuery.CONSTRUCTOR:
       case TdApi.UpdatePaidMediaPurchased.CONSTRUCTOR:
-      case TdApi.UpdateUserSubscription.CONSTRUCTOR: {
+      case TdApi.UpdateUserSubscription.CONSTRUCTOR:
+      case TdApi.UpdateNewWidgetQuery.CONSTRUCTOR:
+      case TdApi.UpdateNewInlineWidgetQuery.CONSTRUCTOR:
+      case TdApi.UpdateNewWidgetCopyQuery.CONSTRUCTOR: {
         // Must never come from TDLib. If it does, there's a bug on TDLib side.
         throw Td.unsupported(update);
       }
       default: {
-        Td.assertUpdate_2a2bec96();
+        Td.assertUpdate_2f0de2f1();
         throw Td.unsupported(update);
       }
     }
@@ -11591,6 +11595,8 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         case TdApi.MessageVoiceNote.CONSTRUCTOR:
         case TdApi.MessageExpiredVoiceNote.CONSTRUCTOR:
           return getDefaultRestrictionText(chat, RightId.SEND_VOICE_NOTES);
+        case TdApi.MessageWidget.CONSTRUCTOR:
+          return getDefaultRestrictionText(chat, RightId.SEND_OTHER_MESSAGES);
         // RightId.SEND_BASIC_MESSAGES
         case TdApi.MessageText.CONSTRUCTOR:
         case TdApi.MessageRichMessage.CONSTRUCTOR:
@@ -11692,7 +11698,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
           // assuming we want to check RightId.SEND_BASIC_MESSAGES
           return getBasicMessageRestrictionText(chat);
         default:
-          Td.assertMessageContent_cc875c63();
+          Td.assertMessageContent_37851fea();
           throw Td.unsupported(message.content);
       }
     }
@@ -11726,6 +11732,8 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
           getDiceRestrictionText(chat, ((TdApi.InputMessageDice) content).emoji);
         case TdApi.InputMessageGame.CONSTRUCTOR ->
           getGameRestrictionText(chat);
+        case TdApi.InputMessageWidget.CONSTRUCTOR, TdApi.InputMessageSharedWidget.CONSTRUCTOR ->
+          getDefaultRestrictionText(chat, RightId.SEND_OTHER_MESSAGES);
 
         // RightId.SEND_BASIC_MESSAGES
         // TODO tdlib.getMessageLocally?
@@ -11742,7 +11750,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
              TdApi.InputMessageStakeDice.CONSTRUCTOR ->
           getBasicMessageRestrictionText(chat);
         default -> {
-          Td.assertInputMessageContent_7c412303();
+          Td.assertInputMessageContent_758b3691();
           throw Td.unsupported(content);
         }
       };

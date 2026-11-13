@@ -7,7 +7,8 @@ Telegram X uses Gradle, Java/Kotlin, and C/C++. Application code lives in
 and `app/src/main/assets`. Native code is in `app/jni`.
 The only supported flavor is `latest` (Android 13+, arm64); shared application
 code and resources live in the `main` source set. `tdlib/`, `tgcalls/`, `vkryl/`, and `extension/` provide supporting modules;
-`buildSrc/` contains Gradle logic; `tests/` contains tests and benchmarks.
+`buildSrc/` contains Gradle logic. Tests and benchmarks are maintained outside this checkout,
+as in upstream Telegram X.
 
 ## Build, Test, and Development Commands
 
@@ -17,10 +18,6 @@ Gradle wrapper. See `README.md` for SDK/NDK and Rust prerequisites.
 - `scripts/setup.sh`: configure Android SDK, NDK, and local properties.
 - `./gradlew :app:assembleLatestDebug`: build the latest-flavor debug APK.
 - `./gradlew :app:installLatestDebug -Pabi=arm64`: install on a connected ARM64 device.
-- `./gradlew :app:testLatestDebugUnitTest`: run JVM unit tests.
-- `./gradlew :app:emulatorLatestDebugAndroidTest -Pabi=arm64`: run integration tests.
-- `./gradlew :tests:ui:emulatorLatestNonMinifiedReleaseAndroidTest -Pabi=arm64`: run UI tests.
-- `./gradlew checkMinSdk`: check Android 13+ API compatibility.
 - `./gradlew :app:lintLatestDebug`: run Android lint checks.
 
 ## Coding Style & Naming Conventions
@@ -35,13 +32,12 @@ Reuse existing helpers and avoid allocations during drawing, animations, or scro
 
 ## Testing Guidelines
 
-Use JUnit 4, Truth, UI Automator, and AndroidX benchmarks.
-Place unit tests in `tests/unit/kotlin`, integration tests in `tests/integration/kotlin`, and
-UI tests in `tests/ui/src/main/kotlin`. Use descriptive `*Test` classes and behavior-named methods.
-Temporary checks belong in ignored `tests/*/checks` folders. Follow
-[testing guidance](tests/README.md): reproduce bugs before fixing them, verify affected flavors,
-and run relevant tests and lint before finishing. Device tests require Android 13+ and arm64;
-report failures, checks not run, and coverage gaps.
+The checkout does not include test sources, benchmarks, or `checkMinSdk`. Gradle enables
+external test infrastructure only when `tests/.git` exists, following upstream.
+Validate changes with `./gradlew :app:assembleLatestDebug` and
+`./gradlew :app:lintLatestDebug`. Reproduce bugs before fixing them and verify affected
+behavior manually on Android 13+ and arm64 when a device is available. Report failures,
+checks not run, and coverage gaps.
 
 ## Commit & Pull Request Guidelines
 

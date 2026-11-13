@@ -48,19 +48,6 @@ For a published build, obtain [Telegram API credentials](https://core.telegram.o
 set `telegram.api_id` and `telegram.api_hash` in `local.properties`, and configure
 [Firebase](https://firebase.google.com/docs/android/setup) for the application ID.
 
-## Tests and checks
-
-```shell
-./gradlew :app:testLatestDebugUnitTest
-./gradlew :app:emulatorLatestDebugAndroidTest -Pabi=arm64
-./gradlew :tests:ui:emulatorLatestNonMinifiedReleaseAndroidTest -Pabi=arm64
-./gradlew checkMinSdk
-./gradlew :app:lintLatestDebug
-```
-
-Device tests require Android 13+ and ARM64. See the [testing guide](tests/README.md) for test
-workflows, benchmarks and baseline profiles.
-
 ## Contributing
 
 See the [contributor guide](docs/GUIDE.md), [code style](docs/CODE_STYLE.md) and
