@@ -52,7 +52,7 @@ public class ContentPreview {
   public static final Emoji EMOJI_CONTACT = new Emoji("\uD83D\uDC64", R.drawable.baseline_person_16);
   public static final Emoji EMOJI_POLL = new Emoji("\uD83D\uDCCA", R.drawable.baseline_poll_16);
   public static final Emoji EMOJI_WIDGET =
-    new Emoji(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? "\uD83E\uDDE9" : "\uD83D\uDD0C",
+    new Emoji("\uD83E\uDDE9",
       R.drawable.baseline_extension_16);
   public static final Emoji EMOJI_POLL_OPTION = new Emoji("\uD83D\uDCCA", R.drawable.baseline_ballot_16);
   public static final Emoji EMOJI_QUIZ = new Emoji("\u2753", R.drawable.baseline_help_16);

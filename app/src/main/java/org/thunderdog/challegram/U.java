@@ -263,6 +263,12 @@ public class U {
   }
 
   public static String getRingtoneName (@NonNull Uri ringtoneUri, @Nullable String fallbackName) {
+    if (ringtoneUri.equals(TdlibNotificationManager.getTelegramCallRingtone())) {
+      return Lang.getString(R.string.RingtoneTelegramCall);
+    }
+    if (ringtoneUri.equals(android.provider.Settings.System.DEFAULT_RINGTONE_URI)) {
+      return Lang.getString(R.string.RingtoneSystemDefault);
+    }
     String[] projection = {MediaStore.MediaColumns.TITLE};
     try {
       try (Cursor cur = UI.getContext().getContentResolver().query(ringtoneUri, projection, null, null, null)) {
@@ -466,30 +472,46 @@ public class U {
   public static void startForeground (Service service, int notificationId, Notification notification, boolean callAnswered) {
     if (notification == null)
       throw new IllegalArgumentException();
-    if (StringUtils.isEmpty(notification.getChannelId()))
-      throw new IllegalArgumentException("id == " + notificationId);
-    switch (notificationId) {
-      case TdlibNotificationManager.ID_FOREGROUND_ONGOING_CALL_NOTIFICATION:
-      case TdlibNotificationManager.ID_FOREGROUND_INCOMING_CALL_NOTIFICATION: {
-        int knownType = android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL;
-        if (((
-          Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ||
-          callAnswered ||
-          notificationId == TdlibNotificationManager.ID_FOREGROUND_ONGOING_CALL_NOTIFICATION
-        ))) {
-          knownType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+    {
+      if (StringUtils.isEmpty(notification.getChannelId()))
+        throw new IllegalArgumentException("id == " + notificationId);
+    }
+    {
+      switch (notificationId) {
+        case TdlibNotificationManager.ID_FOREGROUND_ONGOING_CALL_NOTIFICATION:
+        case TdlibNotificationManager.ID_FOREGROUND_INCOMING_CALL_NOTIFICATION:
+        case TdlibNotificationManager.ID_FOREGROUND_CALL_START: {
+          int knownType = android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL;
+          if ((
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE ||
+            callAnswered ||
+            notificationId == TdlibNotificationManager.ID_FOREGROUND_ONGOING_CALL_NOTIFICATION
+          )) {
+            knownType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+          }
+          knownType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
+          int microphone = android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+          try {
+            service.startForeground(notificationId, notification, knownType);
+          } catch (SecurityException e) {
+            if ((knownType & microphone) == 0) {
+              throw e;
+            }
+            // Android 14+ refuses the microphone to an app that isn't visible, e.g. a call
+            // answered from a watch
+            Log.e("Unable to use the microphone in a foreground service", e);
+            service.startForeground(notificationId, notification, knownType & ~microphone);
+          }
+          return;
         }
-        knownType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
-        service.startForeground(notificationId, notification, knownType);
-        return;
+        case TdlibNotificationManager.ID_FOREGROUND_MUSIC:
+        case TdlibNotificationManager.ID_FOREGROUND_LOCATION:
+        case TdlibNotificationManager.ID_FOREGROUND_PENDING_TASK:
+          // android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST;
+          break;
+        default:
+          throw new UnsupportedOperationException(Integer.toString(notificationId));
       }
-      case TdlibNotificationManager.ID_FOREGROUND_MUSIC:
-      case TdlibNotificationManager.ID_FOREGROUND_LOCATION:
-      case TdlibNotificationManager.ID_FOREGROUND_PENDING_TASK:
-        // android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST;
-        break;
-      default:
-        throw new UnsupportedOperationException(Integer.toString(notificationId));
     }
     service.startForeground(notificationId, notification);
   }
@@ -890,17 +912,52 @@ public class U {
     return getNotificationChannel("maybe", R.string.NotificationChannelMaybe);
   }
 
+  public static final String CHANNEL_ID_ONGOING_CALLS = "ongoing_calls";
+
+  public static String getOngoingCallsNotificationChannel () {
+    return getNotificationChannel(
+      CHANNEL_ID_ONGOING_CALLS,
+      R.string.NotificationChannelOngoingCalls
+    );
+  }
+
+  public static final String CHANNEL_ID_INCOMING_CALLS_IN_APP = "incoming_calls_in_app";
+
+  public static String getIncomingCallsInAppNotificationChannel () {
+    String id = CHANNEL_ID_INCOMING_CALLS_IN_APP;
+    {
+      android.app.NotificationChannel channel = new android.app.NotificationChannel(
+        id,
+        Lang.getString(R.string.NotificationChannelIncomingCallScreen),
+        NotificationManager.IMPORTANCE_HIGH
+      );
+      channel.setSound(null, null);
+      channel.enableVibration(false);
+      createNotificationChannel(channel);
+    }
+    return id;
+  }
+
   public static String getNotificationChannel (String id, int stringRes) {
     {
       android.app.NotificationChannel channel = new android.app.NotificationChannel(id, Lang.getString(stringRes), NotificationManager.IMPORTANCE_LOW);
-      NotificationManager manager = (NotificationManager) AppContext.get().getSystemService(Context.NOTIFICATION_SERVICE);
-      try {
-        manager.createNotificationChannel(channel);
-      } catch (Throwable t) {
-        Log.v("Unable to create notification channel for id: %s", new TdlibNotificationChannelGroup.ChannelCreationFailureException(t), id);
-      }
+      createNotificationChannel(channel);
     }
     return id;
+  }
+
+  private static void createNotificationChannel (android.app.NotificationChannel channel) {
+    NotificationManager manager =
+      (NotificationManager) AppContext.get().getSystemService(Context.NOTIFICATION_SERVICE);
+    try {
+      manager.createNotificationChannel(channel);
+    } catch (Throwable t) {
+      Log.v(
+        "Unable to create notification channel for id: %s",
+        new TdlibNotificationChannelGroup.ChannelCreationFailureException(t),
+        channel.getId()
+      );
+    }
   }
 
   private static Integer maxTextureSize;
@@ -2890,7 +2947,7 @@ public class U {
     Context context = AppContext.get();
     if (canonicalPath.startsWith("/proc/") ||
       isInsideDir(canonicalPath, context.getApplicationInfo().dataDir) ||
-      (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isInsideDir(canonicalPath,
+      (isInsideDir(canonicalPath,
         context.createDeviceProtectedStorageContext().getDataDir().getPath()))) {
       return true;
     }
@@ -2901,24 +2958,13 @@ public class U {
     }
     File tdlibDir = context.getExternalFilesDir(null);
     String tdlibPath = tdlibDir != null ? getCanonicalPath(tdlibDir.getPath()) : null;
-    // Android 4.2–4.4 also mounts the external storage at /storage/emulated/legacy
-    String legacyRoot = "/storage/emulated/legacy/";
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
-      Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && canonicalPath.startsWith(legacyRoot)) {
-      String root = getCanonicalPath(Environment.getExternalStorageDirectory().getPath());
-      if (!StringUtils.isEmpty(root)) {
-        canonicalPath = root + "/" + canonicalPath.substring(legacyRoot.length());
-      }
-    }
     return StringUtils.isEmpty(tdlibPath) || !isInsideDir(canonicalPath, tdlibPath) ||
       canonicalPath.length() == tdlibPath.length() ||
       !TdlibManager.isExternalTdlibFile(canonicalPath.substring(tdlibPath.length() + 1));
   }
 
   private static String foldName (String name) {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ?
-      android.icu.text.Normalizer2.getNFKCCasefoldInstance().normalize(name) :
-      name.toLowerCase(Locale.ROOT);
+    return android.icu.text.Normalizer2.getNFKCCasefoldInstance().normalize(name);
   }
 
   public static @Nullable String getCanonicalPath (String path) {

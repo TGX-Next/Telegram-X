@@ -47,6 +47,7 @@ public class Config {
   public static final boolean ADJUST_STATUS_BAR_TO_AVOID_DISPLAY_CUTOUT = false;
 
   public static final boolean NEED_SILENT_BROADCAST = false;
+  public static final boolean NEED_FLUSH_NOTIFICATION_DATA = false;
 
   public static final boolean SHOW_EMOJI_TONE_PICKER_ALWAYS = true;
 
@@ -180,6 +181,8 @@ public class Config {
   public static final boolean USE_CRASHLYTICS = false;
 
   public static final boolean CALL_FROM_PREVIEW = false;
+  // Android 10 and older: the buttons of a call on the passcode above the keyboard of a password
+  public static final boolean CALL_BUTTONS_ABOVE_KEYBOARD = true;
 
 
   public static final boolean FORCE_SHOW_RECENTS_STICKERS_TITLE = false;
