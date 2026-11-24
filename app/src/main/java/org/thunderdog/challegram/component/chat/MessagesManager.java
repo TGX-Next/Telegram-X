@@ -1795,6 +1795,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
       case TdApi.InternalLinkTypePremiumFeaturesPage.CONSTRUCTOR:
       case TdApi.InternalLinkTypePremiumGiftPurchase.CONSTRUCTOR:
       case TdApi.InternalLinkTypeRequestManagedBot.CONSTRUCTOR:
+      case TdApi.InternalLinkTypeBotInvite.CONSTRUCTOR:
       case TdApi.InternalLinkTypeSavedMessages.CONSTRUCTOR:
       case TdApi.InternalLinkTypeSearch.CONSTRUCTOR:
       case TdApi.InternalLinkTypeStarPurchase.CONSTRUCTOR:
@@ -1853,7 +1854,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
       }
 
       default:
-        Td.assertInternalLinkType_c232a5d5();
+        Td.assertInternalLinkType_166bd314();
         break;
     }
     return true;
@@ -2156,7 +2157,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     // The list moves up above bars of a reply and of files and with the keyboard
     rules.listTop = controller.getTopOffset() - Math.round(parent.getTranslationY());
     rules.endBottom = parent.getMeasuredHeight() - parent.getPaddingBottom();
-    rules.visibleBottom = rules.endBottom - getExtraScrollSpacing();
+    rules.visibleBottom = getVisibleBottom(parent);
     rules.top = view.getTop();
     rules.height = MessagesHolder.findMessageView(view).getHeight();
     rules.finalHeight = finalHeight;
@@ -2188,12 +2189,38 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
       return false;
     }
     final ViewGroup parent = (ViewGroup) view.getParent();
-    final int listTop = controller.getTopOffset() - Math.round(parent.getTranslationY());
-    final int visibleBottom =
-      parent.getMeasuredHeight() - parent.getPaddingBottom() - getExtraScrollSpacing();
-    range[0] = listTop - view.getTop();
-    range[1] = visibleBottom - view.getTop();
+    range[0] = getVisibleTop(parent) - view.getTop();
+    range[1] = getVisibleBottom(parent) - view.getTop();
     return true;
+  }
+
+  public int getVisibleTop (ViewGroup list) {
+    return controller.getTopOffset() - Math.round(list.getTranslationY());
+  }
+
+  public int getVisibleBottom (ViewGroup list) {
+    return list.getMeasuredHeight() - list.getPaddingBottom() - controller.getBottomCover();
+  }
+
+  public void invalidateStickyElements () {
+    if (manager == null) {
+      return;
+    }
+    for (int i = 0; i < manager.getChildCount(); i++) {
+      final View view = manager.getChildAt(i);
+      final MessageView messageView = MessagesHolder.findMessageView(view);
+      final TGMessage message = messageView != null ? messageView.getMessage() : null;
+      if (message == null) {
+        continue;
+      }
+      final ViewGroup list = (ViewGroup) view.getParent();
+      final int top = StickyElements.topOf(view);
+      if (message.hasStuckStickyElements() ||
+        message.needsStickyDrawAgain(getVisibleTop(list) - top, getVisibleBottom(list) - top)) {
+        list.invalidate();
+        return;
+      }
+    }
   }
 
   private int measureBelowHeight (int position) {
@@ -3105,10 +3132,9 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     if (blocks == null && resize == null && !hasPosition) {
       return null;
     }
-    final TdApi.Message content = message.findDescendantOrSelf(messageId);
     return new Settings.MessageState(
       messageId,
-      content != null ? content.editDate : 0,
+      message.isDescendantOrSelf(messageId) ? message.getEditDate() : 0,
       offsetPixels,
       blocks,
       resize
@@ -3137,9 +3163,9 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     if (returnState != null && message.isDescendantOrSelf(returnState.messageId)) {
       state = returnState;
     }
-    final TdApi.Message content =
-      state != null ? message.findDescendantOrSelf(state.messageId) : null;
-    return content != null && content.editDate == state.editDate ? state : null;
+    // The newest edit of an album, whose caption may be on another message than this id
+    return state != null && message.isDescendantOrSelf(state.messageId) &&
+      message.getEditDate() == state.editDate ? state : null;
   }
 
   private void restoreChanges (List<TGMessage> items) {

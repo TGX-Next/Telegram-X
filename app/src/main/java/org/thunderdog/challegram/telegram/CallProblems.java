@@ -21,8 +21,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.SparseBooleanArray;
 import android.widget.Toast;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
@@ -31,6 +33,7 @@ import org.thunderdog.challegram.Log;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.U;
 import org.thunderdog.challegram.config.Device;
+import org.thunderdog.challegram.core.BaseThread;
 import org.thunderdog.challegram.tool.UI;
 import org.thunderdog.challegram.unsorted.AppContext;
 
@@ -70,16 +73,30 @@ public final class CallProblems {
   private CallProblems () { }
 
   private static final int UNKNOWN = -1;
+  // What the system answered last, read and written on the main thread
   private static int lastProblem = UNKNOWN;
   private static boolean isLastAppChannelHidden, isLastOngoingChannelOff;
+  private static final SparseBooleanArray silencedChannels = new SparseBooleanArray();
+  private static final SparseBooleanArray pendingRefreshes = new SparseBooleanArray();
+  private static BaseThread refreshThread;
 
-  public static @Type int get (Context context) {
-    return lastProblem != UNKNOWN ? lastProblem : refresh(context);
+  private static BaseThread refreshThread () {
+    synchronized (pendingRefreshes) {
+      if (refreshThread == null) {
+        refreshThread = new BaseThread("CallProblems");
+      }
+      return refreshThread;
+    }
   }
 
   public static @Type int get (Tdlib tdlib) {
-    @Type int problem = get(AppContext.get());
-    return problem != Type.NONE ? problem : getChannelProblem(tdlib);
+    if (lastProblem == UNKNOWN || silencedChannels.indexOfKey(tdlib.id()) < 0) {
+      refresh(tdlib);
+    }
+    if (lastProblem != UNKNOWN && lastProblem != Type.NONE) {
+      return lastProblem;
+    }
+    return getChannelProblem(tdlib);
   }
 
   public static @Type int getOfSettings (Tdlib tdlib) {
@@ -104,11 +121,7 @@ public final class CallProblems {
     if (tdlib.settings().hasCallProblems()) {
       return Type.DISPLAY_FAILED;
     }
-    @Type int problem = get(tdlib);
-    if (problem == Type.CHANNEL_SILENCED && !tdlib.notifications().canPostCallNotifications()) {
-      return Type.NONE;
-    }
-    return problem;
+    return get(tdlib);
   }
 
   public static boolean isOffForDevice (Tdlib tdlib) {
@@ -125,7 +138,7 @@ public final class CallProblems {
     if (isLastAppChannelHidden) {
       return Type.APP_CHANNEL_HIDDEN;
     }
-    if (!tdlib.notifications().canCallChannelRing(0)) {
+    if (silencedChannels.get(tdlib.id())) {
       return Type.CHANNEL_SILENCED;
     }
     if (isLastOngoingChannelOff) {
@@ -134,14 +147,46 @@ public final class CallProblems {
     return Type.NONE;
   }
 
-  public static @Type int refresh (Context context) {
-    lastProblem = find(context);
-    isLastAppChannelHidden = isAppChannelHidden(context);
-    isLastOngoingChannelOff = isOngoingChannelOff(context);
-    return lastProblem;
+  @AnyThread
+  public static void refresh (Tdlib tdlib) {
+    int accountId = tdlib.id();
+    synchronized (pendingRefreshes) {
+      if (pendingRefreshes.get(accountId)) {
+        return;
+      }
+      pendingRefreshes.put(accountId, true);
+    }
+    // Not the queue of notifications, which may wait for their media for seconds
+    refreshThread().post(() -> {
+      synchronized (pendingRefreshes) {
+        pendingRefreshes.delete(accountId);
+      }
+      Context context = AppContext.get();
+      @Type int problem = find(context);
+      boolean isAppChannelHidden = isAppChannelHidden(context);
+      boolean isOngoingChannelOff = isOngoingChannelOff(context);
+      boolean isChannelSilenced = !tdlib.notifications().canCallChannelRing(0);
+      UI.post(() -> {
+        boolean changed = problem != (lastProblem != UNKNOWN ? lastProblem : Type.NONE) ||
+          isAppChannelHidden != isLastAppChannelHidden ||
+          isOngoingChannelOff != isLastOngoingChannelOff ||
+          isChannelSilenced != silencedChannels.get(accountId);
+        lastProblem = problem;
+        isLastAppChannelHidden = isAppChannelHidden;
+        isLastOngoingChannelOff = isOngoingChannelOff;
+        silencedChannels.put(accountId, isChannelSilenced);
+        if (changed) {
+          tdlib.context().global().notifyCallProblemsChanged();
+        }
+      });
+    }, 0);
   }
 
-  public static boolean isFullScreenIntentDenied (Context context) {
+  public static boolean isFullScreenIntentDenied (Tdlib tdlib) {
+    return get(tdlib) == Type.FULL_SCREEN_INTENT_DENIED;
+  }
+
+  private static boolean askFullScreenIntentDenied (Context context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       NotificationManager notificationManager =
         context.getSystemService(NotificationManager.class);
@@ -156,7 +201,7 @@ public final class CallProblems {
   }
 
   private static @Type int find (Context context) {
-    if (isFullScreenIntentDenied(context)) {
+    if (askFullScreenIntentDenied(context)) {
       return Type.FULL_SCREEN_INTENT_DENIED;
     }
     if (isBackgroundRestricted(context)) {
@@ -165,7 +210,7 @@ public final class CallProblems {
     return Type.NONE;
   }
 
-  public static boolean isOngoingChannelOff (Context context) {
+  private static boolean isOngoingChannelOff (Context context) {
     {
       NotificationManager notificationManager =
         context.getSystemService(NotificationManager.class);
@@ -176,7 +221,7 @@ public final class CallProblems {
     }
   }
 
-  public static boolean isAppChannelHidden (Context context) {
+  private static boolean isAppChannelHidden (Context context) {
     {
       NotificationManager notificationManager =
         context.getSystemService(NotificationManager.class);

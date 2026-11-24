@@ -1,5 +1,5 @@
 [versions]
-android-gradle-plugin = "9.5.1"
+android-gradle-plugin = "9.5.2"
 
 kotlin = "2.4.21"
 ksp = "2.3.13"
@@ -29,7 +29,7 @@ subsampling-scale-image-view = "3.10.0"
 mp4parser-isoparser = "1.0.6" # Do not upgrade.
 
 annotations-checkerframework = "4.4.0"
-annotations-errorprone = "2.52.0"
+annotations-errorprone = "2.53.0"
 annotations-j2objc = "3.1"
 annotations-jsr305 = "3.0.2"
 annotations-kotlin = "2.4.21"
@@ -57,7 +57,7 @@ androidx-constraintlayout-latest = "2.2.2"
 androidx-viewpager-latest = "1.1.0"
 androidx-browser-latest = "1.10.0"
 androidx-exifinterface-latest = "1.4.2"
-androidx-camera-latest = "1.6.2"
+androidx-camera-latest = "1.7.0"
 androidx-media-latest = "1.11.1"
 androidx-tracing-latest = "2.0.5"
 androidx-palette-latest = "1.1.0"
@@ -68,7 +68,7 @@ google-recaptcha-latest = "18.9.4"
 
 google-play-integrity-latest = "1.6.0"
 google-play-services-base-latest = "18.11.1"
-google-play-services-basement-latest = "18.12.0"
+google-play-services-basement-latest = "18.12.1"
 google-play-services-maps-latest = "20.1.0"
 google-play-services-location-latest = "21.4.0"
 google-play-services-mlkit-barcode-scanning-latest = "18.3.1"

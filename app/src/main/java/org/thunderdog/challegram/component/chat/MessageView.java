@@ -244,8 +244,11 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
   public void invalidate () {
     super.invalidate();
     invalidateScrollingAvatar(); // @MadeByLLM("gpt-6-astra")
-    if (msg != null && msg.needViewGroup()) {
-      msg.invalidateOverlay();
+    if (msg != null) {
+      if (msg.needViewGroup()) {
+        msg.invalidateOverlay();
+      }
+      msg.invalidateStickyElements();
     }
   }
 
@@ -253,8 +256,11 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
   public void invalidate (int l, int t, int r, int b) {
     super.invalidate(l, t, r, b);
     invalidateScrollingAvatar(); // @MadeByLLM("gpt-6-astra")
-    if (msg != null && msg.needViewGroup()) {
-      msg.invalidateOverlay();
+    if (msg != null) {
+      if (msg.needViewGroup()) {
+        msg.invalidateOverlay();
+      }
+      msg.invalidateStickyElements();
     }
   }
 

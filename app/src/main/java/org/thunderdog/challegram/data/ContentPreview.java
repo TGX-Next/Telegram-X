@@ -752,6 +752,7 @@ public class ContentPreview {
       case TdApi.MessageUpgradedGift.CONSTRUCTOR:
       case TdApi.MessageUpgradedGiftPurchaseOffer.CONSTRUCTOR:
       case TdApi.MessageUpgradedGiftPurchaseOfferRejected.CONSTRUCTOR:
+      case TdApi.MessageUpgradedGiftOnChainPurchaseOffer.CONSTRUCTOR:
       case TdApi.MessageRefundedUpgradedGift.CONSTRUCTOR:
       case TdApi.MessageStakeDice.CONSTRUCTOR:
       case TdApi.MessageVideoChatStarted.CONSTRUCTOR:
@@ -782,6 +783,7 @@ public class ContentPreview {
       case TdApi.MessageChatOwnerChanged.CONSTRUCTOR:
       case TdApi.MessageChatOwnerLeft.CONSTRUCTOR:
       case TdApi.MessageManagedBotCreated.CONSTRUCTOR:
+      case TdApi.MessageBotInvite.CONSTRUCTOR:
       case TdApi.MessagePollOptionAdded.CONSTRUCTOR:
       case TdApi.MessagePollOptionDeleted.CONSTRUCTOR:
       case TdApi.MessageChatAddedToCommunity.CONSTRUCTOR:
@@ -795,7 +797,7 @@ public class ContentPreview {
       case TdApi.MessagePassportDataReceived.CONSTRUCTOR:
       case TdApi.MessageWebAppDataReceived.CONSTRUCTOR:
       default:
-        Td.assertMessageContent_37851fea();
+        Td.assertMessageContent_e4738066();
         throw Td.unsupported(message.content);
     }
     Refresher refresher = null;
@@ -1623,6 +1625,7 @@ public class ContentPreview {
       case TdApi.MessageUpgradedGift.CONSTRUCTOR:
       case TdApi.MessageUpgradedGiftPurchaseOffer.CONSTRUCTOR:
       case TdApi.MessageUpgradedGiftPurchaseOfferRejected.CONSTRUCTOR:
+      case TdApi.MessageUpgradedGiftOnChainPurchaseOffer.CONSTRUCTOR:
       case TdApi.MessageRefundedUpgradedGift.CONSTRUCTOR:
       case TdApi.MessageStakeDice.CONSTRUCTOR:
       case TdApi.MessageChecklist.CONSTRUCTOR:
@@ -1643,6 +1646,7 @@ public class ContentPreview {
       case TdApi.MessageChatOwnerChanged.CONSTRUCTOR:
       case TdApi.MessageChatOwnerLeft.CONSTRUCTOR:
       case TdApi.MessageManagedBotCreated.CONSTRUCTOR:
+      case TdApi.MessageBotInvite.CONSTRUCTOR:
       case TdApi.MessagePollOptionAdded.CONSTRUCTOR:
       case TdApi.MessagePollOptionDeleted.CONSTRUCTOR:
       case TdApi.MessageRichMessage.CONSTRUCTOR:
@@ -1661,7 +1665,7 @@ public class ContentPreview {
       case TdApi.MessagePassportDataReceived.CONSTRUCTOR:
       case TdApi.MessageWebAppDataReceived.CONSTRUCTOR:
       default:
-        Td.assertMessageContent_37851fea();
+        Td.assertMessageContent_e4738066();
         throw new UnsupportedOperationException(Integer.toString(type));
     }
   }

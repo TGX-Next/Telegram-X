@@ -965,9 +965,10 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
   private boolean shouldPause () {
     if (instancePaused)
       return false; // Instance already paused
-    if (authorizationStatus() == Status.UNKNOWN)
+    @Status int authorizationStatus = authorizationStatus();
+    if (authorizationStatus == Status.UNKNOWN)
       return false; // TDLib takes too long to launch. Give it a chance to initialize
-    if ((authorizationState != null && authorizationState.getConstructor() != TdApi.AuthorizationStateWaitPhoneNumber.CONSTRUCTOR))
+    if (authorizationStatus == Status.UNAUTHORIZED && (authorizationState != null && authorizationState.getConstructor() != TdApi.AuthorizationStateWaitPhoneNumber.CONSTRUCTOR))
       return false; // User has started authorization process. Give them a chance to complete it.
     /*if (context().hasUi()) {
         // TODO limit couple most recent used accounts?
@@ -3775,7 +3776,8 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
   }
 
   public boolean chatNeedsMuteIcon (TdApi.Chat chat) {
-    return chat != null && TD.needMuteIcon(chat.notificationSettings, scopeNotificationSettings(chat.id));
+    return chat != null &&
+      TD.needMuteIcon(chat.notificationSettings, scopeNotificationSettings(chat));
   }
 
   public boolean chatNotificationsEnabled (long chatId) {
@@ -4888,7 +4890,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
       case TdApi.MessageAnimation.CONSTRUCTOR:
         return !photoVideoOnly;
       default:
-        Td.assertMessageContent_37851fea();
+        Td.assertMessageContent_e4738066();
         break;
     }
 
@@ -4972,7 +4974,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         case TdApi.MessageAnimatedEmoji.CONSTRUCTOR:
           return Td.textOrCaption(messageText);
       }
-      Td.assertMessageContent_37851fea();
+      Td.assertMessageContent_e4738066();
       throw Td.unsupported(messageText);
     }
     MessageEditMediaPending pendingEditMedia = getPendingMessageMedia(chatId, messageId);
@@ -7743,7 +7745,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         break;
       }
       default: {
-        Td.assertMessageContent_37851fea();
+        Td.assertMessageContent_e4738066();
         break;
       }
     }
@@ -8391,6 +8393,17 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
     }
 
     listeners.updateChatBusinessBotManageBar(update);
+  }
+
+  @TdlibThread
+  private void updateChatTextComposition (TdApi.UpdateChatTextCompositionParameters update) {
+    synchronized (dataLock) {
+      final TdApi.Chat chat = chats.get(update.chatId);
+      if (TdlibUtils.assertChat(update.chatId, chat, update)) {
+        return;
+      }
+      chat.textCompositionParameters = update.textCompositionParameters;
+    }
   }
 
   @TdlibThread
@@ -10260,6 +10273,10 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         updateChatBusinessBotManageBar((TdApi.UpdateChatBusinessBotManageBar) update);
         break;
       }
+      case TdApi.UpdateChatTextCompositionParameters.CONSTRUCTOR: {
+        updateChatTextComposition((TdApi.UpdateChatTextCompositionParameters) update);
+        break;
+      }
       case TdApi.UpdateChatHasScheduledMessages.CONSTRUCTOR: {
         updateChatHasScheduledMessages((TdApi.UpdateChatHasScheduledMessages) update);
         break;
@@ -10709,7 +10726,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         throw Td.unsupported(update);
       }
       default: {
-        Td.assertUpdate_2f0de2f1();
+        Td.assertUpdate_fdfa812a();
         throw Td.unsupported(update);
       }
     }
@@ -11693,6 +11710,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         case TdApi.MessageUpgradedGift.CONSTRUCTOR:
         case TdApi.MessageUpgradedGiftPurchaseOffer.CONSTRUCTOR:
         case TdApi.MessageUpgradedGiftPurchaseOfferRejected.CONSTRUCTOR:
+        case TdApi.MessageUpgradedGiftOnChainPurchaseOffer.CONSTRUCTOR:
         case TdApi.MessageStakeDice.CONSTRUCTOR:
         case TdApi.MessageRefundedUpgradedGift.CONSTRUCTOR:
         case TdApi.MessagePaidMessagePriceChanged.CONSTRUCTOR:
@@ -11732,6 +11750,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
         case TdApi.MessageChatOwnerChanged.CONSTRUCTOR:
         case TdApi.MessageChatOwnerLeft.CONSTRUCTOR:
         case TdApi.MessageManagedBotCreated.CONSTRUCTOR:
+        case TdApi.MessageBotInvite.CONSTRUCTOR:
         case TdApi.MessagePollOptionAdded.CONSTRUCTOR:
         case TdApi.MessagePollOptionDeleted.CONSTRUCTOR:
         case TdApi.MessageChatAddedToCommunity.CONSTRUCTOR:
@@ -11743,7 +11762,7 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
           // assuming we want to check RightId.SEND_BASIC_MESSAGES
           return getBasicMessageRestrictionText(chat);
         default:
-          Td.assertMessageContent_37851fea();
+          Td.assertMessageContent_e4738066();
           throw Td.unsupported(message.content);
       }
     }

@@ -53,6 +53,7 @@ import me.vkryl.core.StringUtils;
 
 public class ImageReader {
   public static final int LARGE_IMAGE_LIMIT = 1024;
+  private static final int MAX_WEBP_SIZE = 4096;
 
   private static ImageReader instance;
 
@@ -279,12 +280,29 @@ public class ImageReader {
 
           BitmapFactory.Options bmOptions = new BitmapFactory.Options();
           bmOptions.inJustDecodeBounds = true;
-          N.loadWebpImage(null, buffer, buffer.limit(), bmOptions, true);
-          bitmap = Bitmap.createBitmap(bmOptions.outWidth, bmOptions.outHeight, Bitmap.Config.ARGB_8888);
+          if (!N.loadWebpImage(null, buffer, buffer.limit(), bmOptions, true)) {
+            throw new IllegalArgumentException("WebP image is too large");
+          }
+          int size = file.getSize();
+          int sampleSize = size != 0 ? calculateInSampleSize(bmOptions, size, size) : 1;
+          // A divisor of both sides, so pixels average whole blocks
+          while (sampleSize > 1 &&
+            (bmOptions.outWidth % sampleSize != 0 || bmOptions.outHeight % sampleSize != 0)) {
+            sampleSize--;
+          }
+          int maxSide = Math.max(bmOptions.outWidth, bmOptions.outHeight);
+          while ((maxSide + sampleSize - 1) / sampleSize > MAX_WEBP_SIZE) {
+            sampleSize++;
+          }
+          int width = (bmOptions.outWidth + sampleSize - 1) / sampleSize;
+          int height = (bmOptions.outHeight + sampleSize - 1) / sampleSize;
+          bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
           N.loadWebpImage(bitmap, buffer, buffer.limit(), null, true);
         } catch (Throwable t) {
           Log.e(Log.TAG_IMAGE_LOADER, "#%s: Cannot load bitmap, config: %s", t, file.toString(), opts.inPreferredConfig.toString());
           webpDecoderFailed = true;
+          U.recycle(bitmap);
+          bitmap = null;
         }
       }
 

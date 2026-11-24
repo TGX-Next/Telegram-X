@@ -154,16 +154,19 @@ public class CameraManagerX extends CameraManager<PreviewView> {
     waitingForPreview = true;
 
     AspectRatioStrategy aspectRatioStrategy;
+    int videoAspectRatio;
     int aspectRatioMode = Settings.instance().getCameraAspectRatioMode();
     switch (aspectRatioMode) {
       case Settings.CAMERA_RATIO_FULL_SCREEN:
       case Settings.CAMERA_RATIO_16_9:
         aspectRatioStrategy = AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY;
+        videoAspectRatio = AspectRatio.RATIO_16_9;
         break;
       case Settings.CAMERA_RATIO_1_1:
       case Settings.CAMERA_RATIO_4_3:
       default:
         aspectRatioStrategy = AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY;
+        videoAspectRatio = AspectRatio.RATIO_4_3;
         break;
     }
 
@@ -202,11 +205,7 @@ public class CameraManagerX extends CameraManager<PreviewView> {
       Arrays.asList(Quality.FHD, Quality.HD, Quality.SD),
       FallbackStrategy.lowerQualityOrHigherThan(Quality.SD)
     );
-    Recorder recorder = new Recorder.Builder()
-      .setQualitySelector(qualitySelector)
-      .build();
-    videoCapture = VideoCapture.withOutput(recorder);
-    videoCapture.setTargetRotation(getSurfaceRotation());
+    videoCapture = newVideoCapture(qualitySelector, videoAspectRatio);
 
     boolean needQrScanner = delegate.useQrScanner();
     if (needQrScanner) {
@@ -224,18 +223,16 @@ public class CameraManagerX extends CameraManager<PreviewView> {
     }
 
     try {
-      UseCaseGroup.Builder group = new UseCaseGroup.Builder().addUseCase(preview);
-      if (needQrScanner) {
-        group.addUseCase(imageAnalyzer);
-      } else {
-        group.addUseCase(imageCapture).addUseCase(videoCapture);
+      try {
+        camera = bindUseCases(cameraSelector);
+      } catch (IllegalArgumentException e) {
+        if (needQrScanner) {
+          throw e;
+        }
+        Log.w(Log.TAG_CAMERA, "Use case binding with the ratio of videos failed", e);
+        videoCapture = newVideoCapture(qualitySelector, AspectRatio.RATIO_DEFAULT);
+        camera = bindUseCases(cameraSelector);
       }
-      ViewPort viewPort = cameraView.getViewPort();
-      if (viewPort != null) {
-        group.setViewPort(viewPort);
-      }
-      this.camera = cameraProvider.bindToLifecycle(
-        (LifecycleOwner) context, cameraSelector, group.build());
       lastCameraState = camera.getCameraInfo().getCameraState();
     } catch (Exception e) {
       Log.e(Log.TAG_CAMERA, "Use case binding failed", e);
@@ -253,6 +250,33 @@ public class CameraManagerX extends CameraManager<PreviewView> {
     preview.setSurfaceProvider(surfaceProvider);
 
     reportFlashMode();
+  }
+
+  // @MadeByLLM("gpt-6", id = "upstream-1833")
+  private Camera bindUseCases (CameraSelector cameraSelector) {
+    UseCaseGroup.Builder group = new UseCaseGroup.Builder().addUseCase(preview);
+    if (imageAnalyzer != null) {
+      group.addUseCase(imageAnalyzer);
+    } else {
+      group.addUseCase(imageCapture).addUseCase(videoCapture);
+    }
+    ViewPort viewPort = cameraView.getViewPort();
+    if (viewPort != null) {
+      group.setViewPort(viewPort);
+    }
+    return cameraProvider.bindToLifecycle(
+      (LifecycleOwner) context, cameraSelector, group.build());
+  }
+
+  private VideoCapture<Recorder> newVideoCapture (QualitySelector qualitySelector, int ratio) {
+    Recorder.Builder recorder = new Recorder.Builder()
+      .setQualitySelector(qualitySelector);
+    if (ratio != AspectRatio.RATIO_DEFAULT) {
+      recorder.setAspectRatio(ratio);
+    }
+    VideoCapture<Recorder> capture = VideoCapture.withOutput(recorder.build());
+    capture.setTargetRotation(getSurfaceRotation());
+    return capture;
   }
 
   private void unbindCamera () {
