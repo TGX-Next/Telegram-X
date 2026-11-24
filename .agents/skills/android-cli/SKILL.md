@@ -4,6 +4,7 @@ description: Provides instructions for installing and using the `android` CLI. T
 license: Complete terms in LICENSE.txt
 metadata:
   author: Google LLC
+  last-updated: '2026-11-14'
   keywords:
   - android-cli
   - sdk
